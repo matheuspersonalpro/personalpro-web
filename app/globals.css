@@ -1,26 +1,61 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
+
+  html, body { height: 100%; }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #080f1d;
+  color: #f1f5f9;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  line-height: 1.5;
 }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.14); }
+
+/* Herança de fonte */
+input, select, textarea, button { font-family: inherit; }
+
+/* Seleção de texto */
+::selection { background: rgba(59, 130, 246, 0.30); color: #fff; }
+
+/* Focus global — remove o outline padrão (temos estilos customizados nos inputs) */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid rgba(59, 130, 246, 0.6);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Inputs e selects — herdam color-scheme para dark */
+input, select, textarea {
+  color-scheme: dark;
+}
+
+/* Evitar input[type=date] feio no Windows */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.4);
+  cursor: pointer;
+}
+
+/* Transição padrão para links e botões */
+a, button { transition-property: color, background-color, border-color, opacity, box-shadow; transition-duration: 150ms; }
+
+/* Tabelas */
+table { border-collapse: collapse; width: 100%; }
