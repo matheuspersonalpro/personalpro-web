@@ -1,6 +1,7 @@
 'use client';
-import { useEffect, useState, useRef } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+
 import Link from 'next/link';
 import { buscarTreino, buscarAlunos, salvarTreino, buscarExercicios } from '@/lib/firestore';
 import { ChevronLeft, Save, Search, Plus, X, Dumbbell, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
@@ -12,7 +13,6 @@ function ExCard({ ex, idx, onChange, onRemove }) {
   const [open, setOpen] = useState(true);
   return (
     <div className="rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] overflow-hidden">
-      {/* Header */}
       <div className="flex items-center gap-2 px-4 py-3">
         <GripVertical size={14} className="text-white/15 shrink-0" />
         <div className="flex-1 min-w-0">
@@ -56,10 +56,10 @@ function ExCard({ ex, idx, onChange, onRemove }) {
 }
 
 export default function EditarTreino() {
-  const { id }          = useParams();
+  const searchParams    = useSearchParams();
+  const id              = searchParams.get('id');
   const router          = useRouter();
   const toast           = useToast();
-  const searchParams    = useSearchParams();
   const isNovo          = id === 'novo';
 
   const [form, setForm]         = useState({ nome: '', alunoId: '', exercicios: [] });
@@ -72,6 +72,7 @@ export default function EditarTreino() {
   const [grupoFiltro, setGrupo] = useState('');
 
   useEffect(() => {
+    if (!id) return;
     const alunoIdParam = searchParams.get('alunoId') || '';
     Promise.all([buscarAlunos(), buscarExercicios(), isNovo ? null : buscarTreino(id)])
       .then(([a, ex, treino]) => {
@@ -115,7 +116,7 @@ export default function EditarTreino() {
     try {
       await salvarTreino(isNovo ? form : { ...form, id });
       toast('Treino salvo com sucesso.');
-      router.push(form.alunoId ? `/dashboard/alunos/${form.alunoId}` : '/dashboard/treinos');
+      router.push(form.alunoId ? `/dashboard/alunos?id=${form.alunoId}` : '/dashboard/treinos');
     } catch { toast('Erro ao salvar treino.', 'error'); }
     finally { setSaving(false); }
   }
@@ -133,7 +134,6 @@ export default function EditarTreino() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header fixo */}
       <div className="flex items-center justify-between px-8 py-4 border-b border-white/[0.05] shrink-0 bg-[#080f1d]">
         <div className="flex items-center gap-3">
           <Link href="/dashboard/treinos" className="w-7 h-7 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/35 hover:text-white transition-all">
@@ -168,9 +168,7 @@ export default function EditarTreino() {
         </div>
       </div>
 
-      {/* Corpo */}
       <div className="flex flex-1 min-h-0">
-        {/* Exercícios do treino */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="max-w-2xl space-y-2.5">
             {(form.exercicios || []).length === 0 ? (
@@ -193,7 +191,6 @@ export default function EditarTreino() {
           </div>
         </div>
 
-        {/* Biblioteca lateral */}
         <div className="w-72 shrink-0 border-l border-white/[0.05] flex flex-col bg-[#0a1628]">
           <div className="p-4 border-b border-white/[0.05] shrink-0">
             <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-3">Biblioteca</p>

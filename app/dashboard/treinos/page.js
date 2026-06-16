@@ -1,12 +1,17 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { buscarTreinosBiblioteca, buscarAlunos, excluirTreino } from '@/lib/firestore';
 import { Plus, Search, Dumbbell, ArrowUpRight, Trash2, User } from 'lucide-react';
 import ConfirmModal from '@/components/ConfirmModal';
 import { useToast } from '@/components/Toast';
+import EditarTreino from './EditarTreinoClient';
 
 export default function TreinosPage() {
+  const searchParams = useSearchParams();
+  const treinoId     = searchParams.get('id');
+
   const toast = useToast();
   const [treinos, setTreinos] = useState([]);
   const [alunos, setAlunos]   = useState([]);
@@ -19,7 +24,13 @@ export default function TreinosPage() {
       .then(([t, a]) => { setTreinos(t); setAlunos(a); })
       .finally(() => setLoading(false));
   };
-  useEffect(() => { carregar(); }, []);
+
+  useEffect(() => {
+    if (treinoId) return;
+    carregar();
+  }, [treinoId]);
+
+  if (treinoId) return <EditarTreino />;
 
   function nomeAluno(id) {
     return alunos.find(a => a.id === id)?.nome || null;
@@ -43,7 +54,6 @@ export default function TreinosPage() {
     nomeAluno(t.alunoId)?.toLowerCase().includes(busca.toLowerCase())
   );
 
-  // Agrupar por aluno
   const grupos = filtrados.reduce((acc, t) => {
     const key = t.alunoId || '__sem_aluno__';
     if (!acc[key]) acc[key] = [];
@@ -79,7 +89,7 @@ export default function TreinosPage() {
             <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar..."
               className="pl-8 pr-4 py-2 rounded-xl bg-white/[0.05] border border-white/[0.07] text-white placeholder-white/25 text-[13px] focus:outline-none focus:border-blue-500/50 transition-all w-44" />
           </div>
-          <Link href="/dashboard/treinos/novo"
+          <Link href="/dashboard/treinos?id=novo"
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
             <Plus size={13} /> Novo treino
           </Link>
@@ -97,14 +107,13 @@ export default function TreinosPage() {
             const nome = alunoId === '__sem_aluno__' ? null : nomeAluno(alunoId);
             return (
               <div key={alunoId}>
-                {/* Header do grupo */}
                 <div className="flex items-center gap-2 mb-3">
                   {nome ? (
                     <>
                       <div className="w-6 h-6 rounded-full bg-blue-500/15 flex items-center justify-center text-[10px] font-bold text-blue-400">
                         {nome[0]}
                       </div>
-                      <Link href={`/dashboard/alunos/${alunoId}`}
+                      <Link href={`/dashboard/alunos?id=${alunoId}`}
                         className="text-[12px] font-semibold text-white/60 hover:text-white transition-colors flex items-center gap-1">
                         {nome} <ArrowUpRight size={11} />
                       </Link>
@@ -118,10 +127,9 @@ export default function TreinosPage() {
                   <span className="text-[10px] text-white/20 ml-1">{lista.length} treino{lista.length !== 1 ? 's' : ''}</span>
                 </div>
 
-                {/* Cards dos treinos */}
                 <div className="grid grid-cols-3 gap-3">
                   {lista.map(t => (
-                    <Link key={t.id} href={`/dashboard/treinos/${t.id}`}
+                    <Link key={t.id} href={`/dashboard/treinos?id=${t.id}`}
                       className="group relative rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] hover:ring-blue-500/25 hover:bg-[#101f38] p-4 transition-all">
                       <div className="flex items-start justify-between mb-4">
                         <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center">

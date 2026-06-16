@@ -1,8 +1,10 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { buscarAlunos } from '@/lib/firestore';
 import { Search, ArrowUpRight, Clock, XCircle, CheckCircle2, Filter } from 'lucide-react';
+import FichaAluno from './FichaAlunoClient';
 
 function Badge({ tipo }) {
   const map = {
@@ -37,14 +39,20 @@ function VencimentoCell({ vencimento }) {
 }
 
 export default function AlunosPage() {
+  const searchParams = useSearchParams();
+  const alunoId      = searchParams.get('id');
+
   const [alunos, setAlunos]   = useState([]);
   const [busca, setBusca]     = useState('');
-  const [filtro, setFiltro]   = useState('todos'); // todos | ativos | vencendo | inadimplentes
+  const [filtro, setFiltro]   = useState('todos');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (alunoId) return;
     buscarAlunos().then(setAlunos).finally(() => setLoading(false));
-  }, []);
+  }, [alunoId]);
+
+  if (alunoId) return <FichaAluno />;
 
   const hoje = new Date();
 
@@ -81,7 +89,6 @@ export default function AlunosPage() {
 
   return (
     <div className="p-8 max-w-6xl mx-auto w-full">
-      {/* Header */}
       <div className="flex items-end justify-between mb-6">
         <div>
           <h1 className="text-[22px] font-bold text-white tracking-tight">Alunos</h1>
@@ -89,9 +96,7 @@ export default function AlunosPage() {
         </div>
       </div>
 
-      {/* Filtros + busca */}
       <div className="flex items-center gap-3 mb-5">
-        {/* Tabs de filtro */}
         <div className="flex items-center gap-1 bg-white/[0.04] rounded-xl p-1">
           {[
             { key: 'todos', label: 'Todos' },
@@ -114,7 +119,6 @@ export default function AlunosPage() {
           ))}
         </div>
 
-        {/* Busca */}
         <div className="relative ml-auto">
           <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25" />
           <input
@@ -126,7 +130,6 @@ export default function AlunosPage() {
         </div>
       </div>
 
-      {/* Tabela */}
       <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
         <table className="w-full">
           <thead>
@@ -145,7 +148,7 @@ export default function AlunosPage() {
                 className={`border-b border-white/[0.03] last:border-0 hover:bg-white/[0.025] transition-colors group ${i % 2 === 1 ? 'bg-white/[0.01]' : ''}`}
               >
                 <td className="px-6 py-3.5">
-                  <Link href={`/dashboard/alunos/${a.id}`} className="flex items-center gap-3">
+                  <Link href={`/dashboard/alunos?id=${a.id}`} className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-500/20 flex items-center justify-center text-[11px] font-bold text-blue-400 shrink-0">
                       {a.nome?.[0]}
                     </div>
@@ -160,7 +163,7 @@ export default function AlunosPage() {
                 <td className="px-6 py-3.5"><Badge tipo={a.tipoServico || 'presencial'} /></td>
                 <td className="px-6 py-3.5"><VencimentoCell vencimento={a.vencimento} /></td>
                 <td className="px-6 py-3.5">
-                  <Link href={`/dashboard/alunos/${a.id}`}
+                  <Link href={`/dashboard/alunos?id=${a.id}`}
                     className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-7 h-7 rounded-lg hover:bg-white/[0.08] text-white/40 hover:text-white">
                     <ArrowUpRight size={13} />
                   </Link>

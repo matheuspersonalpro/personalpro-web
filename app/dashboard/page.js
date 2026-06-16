@@ -128,7 +128,7 @@ export default function DashboardPage() {
                 return (
                   <tr key={a.id} className="border-b border-white/[0.03] last:border-0 hover:bg-white/[0.025] transition-colors group">
                     <td className="px-5 py-3.5">
-                      <Link href={`/dashboard/alunos/${a.id}`} className="flex items-center gap-3">
+                      <Link href={`/dashboard/alunos?id=${a.id}`} className="flex items-center gap-3">
                         <div className="w-7 h-7 rounded-full bg-blue-500/15 flex items-center justify-center text-[11px] font-bold text-blue-400 shrink-0">
                           {a.nome?.[0]}
                         </div>
@@ -179,7 +179,7 @@ export default function DashboardPage() {
                 const [d, m, y] = a.vencimento.split('/');
                 const diff = Math.ceil((new Date(+y, m - 1, +d) - hoje) / 86400000);
                 return (
-                  <Link key={a.id} href={`/dashboard/alunos/${a.id}`}
+                  <Link key={a.id} href={`/dashboard/alunos?id=${a.id}`}
                     className="flex items-center justify-between px-2 py-2.5 rounded-lg hover:bg-white/[0.04] transition-colors group">
                     <div className="flex items-center gap-2.5">
                       <div className="w-6 h-6 rounded-full bg-amber-500/15 flex items-center justify-center text-[10px] font-bold text-amber-400">
@@ -209,7 +209,7 @@ export default function DashboardPage() {
                   <span className="text-[12px] text-white/25">Nenhum inadimplente</span>
                 </div>
               ) : inadimplentes.slice(0, 5).map(a => (
-                <Link key={a.id} href={`/dashboard/alunos/${a.id}`}
+                <Link key={a.id} href={`/dashboard/alunos?id=${a.id}`}
                   className="flex items-center justify-between px-2 py-2.5 rounded-lg hover:bg-white/[0.04] transition-colors group">
                   <div className="flex items-center gap-2.5">
                     <div className="w-6 h-6 rounded-full bg-red-500/12 flex items-center justify-center text-[10px] font-bold text-red-400">

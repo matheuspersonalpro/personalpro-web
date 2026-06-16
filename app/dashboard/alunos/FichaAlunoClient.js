@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
+
 import Link from 'next/link';
 import { buscarAluno, buscarTreinos, atualizarAluno } from '@/lib/firestore';
 import { ChevronLeft, Pencil, Save, X, User, CreditCard, Dumbbell, Phone, Mail, Calendar, Plus, ArrowUpRight } from 'lucide-react';
@@ -51,9 +52,10 @@ function SelectField({ label, field, form, setForm, editing, options }) {
 }
 
 export default function FichaAluno() {
-  const { id } = useParams();
-  const router  = useRouter();
-  const toast   = useToast();
+  const searchParams = useSearchParams();
+  const id           = searchParams.get('id');
+  const router       = useRouter();
+  const toast        = useToast();
   const [aluno, setAluno]     = useState(null);
   const [treinos, setTreinos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +65,7 @@ export default function FichaAluno() {
   const [aba, setAba]         = useState('dados');
 
   useEffect(() => {
+    if (!id) return;
     Promise.all([buscarAluno(id), buscarTreinos(id)])
       .then(([a, t]) => { setAluno(a); setForm(a || {}); setTreinos(t); })
       .finally(() => setLoading(false));
@@ -101,13 +104,11 @@ export default function FichaAluno() {
 
   return (
     <div className="p-8 max-w-5xl mx-auto w-full">
-      {/* Voltar */}
       <Link href="/dashboard/alunos"
         className="inline-flex items-center gap-1.5 text-[12px] text-white/35 hover:text-white/70 transition-colors mb-6">
         <ChevronLeft size={14} /> Alunos
       </Link>
 
-      {/* Header do aluno */}
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/25 to-indigo-500/25 flex items-center justify-center text-xl font-bold text-blue-400 ring-1 ring-blue-500/20">
@@ -149,7 +150,6 @@ export default function FichaAluno() {
         </div>
       </div>
 
-      {/* Abas */}
       <div className="flex items-center gap-1 border-b border-white/[0.05] mb-6">
         {[
           { key: 'dados', label: 'Dados pessoais', icon: User },
@@ -168,7 +168,6 @@ export default function FichaAluno() {
         ))}
       </div>
 
-      {/* Conteúdo das abas */}
       {aba === 'dados' && (
         <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-6">
           <div className="grid grid-cols-2 gap-x-8 gap-y-5">
@@ -196,7 +195,7 @@ export default function FichaAluno() {
       {aba === 'treinos' && (
         <div className="space-y-3">
           <div className="flex justify-end">
-            <Link href={`/dashboard/treinos/novo?alunoId=${id}`}
+            <Link href={`/dashboard/treinos?id=novo&alunoId=${id}`}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
               <Plus size={13} /> Novo treino
             </Link>
@@ -208,7 +207,7 @@ export default function FichaAluno() {
             </div>
           ) : (
             treinos.map(t => (
-              <Link key={t.id} href={`/dashboard/treinos/${t.id}`}
+              <Link key={t.id} href={`/dashboard/treinos?id=${t.id}`}
                 className="flex items-center justify-between p-4 rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] hover:ring-white/[0.10] hover:bg-[#101f38] transition-all group">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center">
