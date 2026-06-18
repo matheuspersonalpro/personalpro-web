@@ -1,15 +1,17 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   buscarAluno, buscarTreinos, atualizarAluno, excluirAluno,
   buscarAvaliacoes, criarAvaliacao, excluirAvaliacao, buscarHistoricoDoAluno,
+  atribuirProgramaMuscular, listarProgramas,
+  buscarFotosEvolucao, uploadFotoEvolucao, salvarFotosEvolucao, deletarSessaoFotos,
 } from '@/lib/firestore';
 import {
   ChevronLeft, Pencil, Save, X, User, CreditCard, Dumbbell,
   Phone, Mail, Calendar, Plus, ArrowUpRight, ClipboardList, Trash2,
-  TrendingUp, Weight,
+  TrendingUp, Weight, Camera,
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useToast } from '@/components/Toast';
@@ -191,6 +193,210 @@ function CardAvaliacao({ av, onExcluir }) {
   );
 }
 
+// ── Atribuir Programa Modal ───────────────────────────────────────────────────
+function AtribuirProgramaModal({ aluno, onSalvo, onFechar }) {
+  const toast = useToast();
+  const [programas, setProgramas] = useState([]);
+  const [programaId, setProgramaId] = useState('');
+  const [mes, setMes] = useState(1);
+  const [salvando, setSalvando] = useState(false);
+
+  useEffect(() => {
+    listarProgramas().then(lista => {
+      setProgramas(lista);
+      if (lista.length > 0) setProgramaId(lista[0].id);
+    });
+  }, []);
+
+  async function atribuir() {
+    if (!programaId) return;
+    setSalvando(true);
+    try {
+      await atribuirProgramaMuscular(aluno, programaId, mes);
+      toast('Programa atribuído com sucesso.');
+      onSalvo();
+    } catch { toast('Erro ao atribuir programa.', 'error'); }
+    finally { setSalvando(false); }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}>
+      <div className="w-full max-w-md rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
+          <h2 className="text-[15px] font-bold text-white">Atribuir programa muscular</h2>
+          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all">
+            <X size={16} />
+          </button>
+        </div>
+        <div className="p-6 space-y-4">
+          <div>
+            <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Programa</label>
+            <select value={programaId} onChange={e => setProgramaId(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+              {programas.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
+            </select>
+            {programaId && programas.find(p => p.id === programaId)?.desc && (
+              <p className="text-[11px] text-white/30 mt-1.5 leading-relaxed">
+                {programas.find(p => p.id === programaId).desc}
+              </p>
+            )}
+          </div>
+          <div>
+            <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Mês inicial (1–12)</label>
+            <input type="number" min={1} max={12} value={mes} onChange={e => setMes(Number(e.target.value))}
+              className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+          </div>
+          <p className="text-[11px] text-amber-400/70 leading-relaxed">
+            Atenção: os treinos de programa existentes deste aluno serão substituídos.
+          </p>
+        </div>
+        <div className="px-6 py-4 border-t border-white/[0.06] flex justify-end gap-2">
+          <button onClick={onFechar} className="px-4 py-2 rounded-xl border border-white/[0.08] text-[13px] text-white/50 hover:text-white hover:border-white/15 transition-all">
+            Cancelar
+          </button>
+          <button onClick={atribuir} disabled={salvando || !programaId}
+            className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-indigo-900/30">
+            {salvando ? 'Atribuindo...' : 'Atribuir'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Fotos de evolução Tab ─────────────────────────────────────────────────────
+const POSICOES = [
+  { key: 'frente',  label: 'Frente' },
+  { key: 'costas',  label: 'Costas' },
+  { key: 'lateral', label: 'Lateral' },
+];
+
+function FotosTab({ alunoId }) {
+  const toast = useToast();
+  const [historico, setHistorico] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [files, setFiles] = useState({ frente: null, costas: null, lateral: null });
+  const [previews, setPreviews] = useState({ frente: null, costas: null, lateral: null });
+  const [salvando, setSalvando] = useState(false);
+  const refs = { frente: useRef(), costas: useRef(), lateral: useRef() };
+
+  useEffect(() => {
+    buscarFotosEvolucao(alunoId)
+      .then(setHistorico)
+      .finally(() => setCarregando(false));
+  }, [alunoId]);
+
+  function handleFile(posicao, file) {
+    if (!file) return;
+    setFiles(f => ({ ...f, [posicao]: file }));
+    const url = URL.createObjectURL(file);
+    setPreviews(p => ({ ...p, [posicao]: url }));
+  }
+
+  async function salvarFotos() {
+    const posComFile = POSICOES.filter(p => files[p.key]);
+    if (posComFile.length === 0) { toast('Selecione ao menos uma foto.', 'error'); return; }
+    setSalvando(true);
+    try {
+      const fotosUrls = {};
+      for (const { key } of posComFile) {
+        const url = await uploadFotoEvolucao(alunoId, files[key], key);
+        fotosUrls[key] = url;
+      }
+      await salvarFotosEvolucao(alunoId, fotosUrls);
+      toast('Fotos salvas com sucesso.');
+      setFiles({ frente: null, costas: null, lateral: null });
+      setPreviews({ frente: null, costas: null, lateral: null });
+      buscarFotosEvolucao(alunoId).then(setHistorico);
+    } catch { toast('Erro ao salvar fotos.', 'error'); }
+    finally { setSalvando(false); }
+  }
+
+  async function excluirSessao(sessaoId) {
+    await deletarSessaoFotos(sessaoId);
+    setHistorico(h => h.filter(s => s.id !== sessaoId));
+    toast('Sessão excluída.');
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Nova sessão */}
+      <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-6">
+        <p className="text-[12px] font-semibold text-white/40 uppercase tracking-wider mb-4">Nova sessão de fotos</p>
+        <div className="grid grid-cols-3 gap-4">
+          {POSICOES.map(({ key, label }) => (
+            <div key={key} className="flex flex-col items-center gap-2">
+              <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">{label}</p>
+              <input ref={refs[key]} type="file" accept="image/*" className="hidden"
+                onChange={e => handleFile(key, e.target.files[0])} />
+              <button onClick={() => refs[key].current.click()}
+                className="w-24 h-32 rounded-xl border-2 border-dashed border-white/[0.10] hover:border-blue-500/40 bg-white/[0.02] hover:bg-blue-500/5 transition-all overflow-hidden flex items-center justify-center">
+                {previews[key] ? (
+                  <img src={previews[key]} alt={label} className="w-full h-full object-cover" />
+                ) : (
+                  <Camera size={20} className="text-white/20" />
+                )}
+              </button>
+              {files[key] && (
+                <p className="text-[10px] text-white/30 truncate max-w-[96px]">{files[key].name}</p>
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-end mt-4">
+          <button onClick={salvarFotos} disabled={salvando}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-blue-900/30">
+            {salvando ? 'Salvando...' : 'Salvar fotos'}
+          </button>
+        </div>
+      </div>
+
+      {/* Histórico */}
+      <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-6">
+        <p className="text-[12px] font-semibold text-white/40 uppercase tracking-wider mb-4">Histórico</p>
+        {carregando ? (
+          <div className="flex justify-center py-8">
+            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : historico.length === 0 ? (
+          <div className="text-center py-8">
+            <Camera size={24} className="text-white/15 mx-auto mb-2" strokeWidth={1.5} />
+            <p className="text-[13px] text-white/30">Nenhuma foto registrada ainda.</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {historico.map(sess => {
+              const data = sess.criadoEm?.seconds
+                ? new Date(sess.criadoEm.seconds * 1000).toLocaleDateString('pt-BR')
+                : '—';
+              const fotos = sess.fotos || {};
+              return (
+                <div key={sess.id} className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] ring-1 ring-white/[0.05]">
+                  <div className="flex-1">
+                    <p className="text-[12px] font-semibold text-white/60 mb-2">{data}</p>
+                    <div className="flex gap-2">
+                      {POSICOES.map(({ key, label }) => fotos[key] ? (
+                        <div key={key} className="flex flex-col items-center gap-1">
+                          <img src={fotos[key]} alt={label} className="w-24 h-32 object-cover rounded-xl" />
+                          <p className="text-[9px] text-white/25 uppercase">{label}</p>
+                        </div>
+                      ) : null)}
+                    </div>
+                  </div>
+                  <button onClick={() => excluirSessao(sess.id)}
+                    className="p-2 rounded-xl hover:bg-red-500/10 text-white/20 hover:text-red-400 transition-all shrink-0">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function FichaAluno() {
   const searchParams = useSearchParams();
   const id           = searchParams.get('id');
@@ -208,6 +414,7 @@ export default function FichaAluno() {
   const [saving,    setSaving]    = useState(false);
   const [aba,       setAba]       = useState('dados');
   const [novaAval,  setNovaAval]  = useState(false);
+  const [atribuirPrograma, setAtribuirPrograma] = useState(false);
   const [confirmExcluirId, setConfirmExcluirId] = useState(null);
   const [confirmAluno, setConfirmAluno] = useState(false);
 
@@ -270,6 +477,13 @@ export default function FichaAluno() {
           alunoId={id}
           onSalvo={() => { setNovaAval(false); buscarAvaliacoes(id).then(setAvaliacoes); }}
           onFechar={() => setNovaAval(false)}
+        />
+      )}
+      {atribuirPrograma && (
+        <AtribuirProgramaModal
+          aluno={aluno}
+          onSalvo={() => { setAtribuirPrograma(false); buscarTreinos(id).then(setTreinos); }}
+          onFechar={() => setAtribuirPrograma(false)}
         />
       )}
       <ConfirmModal
@@ -352,6 +566,7 @@ export default function FichaAluno() {
           { key: 'avaliacoes', label: 'Avaliações',       icon: ClipboardList },
           { key: 'evolucao',   label: 'Evolução',         icon: TrendingUp },
           { key: 'cargas',     label: 'Cargas',           icon: Weight },
+          { key: 'fotos',      label: 'Fotos',            icon: Camera },
         ].map(({ key, label, icon: Icon }) => (
           <button key={key} onClick={() => {
             setAba(key);
@@ -398,7 +613,11 @@ export default function FichaAluno() {
 
       {aba === 'treinos' && (
         <div className="space-y-3">
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <button onClick={() => setAtribuirPrograma(true)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-[12px] font-semibold text-indigo-300 hover:text-indigo-200 transition-all">
+              <Dumbbell size={13} /> Atribuir programa
+            </button>
             <Link href={`/dashboard/treinos?id=novo&alunoId=${id}`}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
               <Plus size={13} /> Novo treino
@@ -556,6 +775,8 @@ export default function FichaAluno() {
           </div>
         );
       })()}
+
+      {aba === 'fotos' && <FotosTab alunoId={id} />}
 
       {aba === 'cargas' && (() => {
         if (!histLoaded) {
