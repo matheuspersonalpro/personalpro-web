@@ -4,12 +4,14 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   buscarAluno, buscarTreinos, atualizarAluno, excluirAluno,
-  buscarAvaliacoes, criarAvaliacao, excluirAvaliacao,
+  buscarAvaliacoes, criarAvaliacao, excluirAvaliacao, buscarHistoricoDoAluno,
 } from '@/lib/firestore';
 import {
   ChevronLeft, Pencil, Save, X, User, CreditCard, Dumbbell,
   Phone, Mail, Calendar, Plus, ArrowUpRight, ClipboardList, Trash2,
+  TrendingUp, Weight,
 } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useToast } from '@/components/Toast';
 import ConfirmModal from '@/components/ConfirmModal';
 
@@ -198,6 +200,8 @@ export default function FichaAluno() {
   const [aluno,     setAluno]     = useState(null);
   const [treinos,   setTreinos]   = useState([]);
   const [avaliacoes,setAvaliacoes]= useState([]);
+  const [historico, setHistorico] = useState([]);
+  const [histLoaded,setHistLoaded]= useState(false);
   const [loading,   setLoading]   = useState(true);
   const [editing,   setEditing]   = useState(false);
   const [form,      setForm]      = useState({});
@@ -340,15 +344,22 @@ export default function FichaAluno() {
         </div>
       </div>
 
-      <div className="flex items-center gap-1 border-b border-white/[0.05] mb-6">
+      <div className="flex items-center gap-1 border-b border-white/[0.05] mb-6 overflow-x-auto">
         {[
           { key: 'dados',      label: 'Dados pessoais',   icon: User },
           { key: 'plano',      label: 'Plano',            icon: CreditCard },
           { key: 'treinos',    label: 'Treinos',          icon: Dumbbell },
           { key: 'avaliacoes', label: 'Avaliações',       icon: ClipboardList },
+          { key: 'evolucao',   label: 'Evolução',         icon: TrendingUp },
+          { key: 'cargas',     label: 'Cargas',           icon: Weight },
         ].map(({ key, label, icon: Icon }) => (
-          <button key={key} onClick={() => setAba(key)}
-            className={`flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium border-b-2 -mb-px transition-all ${
+          <button key={key} onClick={() => {
+            setAba(key);
+            if (key === 'cargas' && !histLoaded) {
+              buscarHistoricoDoAluno(id).then(h => { setHistorico(h); setHistLoaded(true); });
+            }
+          }}
+            className={`flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium border-b-2 -mb-px transition-all whitespace-nowrap ${
               aba === key ? 'border-blue-500 text-blue-400' : 'border-transparent text-white/35 hover:text-white/60'
             }`}>
             <Icon size={13} />
@@ -436,6 +447,195 @@ export default function FichaAluno() {
               <CardAvaliacao key={av.id} av={av} onExcluir={id => setConfirmExcluirId(id)} />
             ))
           )}
+        </div>
+      )}
+
+      {aba === 'evolucao' && (() => {
+        if (avaliacoes.length === 0) {
+          return (
+            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-12 text-center">
+              <TrendingUp size={28} className="text-white/15 mx-auto mb-3" strokeWidth={1.5} />
+              <p className="text-[13px] text-white/30">Nenhuma avaliação registrada para mostrar a evolução.</p>
+            </div>
+          );
+        }
+
+        // Ordena cronologicamente (mais antigas primeiro) para o gráfico
+        const sorted = [...avaliacoes]
+          .sort((a, b) => (a.criadoEm?.seconds || 0) - (b.criadoEm?.seconds || 0));
+
+        const chartData = sorted.map(av => {
+          const d = av.criadoEm?.seconds
+            ? new Date(av.criadoEm.seconds * 1000)
+            : null;
+          const label = d
+            ? d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '')
+            : '—';
+          return {
+            data: label,
+            Peso: av.medidas?.peso ? parseFloat(av.medidas.peso) : undefined,
+            '%Gordura': av.medidas?.bf ? parseFloat(av.medidas.bf) : undefined,
+            'Massa Magra': av.medidas?.mm ? parseFloat(av.medidas.mm) : undefined,
+          };
+        });
+
+        // Mini-tabela últimas 5
+        const ultimas5 = [...avaliacoes].slice(0, 5);
+
+        return (
+          <div className="space-y-6">
+            {/* Gráfico */}
+            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-6">
+              <p className="text-[12px] font-semibold text-white/40 uppercase tracking-wider mb-5">Evolução ao longo do tempo</p>
+              <ResponsiveContainer width="100%" height={260}>
+                <LineChart data={chartData} margin={{ top: 4, right: 16, bottom: 0, left: -16 }}>
+                  <XAxis dataKey="data" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <Tooltip
+                    contentStyle={{ background: '#0d1b2e', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, fontSize: 12, color: '#fff' }}
+                    labelStyle={{ color: 'rgba(255,255,255,0.5)', marginBottom: 4 }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', paddingTop: 12 }} />
+                  <Line type="monotone" dataKey="Peso" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, fill: '#3b82f6' }} connectNulls />
+                  <Line type="monotone" dataKey="%Gordura" stroke="#f97316" strokeWidth={2} dot={{ r: 3, fill: '#f97316' }} connectNulls />
+                  <Line type="monotone" dataKey="Massa Magra" stroke="#22c55e" strokeWidth={2} dot={{ r: 3, fill: '#22c55e' }} connectNulls />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Tabela últimas 5 */}
+            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+              <div className="px-6 py-4 border-b border-white/[0.05]">
+                <p className="text-[12px] font-semibold text-white/40 uppercase tracking-wider">Últimas avaliações</p>
+              </div>
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/[0.05]">
+                    {['Data', 'Peso (kg)', 'Delta', '% Gord.', 'Delta', 'M. Magra', 'Delta'].map(h => (
+                      <th key={h} className="text-left px-4 py-3 text-[10px] font-semibold text-white/25 uppercase tracking-wider">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {ultimas5.map((av, i) => {
+                    const prev = ultimas5[i + 1];
+                    const fmt = v => v != null && v !== '' ? parseFloat(v).toFixed(1) : '—';
+                    const delta = (curr, prevV) => {
+                      if (curr == null || curr === '' || prevV == null || prevV === '') return null;
+                      const d = parseFloat(curr) - parseFloat(prevV);
+                      return d;
+                    };
+                    const DeltaBadge = ({ val, inverted }) => {
+                      if (val === null) return <span className="text-white/20">—</span>;
+                      const pos = inverted ? val < 0 : val > 0;
+                      const neg = inverted ? val > 0 : val < 0;
+                      return (
+                        <span className={`text-[11px] font-semibold ${pos ? 'text-green-400' : neg ? 'text-red-400' : 'text-white/30'}`}>
+                          {val > 0 ? '+' : ''}{val.toFixed(1)}
+                        </span>
+                      );
+                    };
+                    const data = av.criadoEm?.seconds
+                      ? new Date(av.criadoEm.seconds * 1000).toLocaleDateString('pt-BR')
+                      : '—';
+                    return (
+                      <tr key={av.id} className={`border-b border-white/[0.03] ${i % 2 === 0 ? '' : 'bg-white/[0.01]'}`}>
+                        <td className="px-4 py-3 text-[12px] text-white/50">{data}</td>
+                        <td className="px-4 py-3 text-[13px] font-semibold text-white/80">{fmt(av.medidas?.peso)}</td>
+                        <td className="px-4 py-3"><DeltaBadge val={delta(av.medidas?.peso, prev?.medidas?.peso)} inverted={false} /></td>
+                        <td className="px-4 py-3 text-[13px] font-semibold text-white/80">{fmt(av.medidas?.bf)}</td>
+                        <td className="px-4 py-3"><DeltaBadge val={delta(av.medidas?.bf, prev?.medidas?.bf)} inverted={true} /></td>
+                        <td className="px-4 py-3 text-[13px] font-semibold text-white/80">{fmt(av.medidas?.mm)}</td>
+                        <td className="px-4 py-3"><DeltaBadge val={delta(av.medidas?.mm, prev?.medidas?.mm)} inverted={false} /></td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      })()}
+
+      {aba === 'cargas' && (() => {
+        if (!histLoaded) {
+          return (
+            <div className="flex items-center justify-center py-16">
+              <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          );
+        }
+        if (historico.length === 0) {
+          return (
+            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-12 text-center">
+              <Weight size={28} className="text-white/15 mx-auto mb-3" strokeWidth={1.5} />
+              <p className="text-[13px] text-white/30">Nenhum histórico de cargas registrado ainda.</p>
+            </div>
+          );
+        }
+
+        // Agrupa por exercício
+        const porExercicio = {};
+        historico.forEach(h => {
+          const nome = h.exercicioNome || h.nome || 'Sem nome';
+          if (!porExercicio[nome]) porExercicio[nome] = [];
+          porExercicio[nome].push(h);
+        });
+
+        return (
+          <div className="space-y-2">
+            {Object.entries(porExercicio).map(([nome, entradas]) => (
+              <AcordiaoCarga key={nome} nome={nome} entradas={entradas} />
+            ))}
+          </div>
+        );
+      })()}
+    </div>
+  );
+}
+
+function AcordiaoCarga({ nome, entradas }) {
+  const [aberto, setAberto] = useState(false);
+  return (
+    <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+      <button onClick={() => setAberto(o => !o)}
+        className="w-full flex items-center justify-between p-4 hover:bg-white/[0.02] transition-colors">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+            <Weight size={14} className="text-indigo-400" />
+          </div>
+          <div className="text-left">
+            <p className="text-[13px] font-semibold text-white/80">{nome}</p>
+            <p className="text-[11px] text-white/30">{entradas.length} registro{entradas.length !== 1 ? 's' : ''}</p>
+          </div>
+        </div>
+        <ArrowUpRight size={14} className={`text-white/20 transition-transform ${aberto ? 'rotate-90' : ''}`} />
+      </button>
+      {aberto && (
+        <div className="border-t border-white/[0.04] divide-y divide-white/[0.03]">
+          {entradas.map((h, i) => {
+            const data = h.timestamp?.seconds
+              ? new Date(h.timestamp.seconds * 1000).toLocaleDateString('pt-BR')
+              : '—';
+            const series = h.series || [];
+            return (
+              <div key={h.id || i} className="px-4 py-3 flex items-start gap-4">
+                <div className="shrink-0 w-20">
+                  <p className="text-[11px] text-white/35">{data}</p>
+                  {h.treinoNome && <p className="text-[10px] text-white/20 mt-0.5 truncate">{h.treinoNome}</p>}
+                </div>
+                <div className="flex flex-wrap gap-1.5 flex-1">
+                  {series.length > 0 ? series.map((s, si) => (
+                    <span key={si} className="text-[11px] px-2 py-1 rounded-lg bg-white/[0.05] text-white/55 font-mono">
+                      {s.reps ? `${s.reps}x` : ''}{s.carga ? ` ${s.carga}kg` : (s.peso ? ` ${s.peso}kg` : '')}
+                    </span>
+                  )) : (
+                    <span className="text-[11px] text-white/25">Sem séries registradas</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

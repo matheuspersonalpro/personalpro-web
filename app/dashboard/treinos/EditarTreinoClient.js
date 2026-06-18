@@ -4,11 +4,12 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   buscarTreino, buscarAlunos, salvarTreino, buscarExerciciosCustom, criarExercicioCustom,
+  buscarTemplatesTreinos, buscarTemplatesGlobais,
 } from '@/lib/firestore';
 import { BIBLIOTECA, GRUPOS_NOMES, DIAS_SEMANA, METODOS } from '@/lib/treinoData';
 import {
   ChevronLeft, Save, Search, Plus, X, Dumbbell, GripVertical,
-  ChevronDown, ChevronUp, CalendarDays, Zap,
+  ChevronDown, ChevronUp, CalendarDays, Zap, Library,
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
@@ -114,6 +115,11 @@ export default function EditarTreino() {
   const [novoExGrupo, setNovoExGrupo] = useState('');
   const [criandoEx,   setCriandoEx]   = useState(false);
   const [showNovoEx,  setShowNovoEx]  = useState(false);
+
+  // Carregar template
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [templates,     setTemplates]     = useState([]);
+  const [loadingTpl,    setLoadingTpl]    = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -235,6 +241,56 @@ export default function EditarTreino() {
             <option value="">Sem aluno</option>
             {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
           </select>
+
+          {/* Carregar template */}
+          <div className="relative">
+            <button
+              onClick={async () => {
+                if (!showTemplates) {
+                  setLoadingTpl(true);
+                  try {
+                    const [pessoais, globais] = await Promise.all([buscarTemplatesTreinos(), buscarTemplatesGlobais()]);
+                    setTemplates([...pessoais, ...globais]);
+                  } finally { setLoadingTpl(false); }
+                }
+                setShowTemplates(v => !v);
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.07] text-[12px] text-white/60 hover:text-white hover:border-white/15 transition-all">
+              <Library size={13} /> Carregar template
+            </button>
+            {showTemplates && (
+              <div className="absolute right-0 top-full mt-2 z-30 w-64 rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.10] shadow-2xl overflow-hidden">
+                <div className="flex items-center justify-between px-3 py-2.5 border-b border-white/[0.06]">
+                  <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">Selecionar template</p>
+                  <button onClick={() => setShowTemplates(false)} className="text-white/30 hover:text-white transition-colors">
+                    <X size={13} />
+                  </button>
+                </div>
+                <div className="max-h-64 overflow-y-auto">
+                  {loadingTpl && (
+                    <div className="flex items-center justify-center py-6">
+                      <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
+                  {!loadingTpl && templates.length === 0 && (
+                    <p className="text-[12px] text-white/25 text-center py-6">Nenhum template disponível.</p>
+                  )}
+                  {!loadingTpl && templates.map(t => (
+                    <button key={t.id}
+                      onClick={() => {
+                        setForm(f => ({ ...f, exercicios: t.exercicios || [] }));
+                        setShowTemplates(false);
+                        toast(`Template "${t.nome}" carregado.`);
+                      }}
+                      className="w-full text-left px-3 py-2.5 hover:bg-white/[0.05] transition-colors border-b border-white/[0.03] last:border-0">
+                      <p className="text-[13px] text-white/75">{t.nome}</p>
+                      <p className="text-[10px] text-white/30 mt-0.5">{t.exercicios?.length || 0} exercícios{t.global ? ' · Global' : ''}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
           <button onClick={salvar} disabled={saving}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-blue-900/30">
