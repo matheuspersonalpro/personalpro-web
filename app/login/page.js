@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { loginPersonal } from '@/lib/auth';
 import { usePersonal } from '@/lib/AuthContext';
-import { Activity, Lock, Mail, Eye, EyeOff, AlertCircle, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
+import { Lock, Mail, Eye, EyeOff, AlertCircle, ChevronRight } from 'lucide-react';
 
 const FEATURES = [
   { label: 'Dashboard completo', desc: 'Visão em tempo real de alunos, receitas e vencimentos' },
@@ -63,12 +64,8 @@ export default function LoginPage() {
         {/* Conteúdo — logo no topo, conteúdo+footer na base */}
         <div className="relative z-10 flex flex-col justify-between p-12 flex-1">
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg"
-              style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}>
-              <Activity size={17} className="text-white" />
-            </div>
-            <span className="font-bold text-[17px] text-white tracking-tight">PersonalPro</span>
+          <div>
+            <Image src="/logo.png" alt="PersonalPro" width={160} height={48} style={{ objectFit: 'contain', height: 48, width: 'auto' }} priority />
           </div>
 
           {/* Headline + Features + Footer — bloco base */}
@@ -119,11 +116,8 @@ export default function LoginPage() {
 
         <div className="relative w-full max-w-[380px]">
           {/* Logo mobile */}
-          <div className="lg:hidden flex items-center gap-2.5 mb-10">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-              <Activity size={16} className="text-white" />
-            </div>
-            <span className="font-bold text-white tracking-tight">PersonalPro</span>
+          <div className="lg:hidden mb-10">
+            <Image src="/logo.png" alt="PersonalPro" width={140} height={42} style={{ objectFit: 'contain', height: 42, width: 'auto' }} priority />
           </div>
 
           {/* Cabeçalho do form */}

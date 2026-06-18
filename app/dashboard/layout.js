@@ -1,12 +1,13 @@
 'use client';
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePersonal } from '@/lib/AuthContext';
 import { logout } from '@/lib/auth';
 import {
   LayoutDashboard, Users, Dumbbell, DollarSign, LogOut,
-  Activity, ChevronRight, CalendarDays, UserCircle, BookOpen, Video,
+  ChevronRight, CalendarDays, UserCircle, BookOpen, Video,
 } from 'lucide-react';
 
 const NAV = [
@@ -67,13 +68,9 @@ export default function DashboardLayout({ children }) {
         style={{ background: 'rgba(8,14,30,0.98)', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
 
         {/* Marca */}
-        <div className="flex items-center gap-2.5 px-5 py-0 h-14 shrink-0"
+        <div className="flex items-center gap-2.5 px-4 py-0 h-14 shrink-0"
           style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: 'linear-gradient(135deg, #3b82f6, #4f46e5)', boxShadow: '0 2px 8px rgba(59,130,246,0.4)' }}>
-            <Activity size={13} className="text-white" />
-          </div>
-          <span className="font-bold text-[14px] text-white tracking-tight">PersonalPro</span>
+          <Image src="/logo.png" alt="PersonalPro" width={120} height={36} style={{ objectFit: 'contain', height: 36, width: 'auto' }} priority />
         </div>
 
         {/* Nav */}

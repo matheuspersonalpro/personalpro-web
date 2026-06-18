@@ -5,6 +5,7 @@ import { ToastProvider } from '@/components/Toast';
 export const metadata = {
   title: 'PersonalPro',
   description: 'Gestão para personal trainers',
+  icons: { icon: '/favicon.png', apple: '/favicon.png' },
 };
 
 export default function RootLayout({ children }) {
