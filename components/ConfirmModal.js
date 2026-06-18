@@ -2,12 +2,17 @@
 import { useEffect } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 
-export default function ConfirmModal({ title, body, confirmLabel = 'Confirmar', danger = true, onConfirm, onCancel }) {
+export default function ConfirmModal({ open = true, title, body, message, confirmLabel = 'Confirmar', danger = true, onConfirm, onCancel }) {
   useEffect(() => {
-    const handleKey = e => { if (e.key === 'Escape') onCancel(); };
+    if (!open) return;
+    const handleKey = e => { if (e.key === 'Escape') onCancel?.(); };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  }, [onCancel]);
+  }, [open, onCancel]);
+
+  if (!open) return null;
+
+  const texto = body ?? message;
 
   return (
     <div
@@ -25,7 +30,7 @@ export default function ConfirmModal({ title, body, confirmLabel = 'Confirmar', 
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[14px] font-semibold text-white mb-1">{title}</p>
-            {body && <p className="text-[12px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{body}</p>}
+            {texto && <p className="text-[12px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{texto}</p>}
           </div>
           <button onClick={onCancel} className="text-white/25 hover:text-white/60 transition-colors">
             <X size={15} />
