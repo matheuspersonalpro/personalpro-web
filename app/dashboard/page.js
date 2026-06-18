@@ -1,9 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { buscarAlunos, buscarPagamentos } from '@/lib/firestore';
+import { buscarAlunos, buscarPagamentos, buscarSessoes } from '@/lib/firestore';
 import { usePersonal } from '@/lib/AuthContext';
-import { Users, TrendingUp, AlertTriangle, Clock, ArrowUpRight, CheckCircle2, XCircle } from 'lucide-react';
+import { Users, TrendingUp, AlertTriangle, Clock, ArrowUpRight, CheckCircle2, CalendarDays, Cake } from 'lucide-react';
 
 function KpiCard({ icon: Icon, label, value, sub, accent }) {
   const theme = {
@@ -27,15 +27,17 @@ function KpiCard({ icon: Icon, label, value, sub, accent }) {
 
 export default function DashboardPage() {
   const personal = usePersonal();
-  const [alunos, setAlunos]       = useState([]);
-  const [pagamentos, setPagamentos] = useState([]);
-  const [loading, setLoading]     = useState(true);
+  const [alunos,    setAlunos]    = useState([]);
+  const [pagamentos,setPagamentos]= useState([]);
+  const [sessoes,   setSessoes]   = useState([]);
+  const [loading,   setLoading]   = useState(true);
 
   useEffect(() => {
-    Promise.allSettled([buscarAlunos(), buscarPagamentos()])
-      .then(([ra, rp]) => {
+    Promise.allSettled([buscarAlunos(), buscarPagamentos(), buscarSessoes()])
+      .then(([ra, rp, rs]) => {
         if (ra.status === 'fulfilled') setAlunos(ra.value);
         if (rp.status === 'fulfilled') setPagamentos(rp.value);
+        if (rs.status === 'fulfilled') setSessoes(rs.value);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -58,6 +60,20 @@ export default function DashboardPage() {
   const receitaMes = pagamentos
     .filter(p => (p.data || '').startsWith(mesStr))
     .reduce((s, p) => s + Number(p.valor || 0), 0);
+
+  const hojeISO = hoje.toISOString().split('T')[0];
+  const sessoesHoje = sessoes.filter(s => s.data === hojeISO)
+    .sort((a, b) => (a.horario || '').localeCompare(b.horario || ''));
+
+  const alunosMap = Object.fromEntries(alunos.map(a => [a.id, a]));
+
+  const aniversariantes = alunos.filter(a => {
+    if (!a.nascimento) return false;
+    const parts = a.nascimento.split('/');
+    if (parts.length !== 3) return false;
+    const [d, m] = parts;
+    return +d === hoje.getDate() && +m === (hoje.getMonth() + 1);
+  });
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
@@ -164,6 +180,67 @@ export default function DashboardPage() {
 
         {/* Painéis laterais */}
         <div className="space-y-4">
+          {/* Agenda de hoje */}
+          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+            <div className="px-5 py-4 border-b border-white/[0.05] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CalendarDays size={13} className="text-blue-400" />
+                <span className="text-[12px] font-semibold text-white/60 uppercase tracking-wider">Agenda de hoje</span>
+              </div>
+              <Link href="/dashboard/agenda" className="text-[10px] text-white/25 hover:text-white/50 transition-colors">
+                ver agenda →
+              </Link>
+            </div>
+            <div className="p-3">
+              {sessoesHoje.length === 0 ? (
+                <div className="px-2 py-3 text-center">
+                  <p className="text-[12px] text-white/20">Nenhuma sessão hoje</p>
+                </div>
+              ) : sessoesHoje.slice(0, 5).map(s => {
+                const aluno = alunosMap[s.alunoId];
+                const statusCls = {
+                  agendado:  'bg-blue-500/12 text-blue-400',
+                  realizado: 'bg-green-500/12 text-green-400',
+                  faltou:    'bg-red-500/12 text-red-400',
+                  cancelado: 'bg-white/[0.06] text-white/30',
+                };
+                return (
+                  <div key={s.id} className="flex items-center gap-2.5 px-2 py-2.5 rounded-lg hover:bg-white/[0.03] transition-colors">
+                    <span className="text-[11px] font-semibold text-white/40 w-11 shrink-0">{s.horario || '—'}</span>
+                    <div className="w-6 h-6 rounded-full bg-blue-500/12 flex items-center justify-center text-[10px] font-bold text-blue-400 shrink-0">
+                      {(aluno?.nome || s.alunoId || '?')[0]}
+                    </div>
+                    <span className="text-[12px] text-white/65 flex-1 truncate">{aluno?.nome?.split(' ')[0] || '—'}</span>
+                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${statusCls[s.status] || statusCls.agendado}`}>
+                      {s.status || 'agendado'}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Aniversariantes */}
+          {aniversariantes.length > 0 && (
+            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-amber-500/15 overflow-hidden">
+              <div className="px-5 py-4 border-b border-white/[0.05] flex items-center gap-2">
+                <Cake size={13} className="text-amber-400" />
+                <span className="text-[12px] font-semibold text-amber-400/70 uppercase tracking-wider">Aniversários hoje</span>
+              </div>
+              <div className="p-3">
+                {aniversariantes.map(a => (
+                  <Link key={a.id} href={`/dashboard/alunos?id=${a.id}`}
+                    className="flex items-center gap-2.5 px-2 py-2.5 rounded-lg hover:bg-white/[0.04] transition-colors group">
+                    <div className="w-6 h-6 rounded-full bg-amber-500/15 flex items-center justify-center text-[10px] font-bold text-amber-400">
+                      {a.nome?.[0]}
+                    </div>
+                    <span className="text-[12px] text-white/65 group-hover:text-white transition-colors">{a.nome}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Vencimentos */}
           <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
             <div className="px-5 py-4 border-b border-white/[0.05]">

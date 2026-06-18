@@ -1,11 +1,17 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-
 import Link from 'next/link';
-import { buscarAluno, buscarTreinos, atualizarAluno } from '@/lib/firestore';
-import { ChevronLeft, Pencil, Save, X, User, CreditCard, Dumbbell, Phone, Mail, Calendar, Plus, ArrowUpRight } from 'lucide-react';
+import {
+  buscarAluno, buscarTreinos, atualizarAluno, excluirAluno,
+  buscarAvaliacoes, criarAvaliacao, excluirAvaliacao,
+} from '@/lib/firestore';
+import {
+  ChevronLeft, Pencil, Save, X, User, CreditCard, Dumbbell,
+  Phone, Mail, Calendar, Plus, ArrowUpRight, ClipboardList, Trash2,
+} from 'lucide-react';
 import { useToast } from '@/components/Toast';
+import ConfirmModal from '@/components/ConfirmModal';
 
 function Field({ label, value, field, form, setForm, editing, type = 'text', icon: Icon }) {
   return (
@@ -51,25 +57,165 @@ function SelectField({ label, field, form, setForm, editing, options }) {
   );
 }
 
+const MEDIDAS_CAMPOS = [
+  { key: 'peso',   label: 'Peso (kg)' },
+  { key: 'altura', label: 'Altura (cm)' },
+  { key: 'bf',     label: '% Gordura' },
+  { key: 'mm',     label: 'Massa Magra (kg)' },
+  { key: 'peito',  label: 'Peitoral (mm)' },
+  { key: 'abdom',  label: 'Abdome (mm)' },
+  { key: 'coxa',   label: 'Coxa (mm)' },
+  { key: 'tricep', label: 'Trícep (mm)' },
+  { key: 'axilar', label: 'Axilar (mm)' },
+  { key: 'suprai', label: 'Suprailíaca (mm)' },
+  { key: 'subesc', label: 'Subescapular (mm)' },
+  { key: 'cintura',label: 'Cintura (cm)' },
+  { key: 'quadril',label: 'Quadril (cm)' },
+  { key: 'braco',  label: 'Braço (cm)' },
+  { key: 'coxaC',  label: 'Coxa circunf. (cm)' },
+  { key: 'panturr',label: 'Panturrilha (cm)' },
+];
+
+function NovaAvaliacaoModal({ alunoId, onSalvo, onFechar }) {
+  const toast = useToast();
+  const [medidas, setMedidas] = useState({});
+  const [obs, setObs] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  async function salvar() {
+    setSaving(true);
+    try {
+      await criarAvaliacao({ alunoId, medidas, observacoes: obs });
+      toast('Avaliação registrada.');
+      onSalvo();
+    } catch { toast('Erro ao salvar avaliação.', 'error'); }
+    finally { setSaving(false); }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}>
+      <div className="w-full max-w-2xl rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
+          <h2 className="text-[15px] font-bold text-white">Nova Avaliação</h2>
+          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all">
+            <X size={16} />
+          </button>
+        </div>
+        <div className="overflow-y-auto p-6 space-y-4">
+          <div className="grid grid-cols-3 gap-3">
+            {MEDIDAS_CAMPOS.map(({ key, label }) => (
+              <div key={key}>
+                <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">{label}</label>
+                <input
+                  type="number" step="0.1"
+                  value={medidas[key] || ''}
+                  onChange={e => setMedidas(m => ({ ...m, [key]: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all"
+                  placeholder="—"
+                />
+              </div>
+            ))}
+          </div>
+          <div>
+            <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Observações</label>
+            <textarea
+              value={obs}
+              onChange={e => setObs(e.target.value)}
+              rows={3}
+              className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all resize-none"
+              placeholder="Observações da avaliação..."
+            />
+          </div>
+        </div>
+        <div className="px-6 py-4 border-t border-white/[0.06] flex justify-end gap-2">
+          <button onClick={onFechar} className="px-4 py-2 rounded-xl border border-white/[0.08] text-[13px] text-white/50 hover:text-white hover:border-white/15 transition-all">
+            Cancelar
+          </button>
+          <button onClick={salvar} disabled={saving} className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-blue-900/30">
+            {saving ? 'Salvando...' : 'Salvar avaliação'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CardAvaliacao({ av, onExcluir }) {
+  const [aberto, setAberto] = useState(false);
+  const data = av.criadoEm?.seconds
+    ? new Date(av.criadoEm.seconds * 1000).toLocaleDateString('pt-BR')
+    : '—';
+
+  const campos = Object.entries(av.medidas || {}).filter(([, v]) => v !== '' && v != null);
+
+  return (
+    <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+      <button onClick={() => setAberto(o => !o)} className="w-full flex items-center justify-between p-4 hover:bg-white/[0.02] transition-colors">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-green-500/10 flex items-center justify-center">
+            <ClipboardList size={15} className="text-green-400" />
+          </div>
+          <div className="text-left">
+            <p className="text-[13px] font-semibold text-white/80">Avaliação · {data}</p>
+            <p className="text-[11px] text-white/30">{campos.length} métricas registradas</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={e => { e.stopPropagation(); onExcluir(av.id); }} className="p-1.5 rounded-lg hover:bg-red-500/10 text-white/20 hover:text-red-400 transition-all">
+            <Trash2 size={13} />
+          </button>
+          <ArrowUpRight size={14} className={`text-white/20 transition-transform ${aberto ? 'rotate-90' : ''}`} />
+        </div>
+      </button>
+      {aberto && campos.length > 0 && (
+        <div className="px-4 pb-4 grid grid-cols-3 gap-2 border-t border-white/[0.04] pt-3">
+          {campos.map(([key, val]) => {
+            const campo = MEDIDAS_CAMPOS.find(c => c.key === key);
+            return (
+              <div key={key} className="rounded-xl bg-white/[0.03] px-3 py-2">
+                <p className="text-[10px] text-white/30 mb-0.5">{campo?.label || key}</p>
+                <p className="text-[14px] font-bold text-white">{val}</p>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      {aberto && av.observacoes && (
+        <div className="px-4 pb-4">
+          <p className="text-[12px] text-white/40 italic">"{av.observacoes}"</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function FichaAluno() {
   const searchParams = useSearchParams();
   const id           = searchParams.get('id');
   const router       = useRouter();
   const toast        = useToast();
-  const [aluno, setAluno]     = useState(null);
-  const [treinos, setTreinos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(false);
-  const [form, setForm]       = useState({});
-  const [saving, setSaving]   = useState(false);
-  const [aba, setAba]         = useState('dados');
 
-  useEffect(() => {
-    if (!id) return;
-    Promise.all([buscarAluno(id), buscarTreinos(id)])
-      .then(([a, t]) => { setAluno(a); setForm(a || {}); setTreinos(t); })
-      .finally(() => setLoading(false));
-  }, [id]);
+  const [aluno,     setAluno]     = useState(null);
+  const [treinos,   setTreinos]   = useState([]);
+  const [avaliacoes,setAvaliacoes]= useState([]);
+  const [loading,   setLoading]   = useState(true);
+  const [editing,   setEditing]   = useState(false);
+  const [form,      setForm]      = useState({});
+  const [saving,    setSaving]    = useState(false);
+  const [aba,       setAba]       = useState('dados');
+  const [novaAval,  setNovaAval]  = useState(false);
+  const [confirmExcluirId, setConfirmExcluirId] = useState(null);
+  const [confirmAluno, setConfirmAluno] = useState(false);
+
+  const carregar = () => Promise.all([
+    buscarAluno(id),
+    buscarTreinos(id),
+    buscarAvaliacoes(id),
+  ]).then(([a, t, av]) => {
+    setAluno(a); setForm(a || {}); setTreinos(t); setAvaliacoes(av);
+  }).finally(() => setLoading(false));
+
+  useEffect(() => { if (id) carregar(); }, [id]);
 
   async function salvar() {
     setSaving(true);
@@ -83,15 +229,26 @@ export default function FichaAluno() {
     finally { setSaving(false); }
   }
 
+  async function excluirAv(avalId) {
+    await excluirAvaliacao(avalId);
+    setAvaliacoes(prev => prev.filter(a => a.id !== avalId));
+    setConfirmExcluirId(null);
+    toast('Avaliação excluída.');
+  }
+
+  async function excluirAlunoConfirmado() {
+    await excluirAluno(id);
+    toast('Aluno excluído.');
+    router.push('/dashboard/alunos');
+  }
+
   if (loading) return (
     <div className="flex items-center justify-center h-full">
       <div className="w-7 h-7 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
-  if (!aluno) return (
-    <div className="p-8 text-white/35">Aluno não encontrado.</div>
-  );
+  if (!aluno) return <div className="p-8 text-white/35">Aluno não encontrado.</div>;
 
   const hoje = new Date();
   let statusVenc = 'ok';
@@ -104,6 +261,28 @@ export default function FichaAluno() {
 
   return (
     <div className="p-8 max-w-5xl mx-auto w-full">
+      {novaAval && (
+        <NovaAvaliacaoModal
+          alunoId={id}
+          onSalvo={() => { setNovaAval(false); buscarAvaliacoes(id).then(setAvaliacoes); }}
+          onFechar={() => setNovaAval(false)}
+        />
+      )}
+      <ConfirmModal
+        open={!!confirmExcluirId}
+        title="Excluir avaliação"
+        message="Esta avaliação será removida permanentemente."
+        onConfirm={() => excluirAv(confirmExcluirId)}
+        onCancel={() => setConfirmExcluirId(null)}
+      />
+      <ConfirmModal
+        open={confirmAluno}
+        title={`Excluir ${aluno.nome}?`}
+        message="Todos os dados deste aluno serão removidos permanentemente. Esta ação não pode ser desfeita."
+        onConfirm={excluirAlunoConfirmado}
+        onCancel={() => setConfirmAluno(false)}
+      />
+
       <Link href="/dashboard/alunos"
         className="inline-flex items-center gap-1.5 text-[12px] text-white/35 hover:text-white/70 transition-colors mb-6">
         <ChevronLeft size={14} /> Alunos
@@ -119,17 +298,28 @@ export default function FichaAluno() {
             <div className="flex items-center gap-2 mt-1">
               {aluno.email && <p className="text-[12px] text-white/40">{aluno.email}</p>}
               <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ${
-                statusVenc === 'vencido' ? 'bg-red-500/15 text-red-400 ring-red-500/20' :
+                statusVenc === 'vencido'  ? 'bg-red-500/15 text-red-400 ring-red-500/20' :
                 statusVenc === 'vencendo' ? 'bg-amber-500/15 text-amber-400 ring-amber-500/20' :
                 'bg-green-500/15 text-green-400 ring-green-500/20'
               }`}>
                 {statusVenc === 'vencido' ? 'Vencido' : statusVenc === 'vencendo' ? 'Vence em breve' : 'Ativo'}
+              </span>
+              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ${
+                aluno.tipoServico === 'online'
+                  ? 'bg-purple-500/15 text-purple-400 ring-purple-500/20'
+                  : 'bg-blue-500/15 text-blue-400 ring-blue-500/20'
+              }`}>
+                {aluno.tipoServico === 'online' ? 'Online' : 'Presencial'}
               </span>
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
+          <button onClick={() => setConfirmAluno(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-red-500/20 text-[12px] text-red-400/60 hover:text-red-400 hover:border-red-500/40 transition-all">
+            <Trash2 size={13} /> Excluir
+          </button>
           {editing ? (
             <>
               <button onClick={() => { setEditing(false); setForm(aluno); }}
@@ -152,18 +342,20 @@ export default function FichaAluno() {
 
       <div className="flex items-center gap-1 border-b border-white/[0.05] mb-6">
         {[
-          { key: 'dados', label: 'Dados pessoais', icon: User },
-          { key: 'plano', label: 'Plano', icon: CreditCard },
-          { key: 'treinos', label: 'Treinos', icon: Dumbbell },
+          { key: 'dados',      label: 'Dados pessoais',   icon: User },
+          { key: 'plano',      label: 'Plano',            icon: CreditCard },
+          { key: 'treinos',    label: 'Treinos',          icon: Dumbbell },
+          { key: 'avaliacoes', label: 'Avaliações',       icon: ClipboardList },
         ].map(({ key, label, icon: Icon }) => (
           <button key={key} onClick={() => setAba(key)}
             className={`flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium border-b-2 -mb-px transition-all ${
-              aba === key
-                ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-white/35 hover:text-white/60'
+              aba === key ? 'border-blue-500 text-blue-400' : 'border-transparent text-white/35 hover:text-white/60'
             }`}>
             <Icon size={13} />
             {label}
+            {key === 'avaliacoes' && avaliacoes.length > 0 && (
+              <span className="ml-1 bg-white/[0.07] text-white/40 text-[10px] px-1.5 py-0.5 rounded-full">{avaliacoes.length}</span>
+            )}
           </button>
         ))}
       </div>
@@ -177,6 +369,7 @@ export default function FichaAluno() {
             <Field label="Data de nascimento" field="nascimento" form={form} setForm={setForm} editing={editing} icon={Calendar} />
             <SelectField label="Tipo de serviço" field="tipoServico" form={form} setForm={setForm} editing={editing}
               options={[{ value: 'presencial', label: 'Presencial' }, { value: 'online', label: 'Online' }]} />
+            <Field label="Observações" field="obs" form={form} setForm={setForm} editing={editing} />
           </div>
         </div>
       )}
@@ -220,6 +413,27 @@ export default function FichaAluno() {
                 </div>
                 <ArrowUpRight size={15} className="text-white/20 group-hover:text-white/50 transition-colors" />
               </Link>
+            ))
+          )}
+        </div>
+      )}
+
+      {aba === 'avaliacoes' && (
+        <div className="space-y-3">
+          <div className="flex justify-end">
+            <button onClick={() => setNovaAval(true)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-green-600 hover:bg-green-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-green-900/20">
+              <Plus size={13} /> Nova avaliação
+            </button>
+          </div>
+          {avaliacoes.length === 0 ? (
+            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-12 text-center">
+              <ClipboardList size={28} className="text-white/15 mx-auto mb-3" strokeWidth={1.5} />
+              <p className="text-[13px] text-white/30">Nenhuma avaliação registrada ainda.</p>
+            </div>
+          ) : (
+            avaliacoes.map(av => (
+              <CardAvaliacao key={av.id} av={av} onExcluir={id => setConfirmExcluirId(id)} />
             ))
           )}
         </div>

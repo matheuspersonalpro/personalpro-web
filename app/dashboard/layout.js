@@ -6,21 +6,25 @@ import { usePersonal } from '@/lib/AuthContext';
 import { logout } from '@/lib/auth';
 import {
   LayoutDashboard, Users, Dumbbell, DollarSign, LogOut,
-  Activity, ChevronRight,
+  Activity, ChevronRight, CalendarDays, UserCircle,
 } from 'lucide-react';
 
 const NAV = [
   { href: '/dashboard',            icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/dashboard/alunos',     icon: Users,           label: 'Alunos' },
   { href: '/dashboard/treinos',    icon: Dumbbell,        label: 'Treinos' },
+  { href: '/dashboard/agenda',     icon: CalendarDays,    label: 'Agenda' },
   { href: '/dashboard/financeiro', icon: DollarSign,      label: 'Financeiro' },
+  { href: '/dashboard/perfil',     icon: UserCircle,      label: 'Meu Perfil' },
 ];
 
 const LABEL_MAP = {
   dashboard: 'Dashboard',
   alunos: 'Alunos',
   treinos: 'Treinos',
+  agenda: 'Agenda',
   financeiro: 'Financeiro',
+  perfil: 'Meu Perfil',
   novo: 'Novo',
 };
 
