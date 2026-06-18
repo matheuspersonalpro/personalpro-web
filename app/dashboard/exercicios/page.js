@@ -4,7 +4,7 @@ import {
   listarVideosExercicios, salvarVideoExercicio, removerVideoExercicio,
 } from '@/lib/firestore';
 import { BIBLIOTECA } from '@/lib/treinoData';
-import { Video, Plus, X, Pencil, Trash2, Search, ExternalLink } from 'lucide-react';
+import { Video, Plus, X, Pencil, Trash2, Search, ExternalLink, Play } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import ConfirmModal from '@/components/ConfirmModal';
 
@@ -12,7 +12,39 @@ import ConfirmModal from '@/components/ConfirmModal';
 const TODOS_EXERCICIOS = BIBLIOTECA.flatMap(b => b.exercicios.map(nome => ({ nome, grupo: b.grupo })));
 
 function extrairYoutubeId(url) {
-  return url.match(/(?:v=|youtu\.be\/)([^&?#]+)/)?.[1] || null;
+  return (url || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([^&?#/]+)/)?.[1] || null;
+}
+
+// Player inline: embed do YouTube ou <video> para MP4 (Firebase Storage etc.)
+function PlayerModal({ video, onFechar }) {
+  const ytId = extrairYoutubeId(video.videoUrl);
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}
+      onClick={e => { if (e.target === e.currentTarget) onFechar(); }}>
+      <div className="w-full max-w-2xl rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.06]">
+          <p className="text-[14px] font-semibold text-white truncate">{video.nome}</p>
+          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all">
+            <X size={16} />
+          </button>
+        </div>
+        <div className="w-full bg-black" style={{ aspectRatio: '16 / 9' }}>
+          {ytId ? (
+            <iframe
+              className="w-full h-full"
+              src={`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`}
+              title={video.nome}
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          ) : (
+            <video src={video.videoUrl} controls autoPlay playsInline className="w-full h-full bg-black" />
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function ModalVideo({ item, onFechar, onSalvo }) {
@@ -144,6 +176,7 @@ export default function ExerciciosPage() {
   const [busca, setBusca]       = useState('');
   const [modal, setModal]       = useState(null); // null | 'novo' | item
   const [confirmId, setConfirmId] = useState(null);
+  const [playing, setPlaying]   = useState(null); // vídeo em reprodução
 
   async function carregar() {
     setLoading(true);
@@ -185,6 +218,7 @@ export default function ExerciciosPage() {
         onConfirm={() => handleExcluir(confirmId)}
         onCancel={() => setConfirmId(null)}
       />
+      {playing && <PlayerModal video={playing} onFechar={() => setPlaying(null)} />}
 
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -228,7 +262,7 @@ export default function ExerciciosPage() {
         <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
           {filtrados.map((v, i) => {
             const ytId = extrairYoutubeId(v.videoUrl || '');
-            const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : null;
+            const thumb = v.thumbnailUrl || (ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : null);
             const urlCurta = (v.videoUrl || '').length > 55
               ? v.videoUrl.slice(0, 52) + '...'
               : v.videoUrl;
@@ -236,13 +270,18 @@ export default function ExerciciosPage() {
             return (
               <div key={v.id}
                 className={`flex items-center gap-4 px-5 py-4 ${i > 0 ? 'border-t border-white/[0.04]' : ''} hover:bg-white/[0.02] transition-colors`}>
-                {/* Thumbnail */}
-                <div className="w-16 h-10 rounded-lg overflow-hidden bg-white/[0.05] shrink-0 flex items-center justify-center">
+                {/* Thumbnail — clicável para reproduzir */}
+                <button onClick={() => setPlaying(v)}
+                  className="group/thumb relative w-16 h-10 rounded-lg overflow-hidden bg-white/[0.05] shrink-0 flex items-center justify-center"
+                  title="Reproduzir vídeo">
                   {thumb
                     ? <img src={thumb} alt="" className="w-full h-full object-cover" />
                     : <Video size={16} className="text-white/20" />
                   }
-                </div>
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover/thumb:opacity-100 transition-opacity">
+                    <Play size={14} className="text-white" fill="currentColor" />
+                  </div>
+                </button>
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
