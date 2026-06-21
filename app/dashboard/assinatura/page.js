@@ -5,7 +5,7 @@ import {
   PLANOS, ALUNOS_GRATIS, fmtBRL, avaliarAssinatura,
   criarCheckoutAssinatura, iniciarTrialAssinatura,
 } from '@/lib/assinatura';
-import { CreditCard, Check, Zap, Clock, ShieldCheck, AlertCircle, ExternalLink, Smartphone } from 'lucide-react';
+import { CreditCard, Check, Zap, Clock, ShieldCheck, AlertCircle, ExternalLink } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
 const ESTADO_UI = {
@@ -177,15 +177,6 @@ export default function AssinaturaPage() {
           Assinatura
         </h1>
         <p className="text-[12px] text-white/35 mt-1">Gerencie seu plano PersonalPro</p>
-      </div>
-
-      {/* iOS info banner */}
-      <div className="flex items-start gap-3 rounded-2xl bg-blue-500/8 ring-1 ring-blue-500/20 px-5 py-4 mb-7">
-        <Smartphone size={16} className="text-blue-400 shrink-0 mt-0.5" />
-        <p className="text-[12px] text-blue-300/80 leading-relaxed">
-          <strong className="text-blue-300">Usuários iOS:</strong> assine por aqui em{' '}
-          <strong>personalpro.app.br</strong> no Safari. Após o pagamento ser confirmado, abra o app normalmente — o acesso é liberado automaticamente pela mesma conta.
-        </p>
       </div>
 
       {/* Status atual */}

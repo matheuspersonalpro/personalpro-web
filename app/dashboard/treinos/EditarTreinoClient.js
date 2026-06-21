@@ -4,12 +4,12 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   buscarTreino, buscarAlunos, salvarTreino, buscarExerciciosCustom, criarExercicioCustom,
-  buscarTemplatesTreinos, buscarTemplatesGlobais,
+  buscarTemplatesTreinos, buscarTemplatesGlobais, buscarVideosExercicios,
 } from '@/lib/firestore';
 import { BIBLIOTECA, GRUPOS_NOMES, DIAS_SEMANA, METODOS } from '@/lib/treinoData';
 import {
   ChevronLeft, Save, Search, Plus, X, Dumbbell, GripVertical,
-  ChevronDown, ChevronUp, CalendarDays, Zap, Library,
+  ChevronDown, ChevronUp, CalendarDays, Zap, Library, Play,
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
@@ -22,15 +22,58 @@ function normalizarBusca(s) {
   return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 }
 
+function extrairYoutubeId(url) {
+  return (url || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([^&?#/]+)/)?.[1] || null;
+}
+
 // ── Card de um exercício no treino ─────────────────────────────────────────
-function ExCard({ ex, idx, onChange, onRemove }) {
+function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
   const [open, setOpen] = useState(true);
+  const [showPlayer, setShowPlayer] = useState(false);
   const metodoInfo = ex.metodo ? METODOS[ex.metodo] : null;
+  const ytId = extrairYoutubeId(videoUrl);
+  const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : null;
 
   return (
     <div className="rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] overflow-hidden">
+      {/* Player modal */}
+      {showPlayer && videoUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}
+          onClick={() => setShowPlayer(false)}>
+          <div className="w-full max-w-2xl rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.06]">
+              <p className="text-[13px] font-semibold text-white/80 truncate">{ex.nome}</p>
+              <button onClick={() => setShowPlayer(false)} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all">
+                <X size={15} />
+              </button>
+            </div>
+            <div className="w-full bg-black" style={{ aspectRatio: '16/9' }}>
+              {ytId
+                ? <iframe className="w-full h-full" src={`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`} title={ex.nome} allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+                : <video src={videoUrl} controls autoPlay playsInline className="w-full h-full" />
+              }
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center gap-2 px-4 py-3">
         <GripVertical size={14} className="text-white/15 shrink-0 cursor-grab" />
+        {/* Thumbnail clicável */}
+        {videoUrl ? (
+          <button onClick={() => setShowPlayer(true)}
+            className="group/v relative w-12 h-8 rounded-lg overflow-hidden bg-white/[0.05] shrink-0 flex items-center justify-center"
+            title="Ver vídeo">
+            {thumb
+              ? <img src={thumb} alt="" className="w-full h-full object-cover" />
+              : <Play size={10} className="text-white/30" />
+            }
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/v:opacity-100 transition-opacity">
+              <Play size={10} className="text-white" fill="currentColor" />
+            </div>
+          </button>
+        ) : null}
         <div className="flex-1 min-w-0">
           <p className="text-[13px] font-semibold text-white/80 truncate">{ex.nome}</p>
           <div className="flex items-center gap-2">
@@ -41,6 +84,7 @@ function ExCard({ ex, idx, onChange, onRemove }) {
                 {ex.metodo}
               </span>
             )}
+            {!videoUrl && <p className="text-[9px] text-white/15">sem vídeo</p>}
           </div>
         </div>
         <button onClick={() => setOpen(v => !v)}
@@ -105,6 +149,7 @@ export default function EditarTreino() {
   const [loading,   setLoading]   = useState(true);
   const [saving,    setSaving]    = useState(false);
   const [erroNome,  setErroNome]  = useState(false);
+  const [videosMap, setVideosMap] = useState({});
 
   // Sidebar biblioteca
   const [buscaEx,   setBuscaEx]   = useState('');
@@ -124,10 +169,11 @@ export default function EditarTreino() {
   useEffect(() => {
     if (!id) return;
     const alunoIdParam = searchParams.get('alunoId') || '';
-    Promise.all([buscarAlunos(), buscarExerciciosCustom(), isNovo ? null : buscarTreino(id)])
-      .then(([a, ec, treino]) => {
+    Promise.all([buscarAlunos(), buscarExerciciosCustom(), isNovo ? null : buscarTreino(id), buscarVideosExercicios()])
+      .then(([a, ec, treino, vids]) => {
         setAlunos(a);
         setExCustom(ec);
+        setVideosMap(vids || {});
         if (!isNovo && treino) setForm(treino);
         else setForm(f => ({ ...f, alunoId: alunoIdParam }));
       })
@@ -318,7 +364,8 @@ export default function EditarTreino() {
                   </p>
                 </div>
                 {form.exercicios.map((ex, idx) => (
-                  <ExCard key={idx} ex={ex} idx={idx} onChange={updateEx} onRemove={removeEx} />
+                  <ExCard key={idx} ex={ex} idx={idx} onChange={updateEx} onRemove={removeEx}
+                    videoUrl={ex.videoUrl || videosMap[ex.nome]?.videoUrl || null} />
                 ))}
               </>
             )}

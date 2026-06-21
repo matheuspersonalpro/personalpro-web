@@ -154,7 +154,7 @@ function CardAvaliacao({ av, onExcluir }) {
 
   return (
     <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
-      <button onClick={() => setAberto(o => !o)} className="w-full flex items-center justify-between p-4 hover:bg-white/[0.02] transition-colors">
+      <div onClick={() => setAberto(o => !o)} className="w-full flex items-center justify-between p-4 hover:bg-white/[0.02] transition-colors cursor-pointer select-none">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-green-500/10 flex items-center justify-center">
             <ClipboardList size={15} className="text-green-400" />
@@ -170,7 +170,7 @@ function CardAvaliacao({ av, onExcluir }) {
           </button>
           <ArrowUpRight size={14} className={`text-white/20 transition-transform ${aberto ? 'rotate-90' : ''}`} />
         </div>
-      </button>
+      </div>
       {aberto && campos.length > 0 && (
         <div className="px-4 pb-4 grid grid-cols-3 gap-2 border-t border-white/[0.04] pt-3">
           {campos.map(([key, val]) => {
