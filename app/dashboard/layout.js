@@ -7,19 +7,20 @@ import { usePersonal } from '@/lib/AuthContext';
 import { logout } from '@/lib/auth';
 import {
   LayoutDashboard, Users, Dumbbell, DollarSign, LogOut,
-  ChevronRight, CalendarDays, UserCircle, BookOpen, Video, Activity,
+  ChevronRight, CalendarDays, UserCircle, BookOpen, Video, Activity, CreditCard,
 } from 'lucide-react';
 
 const NAV = [
-  { href: '/dashboard',            icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/dashboard/alunos',     icon: Users,           label: 'Alunos' },
-  { href: '/dashboard/treinos',    icon: Dumbbell,        label: 'Treinos' },
-  { href: '/dashboard/biblioteca', icon: BookOpen,        label: 'Biblioteca' },
-  { href: '/dashboard/exercicios', icon: Video,           label: 'Exercícios' },
-  { href: '/dashboard/endurance',  icon: Activity,        label: 'Endurance' },
-  { href: '/dashboard/agenda',     icon: CalendarDays,    label: 'Agenda' },
-  { href: '/dashboard/financeiro', icon: DollarSign,      label: 'Financeiro' },
-  { href: '/dashboard/perfil',     icon: UserCircle,      label: 'Meu Perfil' },
+  { href: '/dashboard',              icon: LayoutDashboard, label: 'Dashboard' },
+  { href: '/dashboard/alunos',       icon: Users,           label: 'Alunos' },
+  { href: '/dashboard/treinos',      icon: Dumbbell,        label: 'Treinos' },
+  { href: '/dashboard/biblioteca',   icon: BookOpen,        label: 'Biblioteca' },
+  { href: '/dashboard/exercicios',   icon: Video,           label: 'Exercícios' },
+  { href: '/dashboard/endurance',    icon: Activity,        label: 'Endurance' },
+  { href: '/dashboard/agenda',       icon: CalendarDays,    label: 'Agenda' },
+  { href: '/dashboard/financeiro',   icon: DollarSign,      label: 'Financeiro' },
+  { href: '/dashboard/assinatura',   icon: CreditCard,      label: 'Assinatura' },
+  { href: '/dashboard/perfil',       icon: UserCircle,      label: 'Meu Perfil' },
 ];
 
 const LABEL_MAP = {
@@ -31,6 +32,7 @@ const LABEL_MAP = {
   endurance: 'Endurance',
   agenda: 'Agenda',
   financeiro: 'Financeiro',
+  assinatura: 'Assinatura',
   perfil: 'Meu Perfil',
   novo: 'Novo',
 };
