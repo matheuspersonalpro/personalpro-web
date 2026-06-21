@@ -342,20 +342,15 @@ export default function BibliotecaPage() {
             </div>
           </section>
 
-          {/* Biblioteca Global */}
-          <section>
-            <div className="flex items-center gap-2 mb-4">
-              <h2 className="text-[15px] font-bold text-white">Biblioteca Personal Pro</h2>
-              <span className="bg-blue-500/15 text-blue-400 text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ring-blue-500/20">
-                {globais.length} templates
-              </span>
-            </div>
-            {globais.length === 0 ? (
-              <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-12 text-center">
-                <BookOpen size={28} className="text-white/15 mx-auto mb-3" strokeWidth={1.5} />
-                <p className="text-[13px] text-white/30">Nenhum template global disponível ainda.</p>
+          {/* Biblioteca Global — só mostra se tiver templates */}
+          {globais.length > 0 && (
+            <section>
+              <div className="flex items-center gap-2 mb-4">
+                <h2 className="text-[15px] font-bold text-white">Biblioteca Personal Pro</h2>
+                <span className="bg-blue-500/15 text-blue-400 text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ring-blue-500/20">
+                  {globais.length} templates
+                </span>
               </div>
-            ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {globais.map(t => (
                   <CardTemplate
@@ -368,8 +363,8 @@ export default function BibliotecaPage() {
                   />
                 ))}
               </div>
-            )}
-          </section>
+            </section>
+          )}
 
           {/* Meus Modelos */}
           <section>
