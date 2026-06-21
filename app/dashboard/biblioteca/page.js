@@ -4,8 +4,10 @@ import Link from 'next/link';
 import {
   buscarTemplatesGlobais, buscarTemplatesTreinos,
   copiarTemplateGlobal, clonarTemplateParaAlunos, excluirTreino, buscarAlunos,
+  atribuirProgramaMuscular,
 } from '@/lib/firestore';
-import { BookOpen, Plus, X, Dumbbell, Copy, Users, Trash2, Check } from 'lucide-react';
+import { listarProgramas } from '@/lib/programaMusculacao';
+import { BookOpen, Plus, X, Dumbbell, Copy, Users, Trash2, Check, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import ConfirmModal from '@/components/ConfirmModal';
 
@@ -15,6 +17,84 @@ function gruposDoTemplate(t) {
     return t.grupos.map(g => (typeof g === 'string' ? g : g.nome)).filter(Boolean).join(', ');
   }
   return null;
+}
+
+// ── Modal: Gerar programa automático para aluno ────────────────────────────
+function ModalGerarPrograma({ programa, alunos, onFechar, onConcluido }) {
+  const toast = useToast();
+  const [alunoId, setAlunoId] = useState('');
+  const [mes, setMes] = useState(1);
+  const [gerando, setGerando] = useState(false);
+
+  async function gerar() {
+    if (!alunoId) { toast('Selecione um aluno.', 'error'); return; }
+    setGerando(true);
+    try {
+      const aluno = alunos.find(a => a.id === alunoId);
+      await atribuirProgramaMuscular(aluno, programa.id, mes);
+      toast(`Programa "${programa.nome}" gerado a partir do Mês ${mes} para ${aluno.nome.split(' ')[0]}!`);
+      onConcluido();
+    } catch { toast('Erro ao gerar programa.', 'error'); }
+    finally { setGerando(false); }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}>
+      <div className="w-full max-w-md rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
+          <div>
+            <h2 className="text-[15px] font-bold text-white">Gerar programa</h2>
+            <p className="text-[12px] text-white/40 mt-0.5">{programa.nome}</p>
+          </div>
+          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all">
+            <X size={16} />
+          </button>
+        </div>
+        <div className="p-6 space-y-5">
+          <div>
+            <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">Aluno</label>
+            <select value={alunoId} onChange={e => setAlunoId(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+              <option value="">Selecione um aluno...</option>
+              {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">
+              Mês inicial — Mês {mes} de 12
+            </label>
+            <div className="flex items-center gap-3">
+              <button onClick={() => setMes(m => Math.max(1, m - 1))}
+                className="p-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.10] text-white/60 hover:text-white transition-all">
+                <ChevronLeft size={14} />
+              </button>
+              <div className="flex-1 h-2 bg-white/[0.06] rounded-full overflow-hidden">
+                <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${(mes / 12) * 100}%` }} />
+              </div>
+              <button onClick={() => setMes(m => Math.min(12, m + 1))}
+                className="p-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.10] text-white/60 hover:text-white transition-all">
+                <ChevronRight size={14} />
+              </button>
+            </div>
+            <p className="text-[11px] text-white/30 mt-2">
+              {mes <= 3 ? 'Bloco 1 — Adaptação (meses 1-3)' : mes <= 6 ? 'Bloco 2 — Hipertrofia (meses 4-6)' : mes <= 9 ? 'Bloco 3 — Força (meses 7-9)' : 'Bloco 4 — Intensidade (meses 10-12)'}
+            </p>
+          </div>
+        </div>
+        <div className="px-6 py-4 border-t border-white/[0.06] flex justify-end gap-2">
+          <button onClick={onFechar}
+            className="px-4 py-2 rounded-xl border border-white/[0.08] text-[13px] text-white/50 hover:text-white hover:border-white/15 transition-all">
+            Cancelar
+          </button>
+          <button onClick={gerar} disabled={gerando || !alunoId}
+            className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-blue-900/30">
+            {gerando ? 'Gerando...' : 'Gerar programa'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function ModalUsarTemplate({ template, alunos, onFechar, onConfirmar }) {
@@ -143,8 +223,10 @@ export default function BibliotecaPage() {
   const [globais, setGlobais]   = useState([]);
   const [pessoais, setPessoais] = useState([]);
   const [alunos, setAlunos]     = useState([]);
+  const [programas, setProgramas] = useState([]);
   const [loading, setLoading]   = useState(true);
   const [modalTemplate, setModalTemplate] = useState(null);
+  const [modalPrograma, setModalPrograma] = useState(null);
   const [confirmExcluir, setConfirmExcluir] = useState(null);
   const [salvando, setSalvando] = useState(null); // id do template sendo salvo
 
@@ -159,6 +241,7 @@ export default function BibliotecaPage() {
       setGlobais(g);
       setPessoais(p);
       setAlunos(a);
+      setProgramas(listarProgramas());
     } catch { toast('Erro ao carregar biblioteca.', 'error'); }
     finally { setLoading(false); }
   }
@@ -195,6 +278,14 @@ export default function BibliotecaPage() {
           onConfirmar={clonarTemplateParaAlunos}
         />
       )}
+      {modalPrograma && (
+        <ModalGerarPrograma
+          programa={modalPrograma}
+          alunos={alunos}
+          onFechar={() => setModalPrograma(null)}
+          onConcluido={() => setModalPrograma(null)}
+        />
+      )}
       <ConfirmModal
         open={!!confirmExcluir}
         title="Excluir modelo"
@@ -220,6 +311,37 @@ export default function BibliotecaPage() {
         </div>
       ) : (
         <div className="space-y-10">
+          {/* Programas Automáticos (gerador de periodização) */}
+          <section>
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="text-[15px] font-bold text-white">Programas Automáticos</h2>
+              <span className="bg-emerald-500/15 text-emerald-400 text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ring-emerald-500/20">
+                {programas.length} programas · 12 meses
+              </span>
+            </div>
+            <p className="text-[12px] text-white/35 mb-4">
+              Periodização científica de 12 meses gerada automaticamente. Selecione um programa e o sistema cria todos os treinos para o aluno.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {programas.map(p => (
+                <button key={p.id} onClick={() => setModalPrograma(p)}
+                  className="group rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5 text-left hover:ring-emerald-500/30 hover:bg-emerald-900/10 transition-all">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3 group-hover:bg-emerald-500/20 transition-all">
+                    <Zap size={16} className="text-emerald-400" strokeWidth={1.8} />
+                  </div>
+                  <p className="text-[13px] font-semibold text-white/85 leading-snug">{p.nome}</p>
+                  <p className="text-[11px] text-white/35 mt-1 line-clamp-2">{p.desc || ''}</p>
+                  <div className="mt-3 flex items-center gap-1.5">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/[0.05] text-white/40">
+                      {p.freq}×/semana
+                    </span>
+                    <span className="text-[10px] text-emerald-400/60 ml-auto">Gerar →</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+
           {/* Biblioteca Global */}
           <section>
             <div className="flex items-center gap-2 mb-4">

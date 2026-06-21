@@ -293,7 +293,13 @@ export default function ExerciciosPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] text-white/30 font-mono truncate mt-0.5">{urlCurta}</p>
+                  <p className="text-[11px] text-white/30 truncate mt-0.5">
+                    {v.videoUrl?.includes('youtube') || v.videoUrl?.includes('youtu.be')
+                      ? '▶ YouTube'
+                      : v.videoUrl?.includes('firebasestorage')
+                      ? '☁ Firebase Storage'
+                      : v.videoUrl ? '🔗 Link externo' : ''}
+                  </p>
                 </div>
 
                 {/* Ações */}

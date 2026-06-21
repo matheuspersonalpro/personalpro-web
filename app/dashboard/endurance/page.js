@@ -5,7 +5,8 @@ import {
   deletarSessaoEndurance,
 } from '@/lib/firestore';
 import { tiposPorModalidade } from '@/lib/enduranceTreinos';
-import { ChevronLeft, ChevronRight, Plus, X, Trash2, Activity } from 'lucide-react';
+import { modelosProntos } from '@/lib/enduranceModelos';
+import { ChevronLeft, ChevronRight, Plus, X, Trash2, Activity, BookOpen, Calendar } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
 // ── Date helpers ──────────────────────────────────────────────────────────────
@@ -162,6 +163,84 @@ function SessaoModal({ data, modalidade, onSalvar, onFechar }) {
   );
 }
 
+// ── Modal: Adicionar modelo ao plano ─────────────────────────────────────────
+function ModalAdicionarModelo({ modelo, alunos, modalidade, onSalvar, onFechar }) {
+  const [alunoId, setAlunoId] = useState('');
+  const [data, setData] = useState(toISO(new Date()));
+  const [salvando, setSalvando] = useState(false);
+  const toast = useToast();
+
+  async function salvar() {
+    if (!alunoId) { toast('Selecione um aluno.', 'error'); return; }
+    if (!data) { toast('Selecione uma data.', 'error'); return; }
+    setSalvando(true);
+    try {
+      await onSalvar(alunoId, modalidade, {
+        data,
+        tipo: modelo.tipo,
+        titulo: modelo.titulo,
+        medida: modelo.medida === 'tempo' ? 'duracao' : 'distancia',
+        valor: modelo.medida === 'tempo'
+          ? Math.round(modelo.valor / 60)
+          : +(modelo.valor / 1000).toFixed(1),
+        zona: modelo.zona || '',
+        detalhe: modelo.detalhe || '',
+        status: 'planejado',
+      });
+      toast('Sessão adicionada ao plano.');
+      onFechar();
+    } catch { toast('Erro ao adicionar sessão.', 'error'); }
+    finally { setSalvando(false); }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}>
+      <div className="w-full max-w-md rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
+          <div>
+            <h2 className="text-[15px] font-bold text-white">Adicionar ao plano</h2>
+            <p className="text-[12px] text-white/40 mt-0.5 truncate max-w-[260px]">{modelo.titulo}</p>
+          </div>
+          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all">
+            <X size={16} />
+          </button>
+        </div>
+        <div className="p-6 space-y-4">
+          <div>
+            <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">Aluno</label>
+            <select value={alunoId} onChange={e => setAlunoId(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+              <option value="">Selecione um aluno...</option>
+              {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">Data</label>
+            <input type="date" value={data} onChange={e => setData(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+          </div>
+          {modelo.detalhe && (
+            <div className="rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] p-3">
+              <p className="text-[11px] text-white/50 leading-relaxed">{modelo.detalhe}</p>
+            </div>
+          )}
+        </div>
+        <div className="px-6 py-4 border-t border-white/[0.06] flex justify-end gap-2">
+          <button onClick={onFechar}
+            className="px-4 py-2 rounded-xl border border-white/[0.08] text-[13px] text-white/50 hover:text-white hover:border-white/15 transition-all">
+            Cancelar
+          </button>
+          <button onClick={salvar} disabled={salvando || !alunoId}
+            className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-blue-900/30">
+            {salvando ? 'Adicionando...' : 'Adicionar'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function EndurancePage() {
   const toast = useToast();
@@ -172,6 +251,8 @@ export default function EndurancePage() {
   const [sessoes, setSessoes] = useState([]);
   const [carregando, setCarregando] = useState(false);
   const [modal, setModal] = useState(null); // { data: 'YYYY-MM-DD' }
+  const [aba, setAba] = useState('plano'); // 'plano' | 'modelos'
+  const [modeloSelecionado, setModeloSelecionado] = useState(null);
 
   const monday = getMondayOfWeek(weekOffset);
   const days = getDaysOfWeek(monday);
@@ -219,6 +300,15 @@ export default function EndurancePage() {
           onFechar={() => setModal(null)}
         />
       )}
+      {modeloSelecionado && (
+        <ModalAdicionarModelo
+          modelo={modeloSelecionado}
+          alunos={alunos}
+          modalidade={modalidade}
+          onSalvar={criarSessaoEndurance}
+          onFechar={() => setModeloSelecionado(null)}
+        />
+      )}
 
       <div className="mb-6">
         <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
@@ -251,9 +341,83 @@ export default function EndurancePage() {
             </button>
           ))}
         </div>
+
+        {/* Tab switcher */}
+        <div className="ml-auto flex items-center gap-1 rounded-xl bg-white/[0.04] p-1">
+          <button onClick={() => setAba('plano')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${
+              aba === 'plano' ? 'bg-blue-600 text-white shadow' : 'text-white/40 hover:text-white/70'
+            }`}>
+            <Calendar size={12} /> Plano semanal
+          </button>
+          <button onClick={() => setAba('modelos')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${
+              aba === 'modelos' ? 'bg-blue-600 text-white shadow' : 'text-white/40 hover:text-white/70'
+            }`}>
+            <BookOpen size={12} /> Modelos prontos
+          </button>
+        </div>
       </div>
 
-      {!alunoId ? (
+      {aba === 'modelos' ? (
+        /* Aba modelos prontos */
+        (() => {
+          const modelos = modelosProntos(modalidade);
+          const tipos = [...new Set(modelos.map(m => m.tipo))];
+          const TIPO_LABELS = {
+            regenerativo: 'Regenerativo', rodagem: 'Rodagem', longao: 'Longão',
+            tempo: 'Tempo / Limiar', intervalado: 'Intervalado / VO₂máx',
+            tiro: 'Tiros / Velocidade', educativos: 'Educativos',
+            endurance: 'Endurance', sweet_spot: 'Sweet Spot', vo2: 'VO₂máx',
+            forca: 'Força', pico: 'Pico de potência',
+          };
+          return (
+            <div className="space-y-8">
+              {tipos.map(tipo => (
+                <section key={tipo}>
+                  <h3 className="text-[12px] font-bold text-white/50 uppercase tracking-wider mb-3">
+                    {TIPO_LABELS[tipo] || tipo}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {modelos.filter(m => m.tipo === tipo).map(m => {
+                      const isKm = m.medida === 'distancia';
+                      const valorFmt = isKm
+                        ? `${(m.valor / 1000).toFixed(1)} km`
+                        : `${Math.round(m.valor / 60)} min`;
+                      return (
+                        <div key={m.id}
+                          className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-4 hover:ring-blue-500/20 transition-all flex flex-col gap-3">
+                          <div>
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                              <p className="text-[13px] font-semibold text-white/85 leading-snug">{m.titulo}</p>
+                              {m.zona && (
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 ring-1 ring-blue-500/20 shrink-0">
+                                  {m.zona}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] text-white/35">{valorFmt}</p>
+                            {m.detalhe && (
+                              <p className="text-[11px] text-white/40 mt-2 leading-relaxed line-clamp-3">{m.detalhe}</p>
+                            )}
+                            {m.ref && (
+                              <p className="text-[10px] text-white/20 mt-1.5 italic">{m.ref}</p>
+                            )}
+                          </div>
+                          <button onClick={() => setModeloSelecionado(m)}
+                            className="mt-auto w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600 border border-blue-500/20 hover:border-transparent text-[12px] font-semibold text-blue-400 hover:text-white transition-all">
+                            <Plus size={12} /> Adicionar ao plano
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              ))}
+            </div>
+          );
+        })()
+      ) : !alunoId ? (
         <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-16 text-center">
           <Activity size={32} className="text-white/15 mx-auto mb-3" strokeWidth={1.5} />
           <p className="text-[13px] text-white/30">Selecione um aluno para ver o plano</p>
