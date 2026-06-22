@@ -45,9 +45,18 @@ export default function FinanceiroPage() {
   const [mesIdx, setMesIdx]           = useState(new Date().getMonth());
   const [ano, setAno]                 = useState(new Date().getFullYear());
   const [showForm, setShowForm]       = useState(false);
-  const [form, setForm]               = useState({ alunoId: '', valor: '', data: new Date().toISOString().slice(0, 10), descricao: '' });
+  const [form, setForm]               = useState({ alunoId: '', valor: '', data: new Date().toISOString().slice(0, 10), descricao: '', metodo: '' });
   const [saving, setSaving]           = useState(false);
   const [confirmPagId, setConfirmPagId] = useState(null);
+
+  const METODOS = [
+    { value: '',            label: 'Não informado' },
+    { value: 'pix',         label: 'PIX' },
+    { value: 'dinheiro',    label: 'Dinheiro' },
+    { value: 'cartao',      label: 'Cartão' },
+    { value: 'transferencia', label: 'Transferência' },
+    { value: 'boleto',      label: 'Boleto' },
+  ];
 
   const carregar = () => {
     Promise.all([buscarPagamentos(), buscarAlunos()])
@@ -81,7 +90,7 @@ export default function FinanceiroPage() {
     setSaving(true);
     try {
       await registrarPagamento({ ...form, valor: Number(form.valor) });
-      setForm({ alunoId: '', valor: '', data: new Date().toISOString().slice(0, 10), descricao: '' });
+      setForm({ alunoId: '', valor: '', data: new Date().toISOString().slice(0, 10), descricao: '', metodo: '' });
       setShowForm(false);
       carregar();
       toast('Pagamento registrado com sucesso.');
@@ -142,7 +151,7 @@ export default function FinanceiroPage() {
               <X size={15} />
             </button>
           </div>
-          <form onSubmit={adicionar} className="grid grid-cols-4 gap-3">
+          <form onSubmit={adicionar} className="grid grid-cols-5 gap-3">
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">Aluno</label>
               <select value={form.alunoId} onChange={e => setForm(f => ({ ...f, alunoId: e.target.value }))}
@@ -161,6 +170,13 @@ export default function FinanceiroPage() {
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">Data</label>
               <input type="date" required value={form.data} onChange={e => setForm(f => ({ ...f, data: e.target.value }))}
                 className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+            </div>
+            <div>
+              <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">Método</label>
+              <select value={form.metodo} onChange={e => setForm(f => ({ ...f, metodo: e.target.value }))}
+                className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                {METODOS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+              </select>
             </div>
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">Descrição</label>
@@ -233,6 +249,7 @@ export default function FinanceiroPage() {
             <tr className="border-b border-white/[0.04] bg-white/[0.01]">
               <th className="text-left px-5 py-3 text-[10px] font-semibold text-white/25 uppercase tracking-wider">Data</th>
               <th className="text-left px-5 py-3 text-[10px] font-semibold text-white/25 uppercase tracking-wider">Aluno</th>
+              <th className="text-left px-5 py-3 text-[10px] font-semibold text-white/25 uppercase tracking-wider">Método</th>
               <th className="text-left px-5 py-3 text-[10px] font-semibold text-white/25 uppercase tracking-wider">Descrição</th>
               <th className="text-right px-5 py-3 text-[10px] font-semibold text-white/25 uppercase tracking-wider">Valor</th>
               <th className="w-12" />
@@ -244,6 +261,13 @@ export default function FinanceiroPage() {
                 <td className="px-5 py-3.5 text-[12px] text-white/40">{p.data}</td>
                 <td className="px-5 py-3.5">
                   <span className="text-[13px] text-white/70">{nomeAluno(p.alunoId)}</span>
+                </td>
+                <td className="px-5 py-3.5">
+                  {p.metodo ? (
+                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white/[0.05] text-white/50 capitalize">
+                      {METODOS.find(m => m.value === p.metodo)?.label || p.metodo}
+                    </span>
+                  ) : <span className="text-[12px] text-white/20">—</span>}
                 </td>
                 <td className="px-5 py-3.5 text-[12px] text-white/40">{p.descricao || '—'}</td>
                 <td className="px-5 py-3.5 text-right">
