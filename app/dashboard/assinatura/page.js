@@ -1,25 +1,29 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { buscarUsuario, buscarAlunos } from '@/lib/firestore';
+import { buscarAlunos } from '@/lib/firestore';
 import {
   PLANOS, ALUNOS_GRATIS, fmtBRL, avaliarAssinatura,
   criarCheckoutAssinatura, iniciarTrialAssinatura,
 } from '@/lib/assinatura';
-import { CreditCard, Check, Zap, Clock, ShieldCheck, AlertCircle, ExternalLink, RefreshCw } from 'lucide-react';
+import { usePersonal } from '@/lib/AuthContext';
+import { CreditCard, Check, Zap, Clock, ShieldCheck, AlertCircle, ExternalLink } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
 const ESTADO_UI = {
-  sem:       { cor: 'text-white/50',   bg: 'bg-white/[0.04]',     ring: 'ring-white/[0.06]',     icone: Zap,          label: 'Sem assinatura' },
-  trial:     { cor: 'text-blue-400',   bg: 'bg-blue-500/10',      ring: 'ring-blue-500/20',      icone: Clock,        label: 'Período de trial' },
-  ativa:     { cor: 'text-emerald-400',bg: 'bg-emerald-500/10',   ring: 'ring-emerald-500/20',   icone: ShieldCheck,  label: 'Assinatura ativa' },
-  pendente:  { cor: 'text-amber-400',  bg: 'bg-amber-500/10',     ring: 'ring-amber-500/20',     icone: AlertCircle,  label: 'Pagamento pendente' },
-  bloqueada: { cor: 'text-red-400',    bg: 'bg-red-500/10',       ring: 'ring-red-500/20',       icone: AlertCircle,  label: 'Assinatura bloqueada' },
+  sem:       { cor: 'text-white/50',    bg: 'bg-white/[0.04]',    ring: 'ring-white/[0.06]',    icone: Zap,          label: 'Sem assinatura' },
+  trial:     { cor: 'text-blue-400',    bg: 'bg-blue-500/10',     ring: 'ring-blue-500/20',     icone: Clock,        label: 'Período de trial' },
+  ativa:     { cor: 'text-emerald-400', bg: 'bg-emerald-500/10',  ring: 'ring-emerald-500/20',  icone: ShieldCheck,  label: 'Assinatura ativa' },
+  pendente:  { cor: 'text-amber-400',   bg: 'bg-amber-500/10',    ring: 'ring-amber-500/20',    icone: AlertCircle,  label: 'Pagamento pendente' },
+  bloqueada: { cor: 'text-red-400',     bg: 'bg-red-500/10',      ring: 'ring-red-500/20',      icone: AlertCircle,  label: 'Assinatura bloqueada' },
+};
+
+const LABEL_PLANO = {
+  mensal: '1 mês', trimestral: '3 meses', semestral: '6 meses', anual: '12 meses',
 };
 
 function StatusCard({ avaliacao, alunosAtivos, planoLabel }) {
   const ui = ESTADO_UI[avaliacao.estado] || ESTADO_UI.sem;
   const Icone = ui.icone;
-
   const alunosGratis = alunosAtivos <= ALUNOS_GRATIS;
 
   return (
@@ -42,13 +46,13 @@ function StatusCard({ avaliacao, alunosAtivos, planoLabel }) {
           </p>
         ) : avaliacao.estado === 'trial' ? (
           <p className="text-[13px] text-white/50 mt-1">
-            Expira em{' '}
-            <strong className="text-white/80">{avaliacao.validade?.toLocaleDateString('pt-BR')}</strong>
+            Expira em <strong className="text-white/80">{avaliacao.validade?.toLocaleDateString('pt-BR')}</strong>
             {' '}· <strong className="text-white/80">{avaliacao.diasRestantes} dias</strong> restantes
           </p>
         ) : avaliacao.estado === 'pendente' ? (
           <p className="text-[13px] text-white/50 mt-1">
-            Pagamento não identificado · ainda libera por <strong className="text-amber-400">{avaliacao.diasRestantes} dia{avaliacao.diasRestantes !== 1 ? 's' : ''}</strong> (carência)
+            Pagamento não identificado · ainda libera por{' '}
+            <strong className="text-amber-400">{avaliacao.diasRestantes} dia{avaliacao.diasRestantes !== 1 ? 's' : ''}</strong> (carência)
           </p>
         ) : avaliacao.estado === 'bloqueada' ? (
           <p className="text-[13px] text-white/50 mt-1">
@@ -57,6 +61,11 @@ function StatusCard({ avaliacao, alunosAtivos, planoLabel }) {
         ) : (
           <p className="text-[13px] text-white/50 mt-1">
             Com mais de {ALUNOS_GRATIS} alunos ativos é necessário assinar um plano.
+          </p>
+        )}
+        {(avaliacao.estado === 'ativa' || avaliacao.estado === 'trial' || avaliacao.estado === 'pendente') && (
+          <p className="text-[11px] text-white/25 mt-2">
+            O status atualiza automaticamente quando um pagamento é confirmado.
           </p>
         )}
       </div>
@@ -98,7 +107,6 @@ function CardPlano({ plano, selecionado, onSelecionar, processando }) {
           {ativo && <Check size={11} className="text-white" strokeWidth={3} />}
         </div>
       </div>
-
       <div className="mb-1">
         <span className="text-[26px] font-bold text-white">{fmtBRL(plano.preco)}</span>
       </div>
@@ -110,41 +118,24 @@ function CardPlano({ plano, selecionado, onSelecionar, processando }) {
   );
 }
 
-const LABEL_PLANO = {
-  mensal: '1 mês', trimestral: '3 meses', semestral: '6 meses', anual: '12 meses',
-};
-
 export default function AssinaturaPage() {
-  const toast = useToast();
-  const [cfg, setCfg]               = useState(null);
-  const [alunosAtivos, setAtivos]   = useState(0);
-  const [loading, setLoading]         = useState(true);
+  const toast      = useToast();
+  const personal   = usePersonal(); // assinatura atualiza automaticamente via onSnapshot no AuthContext
+
+  const [alunosAtivos, setAtivos]     = useState(0);
+  const [loadingAlunos, setLoading]   = useState(true);
   const [planoSel, setPlanoSel]       = useState('anual');
   const [processando, setProcessando] = useState(false);
-  const [verificando, setVerificando] = useState(false);
-
-  const carregar = () =>
-    Promise.all([buscarUsuario(), buscarAlunos()])
-      .then(([usuario, alunos]) => {
-        setCfg(usuario);
-        setAtivos(alunos.filter(a => a.ativo !== false).length);
-      });
 
   useEffect(() => {
-    carregar().finally(() => setLoading(false));
+    buscarAlunos()
+      .then(list => setAtivos(list.filter(a => a.ativo !== false).length))
+      .finally(() => setLoading(false));
   }, []);
 
-  async function verificarStatus() {
-    setVerificando(true);
-    try {
-      await carregar();
-      toast('Status atualizado.');
-    } catch { toast('Erro ao verificar. Tente novamente.', 'error'); }
-    finally { setVerificando(false); }
-  }
-
-  const avaliacao = avaliarAssinatura(cfg?.assinatura);
-  const planoAtual = cfg?.assinatura?.plano;
+  const assinatura  = personal?.assinatura;
+  const avaliacao   = avaliarAssinatura(assinatura);
+  const planoAtual  = assinatura?.plano;
   const alunosGratis = alunosAtivos <= ALUNOS_GRATIS;
 
   async function assinar() {
@@ -165,8 +156,7 @@ export default function AssinaturaPage() {
     try {
       await iniciarTrialAssinatura();
       toast('Trial iniciado! Você tem 14 dias de acesso completo.');
-      const usuario = await buscarUsuario();
-      setCfg(usuario);
+      // AuthContext via onSnapshot atualiza personal.assinatura automaticamente
     } catch (e) {
       toast(e.message || 'Erro ao iniciar trial.', 'error');
     } finally {
@@ -174,7 +164,7 @@ export default function AssinaturaPage() {
     }
   }
 
-  if (loading) return (
+  if (!personal || loadingAlunos) return (
     <div className="flex items-center justify-center h-full">
       <div className="w-7 h-7 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
     </div>
@@ -183,25 +173,18 @@ export default function AssinaturaPage() {
   return (
     <div className="p-8 max-w-4xl mx-auto w-full">
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="text-[22px] font-bold text-white tracking-tight flex items-center gap-2.5">
-            <CreditCard size={20} className="text-blue-400" />
-            Assinatura
-          </h1>
-          <p className="text-[12px] text-white/35 mt-1">Gerencie seu plano PersonalPro</p>
-        </div>
-        <button onClick={verificarStatus} disabled={verificando}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/[0.08] text-[12px] text-white/40 hover:text-white hover:border-white/15 disabled:opacity-40 transition-all">
-          <RefreshCw size={12} className={verificando ? 'animate-spin' : ''} />
-          {verificando ? 'Verificando...' : 'Verificar status'}
-        </button>
+      <div className="mb-8">
+        <h1 className="text-[22px] font-bold text-white tracking-tight flex items-center gap-2.5">
+          <CreditCard size={20} className="text-blue-400" />
+          Assinatura
+        </h1>
+        <p className="text-[12px] text-white/35 mt-1">Gerencie seu plano PersonalPro</p>
       </div>
 
       {/* Status atual */}
       <StatusCard avaliacao={avaliacao} alunosAtivos={alunosAtivos} planoLabel={LABEL_PLANO[planoAtual] || planoAtual} />
 
-      {/* Planos — só mostra se não for grátis e não tiver assinatura ativa */}
+      {/* Planos — só mostra se não for grátis */}
       {!alunosGratis && (
         <div className="mt-8">
           <div className="flex items-center gap-2 mb-5">
@@ -264,12 +247,12 @@ export default function AssinaturaPage() {
             )}
           </button>
           <p className="text-[11px] text-white/25 text-center mt-2.5">
-            Você será redirecionado para o checkout seguro do Asaas. Após pagar, clique em "Verificar status" para atualizar.
+            Você será redirecionado para o checkout seguro do Asaas. O status atualiza automaticamente após a confirmação do pagamento.
           </p>
         </div>
       )}
 
-      {/* Trial (se ainda não tem assinatura e tem mais de 3 alunos) */}
+      {/* Trial */}
       {!alunosGratis && avaliacao.estado === 'sem' && (
         <div className="mt-4 pt-4 border-t border-white/[0.05] text-center">
           <p className="text-[12px] text-white/30 mb-3">Ou comece com um trial gratuito de 14 dias</p>
@@ -283,7 +266,7 @@ export default function AssinaturaPage() {
         </div>
       )}
 
-      {/* Se está no plano grátis (≤ 3 alunos), mostra mensagem de upgrade */}
+      {/* Plano gratuito */}
       {alunosGratis && (
         <div className="mt-6 rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-6 text-center">
           <Zap size={24} className="text-white/20 mx-auto mb-3" strokeWidth={1.5} />

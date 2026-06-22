@@ -1,13 +1,16 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePersonal } from '@/lib/AuthContext';
+import { buscarAlunos } from '@/lib/firestore';
+import { avaliarAssinatura, ALUNOS_GRATIS } from '@/lib/assinatura';
 import { logout } from '@/lib/auth';
 import {
   LayoutDashboard, Users, Dumbbell, DollarSign, LogOut,
   ChevronRight, CalendarDays, UserCircle, BookOpen, Video, Activity, CreditCard,
+  Lock, AlertTriangle,
 } from 'lucide-react';
 
 const NAV = [
@@ -37,10 +40,49 @@ const LABEL_MAP = {
   novo: 'Novo',
 };
 
+// Páginas acessíveis mesmo sem assinatura
+const ROTAS_LIVRES = ['/dashboard/assinatura', '/dashboard/perfil'];
+
+function GatePaywall({ alunosCount, avaliacao }) {
+  const msg = avaliacao.estado === 'sem'
+    ? `Você tem ${alunosCount} alunos ativos. O plano gratuito inclui até ${ALUNOS_GRATIS}.`
+    : `Sua assinatura expirou. Renove para continuar acessando todas as funcionalidades.`;
+
+  return (
+    <div className="flex-1 flex items-center justify-center bg-[#080f1d] relative">
+      <div className="absolute inset-0 bg-[#080f1d]/80 backdrop-blur-sm" />
+      <div className="relative z-10 text-center max-w-sm px-6">
+        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mx-auto mb-5 ring-1 ring-amber-500/20">
+          <Lock size={28} className="text-amber-400" strokeWidth={1.5} />
+        </div>
+        <h2 className="text-[18px] font-bold text-white mb-2">Assinatura necessária</h2>
+        <p className="text-[13px] text-white/45 leading-relaxed mb-6">{msg}</p>
+        <Link href="/dashboard/assinatura"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
+          <CreditCard size={14} />
+          Ver planos e assinar
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardLayout({ children }) {
   const personal = usePersonal();
   const router   = useRouter();
   const pathname = usePathname();
+
+  const [alunosCount, setAlunosCount] = useState(0);
+  const [contando, setContando]       = useState(true);
+
+  // Carrega contagem de alunos ativos uma vez por sessão (re-executa se uid mudar)
+  useEffect(() => {
+    if (!personal?.uid) return;
+    setContando(true);
+    buscarAlunos()
+      .then(list => setAlunosCount(list.filter(a => a.ativo !== false).length))
+      .finally(() => setContando(false));
+  }, [personal?.uid]);
 
   useEffect(() => {
     if (personal === null) router.replace('/login');
@@ -53,6 +95,14 @@ export default function DashboardLayout({ children }) {
       </div>
     );
   }
+
+  const avaliacao     = avaliarAssinatura(personal.assinatura);
+  const estaRotaLivre = ROTAS_LIVRES.some(r => pathname.startsWith(r));
+  // Gate ativo: mais de 3 alunos E assinatura não liberada E contagem já carregou
+  const gateAtivo     = !contando && alunosCount > ALUNOS_GRATIS && !avaliacao.liberado;
+  const mostrarGate   = gateAtivo && !estaRotaLivre;
+  // Aviso suave (banner) na home dashboard mesmo sem gate total
+  const mostrarAlerta = gateAtivo && pathname === '/dashboard';
 
   const initials = personal.nome
     ? personal.nome.split(' ').filter(Boolean).slice(0, 2).map(n => n[0].toUpperCase()).join('')
@@ -85,6 +135,7 @@ export default function DashboardLayout({ children }) {
           </p>
           {NAV.map(({ href, icon: Icon, label }) => {
             const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
+            const bloqueada = gateAtivo && !ROTAS_LIVRES.some(r => href.startsWith(r)) && href !== '/dashboard';
             return (
               <Link key={href} href={href}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 mb-0.5 relative"
@@ -93,13 +144,14 @@ export default function DashboardLayout({ children }) {
                   color: '#60a5fa',
                   boxShadow: 'inset 2px 0 0 #3b82f6',
                 } : {
-                  color: 'rgba(255,255,255,0.4)',
+                  color: bloqueada ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.4)',
                 }}
                 onMouseEnter={e => { if (!active) { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'rgba(255,255,255,0.75)'; } }}
-                onMouseLeave={e => { if (!active) { e.currentTarget.style.background = ''; e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; } }}
+                onMouseLeave={e => { if (!active) { e.currentTarget.style.background = ''; e.currentTarget.style.color = bloqueada ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.4)'; } }}
               >
                 <Icon size={15} strokeWidth={active ? 2.1 : 1.75} />
                 {label}
+                {bloqueada && <Lock size={10} className="ml-auto text-amber-500/60" />}
               </Link>
             );
           })}
@@ -107,6 +159,15 @@ export default function DashboardLayout({ children }) {
 
         {/* Perfil + sair */}
         <div className="p-2.5 shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+          {/* Alerta de assinatura no rodapé da sidebar */}
+          {gateAtivo && (
+            <Link href="/dashboard/assinatura"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 ring-1 ring-amber-500/20 mb-2 hover:bg-amber-500/15 transition-all">
+              <AlertTriangle size={12} className="text-amber-400 shrink-0" />
+              <p className="text-[10px] text-amber-300/80 leading-tight">Assinatura necessária</p>
+            </Link>
+          )}
+
           {/* Card do perfil */}
           <div className="flex items-center gap-2.5 px-3 py-3 rounded-xl mb-1"
             style={{ background: 'rgba(255,255,255,0.03)' }}>
@@ -167,12 +228,38 @@ export default function DashboardLayout({ children }) {
               );
             })}
           </nav>
+
+          {/* Badge de alerta na topbar */}
+          {gateAtivo && !estaRotaLivre && (
+            <Link href="/dashboard/assinatura"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 ring-1 ring-amber-500/20 hover:bg-amber-500/15 transition-all text-[11px] text-amber-300/80">
+              <AlertTriangle size={11} className="text-amber-400" />
+              Assinatura expirada
+            </Link>
+          )}
         </header>
 
-        {/* Página */}
-        <main className="flex-1 overflow-y-auto">
-          {children}
-        </main>
+        {/* Banner de alerta no Dashboard home (não bloqueia, só avisa) */}
+        {mostrarAlerta && (
+          <div className="shrink-0 bg-amber-500/10 border-b border-amber-500/15 px-8 py-2.5 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <AlertTriangle size={13} className="text-amber-400 shrink-0" />
+              <p className="text-[12px] text-amber-300/80">
+                Você tem <strong>{alunosCount}</strong> alunos ativos. Ative sua assinatura para continuar usando o PersonalPro.
+              </p>
+            </div>
+            <Link href="/dashboard/assinatura"
+              className="text-[11px] font-semibold text-amber-400 hover:text-amber-300 transition-colors whitespace-nowrap ml-4">
+              Ver planos →
+            </Link>
+          </div>
+        )}
+
+        {/* Página — substituída pelo gate se bloqueada */}
+        {mostrarGate
+          ? <GatePaywall alunosCount={alunosCount} avaliacao={avaliacao} />
+          : <main className="flex-1 overflow-y-auto">{children}</main>
+        }
       </div>
     </div>
   );
