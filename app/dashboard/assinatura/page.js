@@ -1,11 +1,11 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { buscarConfigApp, buscarAlunos } from '@/lib/firestore';
+import { buscarUsuario, buscarAlunos } from '@/lib/firestore';
 import {
   PLANOS, ALUNOS_GRATIS, fmtBRL, avaliarAssinatura,
   criarCheckoutAssinatura, iniciarTrialAssinatura,
 } from '@/lib/assinatura';
-import { CreditCard, Check, Zap, Clock, ShieldCheck, AlertCircle, ExternalLink } from 'lucide-react';
+import { CreditCard, Check, Zap, Clock, ShieldCheck, AlertCircle, ExternalLink, RefreshCw } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
 const ESTADO_UI = {
@@ -118,18 +118,30 @@ export default function AssinaturaPage() {
   const toast = useToast();
   const [cfg, setCfg]               = useState(null);
   const [alunosAtivos, setAtivos]   = useState(0);
-  const [loading, setLoading]       = useState(true);
-  const [planoSel, setPlanoSel]     = useState('anual');
+  const [loading, setLoading]         = useState(true);
+  const [planoSel, setPlanoSel]       = useState('anual');
   const [processando, setProcessando] = useState(false);
+  const [verificando, setVerificando] = useState(false);
+
+  const carregar = () =>
+    Promise.all([buscarUsuario(), buscarAlunos()])
+      .then(([usuario, alunos]) => {
+        setCfg(usuario);
+        setAtivos(alunos.filter(a => a.ativo !== false).length);
+      });
 
   useEffect(() => {
-    Promise.all([buscarConfigApp(), buscarAlunos()])
-      .then(([config, alunos]) => {
-        setCfg(config);
-        setAtivos(alunos.filter(a => a.ativo !== false).length);
-      })
-      .finally(() => setLoading(false));
+    carregar().finally(() => setLoading(false));
   }, []);
+
+  async function verificarStatus() {
+    setVerificando(true);
+    try {
+      await carregar();
+      toast('Status atualizado.');
+    } catch { toast('Erro ao verificar. Tente novamente.', 'error'); }
+    finally { setVerificando(false); }
+  }
 
   const avaliacao = avaliarAssinatura(cfg?.assinatura);
   const planoAtual = cfg?.assinatura?.plano;
@@ -153,8 +165,8 @@ export default function AssinaturaPage() {
     try {
       await iniciarTrialAssinatura();
       toast('Trial iniciado! Você tem 14 dias de acesso completo.');
-      const config = await buscarConfigApp();
-      setCfg(config);
+      const usuario = await buscarUsuario();
+      setCfg(usuario);
     } catch (e) {
       toast(e.message || 'Erro ao iniciar trial.', 'error');
     } finally {
@@ -171,12 +183,19 @@ export default function AssinaturaPage() {
   return (
     <div className="p-8 max-w-4xl mx-auto w-full">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-[22px] font-bold text-white tracking-tight flex items-center gap-2.5">
-          <CreditCard size={20} className="text-blue-400" />
-          Assinatura
-        </h1>
-        <p className="text-[12px] text-white/35 mt-1">Gerencie seu plano PersonalPro</p>
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h1 className="text-[22px] font-bold text-white tracking-tight flex items-center gap-2.5">
+            <CreditCard size={20} className="text-blue-400" />
+            Assinatura
+          </h1>
+          <p className="text-[12px] text-white/35 mt-1">Gerencie seu plano PersonalPro</p>
+        </div>
+        <button onClick={verificarStatus} disabled={verificando}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/[0.08] text-[12px] text-white/40 hover:text-white hover:border-white/15 disabled:opacity-40 transition-all">
+          <RefreshCw size={12} className={verificando ? 'animate-spin' : ''} />
+          {verificando ? 'Verificando...' : 'Verificar status'}
+        </button>
       </div>
 
       {/* Status atual */}
@@ -245,7 +264,7 @@ export default function AssinaturaPage() {
             )}
           </button>
           <p className="text-[11px] text-white/25 text-center mt-2.5">
-            Você será redirecionado para o checkout seguro do Asaas. Cancele a qualquer momento.
+            Você será redirecionado para o checkout seguro do Asaas. Após pagar, clique em "Verificar status" para atualizar.
           </p>
         </div>
       )}
