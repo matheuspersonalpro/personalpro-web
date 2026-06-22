@@ -408,6 +408,64 @@ const POSICOES = [
   { key: 'lateral', label: 'Lateral' },
 ];
 
+function ComparacaoModal({ sessA, sessB, onFechar }) {
+  const fmtData = sess => sess?.criadoEm?.seconds
+    ? new Date(sess.criadoEm.seconds * 1000).toLocaleDateString('pt-BR')
+    : '—';
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(6px)' }}>
+      <div className="w-full max-w-4xl rounded-2xl bg-[#0a1425] ring-1 ring-white/[0.08] overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06] shrink-0">
+          <h2 className="text-[15px] font-bold text-white flex items-center gap-2">
+            <Camera size={15} className="text-blue-400" />
+            Comparação
+          </h2>
+          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all">
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="overflow-y-auto p-6">
+          {/* Cabeçalhos */}
+          <div className="grid grid-cols-2 gap-4 mb-5">
+            {[sessA, sessB].map((sess, i) => (
+              <div key={i} className={`rounded-xl px-4 py-2.5 text-center ring-1 ${i === 0 ? 'bg-blue-500/10 ring-blue-500/20' : 'bg-purple-500/10 ring-purple-500/20'}`}>
+                <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: i === 0 ? '#60a5fa' : '#c084fc' }}>
+                  {i === 0 ? 'ANTES' : 'DEPOIS'}
+                </p>
+                <p className="text-[13px] font-bold text-white">{fmtData(sess)}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Fotos por posição */}
+          {POSICOES.map(({ key, label }) => {
+            const fotoA = sessA?.fotos?.[key];
+            const fotoB = sessB?.fotos?.[key];
+            if (!fotoA && !fotoB) return null;
+            return (
+              <div key={key} className="mb-5">
+                <p className="text-[10px] font-semibold text-white/25 uppercase tracking-wider mb-3">{label}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  {[fotoA, fotoB].map((foto, i) => (
+                    <div key={i} className="rounded-2xl overflow-hidden bg-white/[0.03] ring-1 ring-white/[0.06] flex items-center justify-center" style={{ minHeight: 220 }}>
+                      {foto
+                        ? <img src={foto} alt={label} className="w-full object-contain max-h-80" />
+                        : <p className="text-[12px] text-white/20 p-8 text-center">Sem foto nesta sessão</p>
+                      }
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function FotosTab({ alunoId }) {
   const toast = useToast();
   const [historico, setHistorico] = useState([]);
@@ -415,6 +473,9 @@ function FotosTab({ alunoId }) {
   const [files, setFiles] = useState({ frente: null, costas: null, lateral: null });
   const [previews, setPreviews] = useState({ frente: null, costas: null, lateral: null });
   const [salvando, setSalvando] = useState(false);
+  const [comparando, setComparando] = useState(false);
+  const [selecionadas, setSelecionadas] = useState([]);
+  const [verComparacao, setVerComparacao] = useState(false);
   const refs = { frente: useRef(), costas: useRef(), lateral: useRef() };
 
   useEffect(() => {
@@ -426,8 +487,7 @@ function FotosTab({ alunoId }) {
   function handleFile(posicao, file) {
     if (!file) return;
     setFiles(f => ({ ...f, [posicao]: file }));
-    const url = URL.createObjectURL(file);
-    setPreviews(p => ({ ...p, [posicao]: url }));
+    setPreviews(p => ({ ...p, [posicao]: URL.createObjectURL(file) }));
   }
 
   async function salvarFotos() {
@@ -437,8 +497,7 @@ function FotosTab({ alunoId }) {
     try {
       const fotosUrls = {};
       for (const { key } of posComFile) {
-        const url = await uploadFotoEvolucao(alunoId, files[key], key);
-        fotosUrls[key] = url;
+        fotosUrls[key] = await uploadFotoEvolucao(alunoId, files[key], key);
       }
       await salvarFotosEvolucao(alunoId, fotosUrls);
       toast('Fotos salvas com sucesso.');
@@ -455,75 +514,146 @@ function FotosTab({ alunoId }) {
     toast('Sessão excluída.');
   }
 
+  function toggleSelecao(sessId) {
+    setSelecionadas(prev => {
+      if (prev.includes(sessId)) return prev.filter(id => id !== sessId);
+      if (prev.length >= 2) return [prev[1], sessId];
+      return [...prev, sessId];
+    });
+  }
+
+  const sessA = historico.find(s => s.id === selecionadas[0]);
+  const sessB = historico.find(s => s.id === selecionadas[1]);
+
   return (
-    <div className="space-y-6">
-      {/* Nova sessão */}
-      <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-6">
-        <p className="text-[12px] font-semibold text-white/40 uppercase tracking-wider mb-4">Nova sessão de fotos</p>
-        <div className="grid grid-cols-3 gap-4">
-          {POSICOES.map(({ key, label }) => (
-            <div key={key} className="flex flex-col items-center gap-2">
-              <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">{label}</p>
-              <input ref={refs[key]} type="file" accept="image/*" className="hidden"
-                onChange={e => handleFile(key, e.target.files[0])} />
-              <button onClick={() => refs[key].current.click()}
-                className="w-24 h-32 rounded-xl border-2 border-dashed border-white/[0.10] hover:border-blue-500/40 bg-white/[0.02] hover:bg-blue-500/5 transition-all overflow-hidden flex items-center justify-center">
-                {previews[key] ? (
-                  <img src={previews[key]} alt={label} className="w-full h-full object-cover" />
-                ) : (
-                  <Camera size={20} className="text-white/20" />
-                )}
-              </button>
-              {files[key] && (
-                <p className="text-[10px] text-white/30 truncate max-w-[96px]">{files[key].name}</p>
-              )}
-            </div>
-          ))}
+    <div className="space-y-5">
+      {verComparacao && sessA && sessB && (
+        <ComparacaoModal sessA={sessA} sessB={sessB} onFechar={() => setVerComparacao(false)} />
+      )}
+
+      {/* Nova sessão (só mostra fora do modo comparação) */}
+      {!comparando && (
+        <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
+          <p className="text-[11px] font-semibold text-white/30 uppercase tracking-wider mb-4">Nova sessão de fotos</p>
+          <div className="grid grid-cols-3 gap-4">
+            {POSICOES.map(({ key, label }) => (
+              <div key={key} className="flex flex-col items-center gap-2">
+                <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">{label}</p>
+                <input ref={refs[key]} type="file" accept="image/*" className="hidden"
+                  onChange={e => handleFile(key, e.target.files[0])} />
+                <button onClick={() => refs[key].current.click()}
+                  className="w-24 h-32 rounded-xl border-2 border-dashed border-white/[0.10] hover:border-blue-500/40 bg-white/[0.02] hover:bg-blue-500/5 transition-all overflow-hidden flex items-center justify-center">
+                  {previews[key]
+                    ? <img src={previews[key]} alt={label} className="w-full h-full object-cover" />
+                    : <Camera size={20} className="text-white/20" />}
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end mt-4">
+            <button onClick={salvarFotos} disabled={salvando}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white disabled:opacity-40 transition-all">
+              {salvando ? 'Salvando...' : 'Salvar fotos'}
+            </button>
+          </div>
         </div>
-        <div className="flex justify-end mt-4">
-          <button onClick={salvarFotos} disabled={salvando}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-blue-900/30">
-            {salvando ? 'Salvando...' : 'Salvar fotos'}
-          </button>
-        </div>
-      </div>
+      )}
 
       {/* Histórico */}
-      <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-6">
-        <p className="text-[12px] font-semibold text-white/40 uppercase tracking-wider mb-4">Histórico</p>
+      <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.05]">
+          <p className="text-[11px] font-semibold text-white/30 uppercase tracking-wider">
+            {comparando ? `Histórico — selecione 2 sessões (${selecionadas.length}/2)` : 'Histórico'}
+          </p>
+          <div className="flex items-center gap-2">
+            {comparando && selecionadas.length === 2 && (
+              <button onClick={() => setVerComparacao(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-[12px] font-semibold text-white transition-all">
+                Ver comparação
+              </button>
+            )}
+            {historico.length >= 2 && (
+              <button
+                onClick={() => { setComparando(v => !v); setSelecionadas([]); }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[12px] font-semibold transition-all ${
+                  comparando
+                    ? 'bg-white/[0.08] text-white/60 hover:bg-white/[0.12]'
+                    : 'border border-white/[0.10] text-white/40 hover:text-white hover:border-white/20'
+                }`}>
+                {comparando ? 'Cancelar' : 'Comparar'}
+              </button>
+            )}
+          </div>
+        </div>
+
         {carregando ? (
-          <div className="flex justify-center py-8">
+          <div className="flex justify-center py-10">
             <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : historico.length === 0 ? (
-          <div className="text-center py-8">
+          <div className="text-center py-10">
             <Camera size={24} className="text-white/15 mx-auto mb-2" strokeWidth={1.5} />
             <p className="text-[13px] text-white/30">Nenhuma foto registrada ainda.</p>
+            <p className="text-[11px] text-white/20 mt-1">Fotos enviadas pelo app mobile aparecem aqui.</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {historico.map(sess => {
+          <div className="divide-y divide-white/[0.04]">
+            {historico.map((sess, idx) => {
               const data = sess.criadoEm?.seconds
                 ? new Date(sess.criadoEm.seconds * 1000).toLocaleDateString('pt-BR')
                 : '—';
               const fotos = sess.fotos || {};
+              const selecionada = selecionadas.includes(sess.id);
+              const ordemSel = selecionadas.indexOf(sess.id);
+
               return (
-                <div key={sess.id} className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] ring-1 ring-white/[0.05]">
-                  <div className="flex-1">
-                    <p className="text-[12px] font-semibold text-white/60 mb-2">{data}</p>
+                <div key={sess.id}
+                  onClick={() => comparando && toggleSelecao(sess.id)}
+                  className={`flex items-center gap-4 p-4 transition-all ${
+                    comparando
+                      ? selecionada
+                        ? ordemSel === 0
+                          ? 'bg-blue-500/10 ring-inset ring-1 ring-blue-500/30 cursor-pointer'
+                          : 'bg-purple-500/10 ring-inset ring-1 ring-purple-500/30 cursor-pointer'
+                        : 'hover:bg-white/[0.03] cursor-pointer'
+                      : ''
+                  }`}>
+                  {/* Indicador de seleção */}
+                  {comparando && (
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 font-bold text-[12px] ring-2 transition-all ${
+                      selecionada && ordemSel === 0 ? 'bg-blue-500 ring-blue-500/50 text-white' :
+                      selecionada && ordemSel === 1 ? 'bg-purple-500 ring-purple-500/50 text-white' :
+                      'ring-white/[0.12] text-white/20 bg-transparent'
+                    }`}>
+                      {selecionada ? (ordemSel === 0 ? 'A' : 'B') : (idx + 1)}
+                    </div>
+                  )}
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2">
+                      <p className="text-[12px] font-semibold text-white/60">{data}</p>
+                      {selecionada && (
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${ordemSel === 0 ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'}`}>
+                          {ordemSel === 0 ? 'ANTES' : 'DEPOIS'}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex gap-2">
                       {POSICOES.map(({ key, label }) => fotos[key] ? (
                         <div key={key} className="flex flex-col items-center gap-1">
-                          <img src={fotos[key]} alt={label} className="w-24 h-32 object-cover rounded-xl" />
+                          <img src={fotos[key]} alt={label} className="w-20 h-28 object-cover rounded-xl" />
                           <p className="text-[9px] text-white/25 uppercase">{label}</p>
                         </div>
                       ) : null)}
                     </div>
                   </div>
-                  <button onClick={() => excluirSessao(sess.id)}
-                    className="p-2 rounded-xl hover:bg-red-500/10 text-white/20 hover:text-red-400 transition-all shrink-0">
-                    <Trash2 size={14} />
-                  </button>
+
+                  {!comparando && (
+                    <button onClick={e => { e.stopPropagation(); excluirSessao(sess.id); }}
+                      className="p-2 rounded-xl hover:bg-red-500/10 text-white/20 hover:text-red-400 transition-all shrink-0">
+                      <Trash2 size={14} />
+                    </button>
+                  )}
                 </div>
               );
             })}
