@@ -428,17 +428,52 @@ export default function EndurancePage() {
           </button>
         )}
 
-        <div className="ml-auto flex items-center gap-1 rounded-xl bg-white/[0.04] p-1">
-          <button onClick={() => setAba('plano')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${aba === 'plano' ? 'bg-blue-600 text-white shadow' : 'text-white/40 hover:text-white/70'}`}>
-            <Calendar size={12} /> Plano semanal
-          </button>
-          <button onClick={() => setAba('modelos')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${aba === 'modelos' ? 'bg-blue-600 text-white shadow' : 'text-white/40 hover:text-white/70'}`}>
-            <BookOpen size={12} /> Modelos prontos
+        {alunoId && dataProva && (
+          <div className="ml-auto flex items-center gap-1 rounded-xl bg-white/[0.04] p-1">
+            <button onClick={() => setAba('plano')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${aba === 'plano' ? 'bg-blue-600 text-white shadow' : 'text-white/40 hover:text-white/70'}`}>
+              <Calendar size={12} /> Plano semanal
+            </button>
+            <button onClick={() => setAba('modelos')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${aba === 'modelos' ? 'bg-blue-600 text-white shadow' : 'text-white/40 hover:text-white/70'}`}>
+              <BookOpen size={12} /> Modelos prontos
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* ── Estado vazio: nenhum aluno selecionado ───────────────────────── */}
+      {!alunoId && (
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
+            style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.15)' }}>
+            <Activity size={28} className="text-blue-400/60" />
+          </div>
+          <h3 className="text-[15px] font-semibold text-white/60 mb-2">Selecione um aluno</h3>
+          <p className="text-[12px] text-white/30 max-w-xs">
+            Escolha um aluno no seletor acima para visualizar ou criar o plano de corrida e ciclismo.
+          </p>
+        </div>
+      )}
+
+      {/* ── Estado vazio: aluno sem prova configurada ─────────────────────── */}
+      {alunoId && !dataProva && (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
+            style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.15)' }}>
+            <Flag size={28} className="text-amber-400/60" />
+          </div>
+          <h3 className="text-[15px] font-semibold text-white/60 mb-2">Configure a prova do aluno</h3>
+          <p className="text-[12px] text-white/30 max-w-xs mb-5">
+            Defina a prova e a data alvo para que o plano de periodização seja gerado automaticamente.
+          </p>
+          <button onClick={() => setShowProva(true)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold text-white transition-all"
+            style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)', boxShadow: '0 4px 20px rgba(37,99,235,0.25)' }}>
+            <Flag size={14} /> Configurar prova
           </button>
         </div>
-      </div>
+      )}
 
       {/* Banner de fase (quando aluno selecionado + prova configurada) */}
       {alunoId && fase && (
@@ -477,21 +512,9 @@ export default function EndurancePage() {
         </div>
       )}
 
-      {/* Aviso quando aluno sem prova (só no plano) */}
-      {alunoId && aba === 'plano' && !fase && (
-        <div className="rounded-2xl bg-white/[0.03] ring-1 ring-white/[0.05] px-4 py-3 mb-4 flex items-center gap-3">
-          <Zap size={15} className="text-amber-400/70 shrink-0" />
-          <p className="text-[12px] text-white/40 flex-1">
-            Configure a prova do aluno para ver a fase de periodização e o botão "Montar semana".
-          </p>
-          <button onClick={() => setShowProva(true)} className="text-[11px] text-blue-400 hover:text-blue-300 transition-colors shrink-0">
-            Configurar →
-          </button>
-        </div>
-      )}
 
-      {/* ── Aba: Modelos prontos ─────────────────────────────────────────────── */}
-      {aba === 'modelos' ? (() => {
+      {/* ── Conteúdo das abas: só quando aluno + prova configurados ─────────── */}
+      {alunoId && dataProva && aba === 'modelos' ? (() => {
         const modelos = modelosProntos(modalidade);
         const tiposUniq = [...new Set(modelos.map(m => m.tipo))];
         const TIPO_LABELS = {
@@ -548,12 +571,7 @@ export default function EndurancePage() {
             ))}
           </div>
         );
-      })() : !alunoId ? (
-        <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-16 text-center">
-          <Activity size={32} className="text-white/15 mx-auto mb-3" strokeWidth={1.5} />
-          <p className="text-[13px] text-white/30">Selecione um aluno para ver o plano</p>
-        </div>
-      ) : (
+      })() : (alunoId && dataProva) ? (
         <>
           {/* Navegação semana */}
           <div className="flex items-center justify-between mb-4">
@@ -622,7 +640,7 @@ export default function EndurancePage() {
             })}
           </div>
         </>
-      )}
+      ) : null}
     </div>
   );
 }
