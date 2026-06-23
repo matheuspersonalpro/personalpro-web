@@ -1,10 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { loginPersonal } from '@/lib/auth';
+import { loginPersonal, loginGoogle, resetSenha } from '@/lib/auth';
 import { usePersonal } from '@/lib/AuthContext';
 import Image from 'next/image';
-import { Lock, Mail, Eye, EyeOff, AlertCircle, ChevronRight } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff, AlertCircle, ChevronRight, CheckCircle } from 'lucide-react';
 
 const FEATURES = [
   { label: 'Dashboard completo', desc: 'Visão em tempo real de alunos, receitas e vencimentos' },
@@ -14,11 +14,13 @@ const FEATURES = [
 ];
 
 export default function LoginPage() {
-  const [email, setEmail]       = useState('');
-  const [senha, setSenha]       = useState('');
-  const [verSenha, setVerSenha] = useState(false);
-  const [erro, setErro]         = useState('');
-  const [loading, setLoading]   = useState(false);
+  const [email, setEmail]           = useState('');
+  const [senha, setSenha]           = useState('');
+  const [verSenha, setVerSenha]     = useState(false);
+  const [erro, setErro]             = useState('');
+  const [sucesso, setSucesso]       = useState('');
+  const [loading, setLoading]       = useState(false);
+  const [loadingGoogle, setLoadingGoogle] = useState(false);
   const personal = usePersonal();
   const router   = useRouter();
 
@@ -26,7 +28,7 @@ export default function LoginPage() {
 
   async function handleLogin(e) {
     e.preventDefault();
-    setErro('');
+    setErro(''); setSucesso('');
     setLoading(true);
     try {
       await loginPersonal(email, senha);
@@ -35,6 +37,29 @@ export default function LoginPage() {
       setErro(err.message.includes('Acesso restrito') ? err.message : 'E-mail ou senha incorretos.');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleGoogle() {
+    setErro(''); setSucesso('');
+    setLoadingGoogle(true);
+    try {
+      await loginGoogle();
+      router.replace('/dashboard');
+    } catch (err) {
+      setErro(err.message.includes('Acesso restrito') ? err.message : 'Não foi possível entrar com o Google.');
+    } finally {
+      setLoadingGoogle(false);
+    }
+  }
+
+  async function handleResetSenha() {
+    setErro(''); setSucesso('');
+    try {
+      await resetSenha(email);
+      setSucesso('E-mail de redefinição enviado! Verifique sua caixa de entrada.');
+    } catch (err) {
+      setErro(err.message || 'Informe o e-mail antes de redefinir a senha.');
     }
   }
 
@@ -183,6 +208,17 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {/* Link esqueci senha */}
+            <div className="flex justify-end -mt-1">
+              <button
+                type="button"
+                onClick={handleResetSenha}
+                className="text-[12px] text-blue-400/70 hover:text-blue-400 transition-colors"
+              >
+                Esqueci minha senha
+              </button>
+            </div>
+
             {erro && (
               <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl"
                 style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
@@ -191,9 +227,17 @@ export default function LoginPage() {
               </div>
             )}
 
+            {sucesso && (
+              <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl"
+                style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)' }}>
+                <CheckCircle size={14} className="text-green-400 shrink-0 mt-0.5" />
+                <p className="text-[12px] text-green-300 leading-relaxed">{sucesso}</p>
+              </div>
+            )}
+
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || loadingGoogle}
               className="w-full py-3 rounded-xl font-semibold text-[14px] text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all mt-1"
               style={{
                 background: loading ? '#2563eb' : 'linear-gradient(135deg, #3b82f6, #2563eb)',
@@ -208,6 +252,34 @@ export default function LoginPage() {
               ) : 'Entrar'}
             </button>
           </form>
+
+          {/* Divisor */}
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.07)' }} />
+            <span className="text-[11px] text-white/25">ou</span>
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.07)' }} />
+          </div>
+
+          {/* Google */}
+          <button
+            type="button"
+            onClick={handleGoogle}
+            disabled={loading || loadingGoogle}
+            className="w-full flex items-center justify-center gap-3 py-3 rounded-xl text-[13px] font-medium text-white/80 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)' }}
+          >
+            {loadingGoogle ? (
+              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+            )}
+            Entrar com Google
+          </button>
         </div>
       </div>
     </div>
