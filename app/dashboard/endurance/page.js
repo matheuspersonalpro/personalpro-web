@@ -535,10 +535,6 @@ export default function EndurancePage() {
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${aba === 'plano' ? 'bg-blue-600 text-white shadow' : 'text-white/40 hover:text-white/70'}`}>
             <Calendar size={12} /> Planilha
           </button>
-          <button onClick={() => setAba('modelos')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${aba === 'modelos' ? 'bg-blue-600 text-white shadow' : 'text-white/40 hover:text-white/70'}`}>
-            <BookOpen size={12} /> Modelos
-          </button>
         </div>
       </div>
 
@@ -695,31 +691,41 @@ export default function EndurancePage() {
 
           {/* Resultados */}
           {resultado && !resultado.erro && (
-            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] p-5 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-1">Resultado</p>
-                  <p className="text-[22px] font-bold text-white">{resultado.destaque}</p>
+            <div className="space-y-3">
+              {/* Destaque: VDOT / FTP */}
+              {(resultado.destaque || resultado.fcMax) && (
+                <div className="rounded-2xl p-4 text-center ring-1"
+                  style={{ background: 'rgba(59,130,246,0.10)', borderColor: 'rgba(59,130,246,0.30)' }}>
+                  {resultado.destaque && (
+                    <p className="text-[26px] font-bold text-blue-400">{resultado.destaque}</p>
+                  )}
+                  {resultado.destaque && (
+                    <p className="text-[11px] text-white/55 mt-1 leading-relaxed px-2">
+                      {modalidade === 'corrida'
+                        ? 'Índice de condicionamento de corrida (Daniels) — quanto maior, mais rápido.'
+                        : 'Potência que você sustenta por ~1 hora — base das suas zonas.'}
+                    </p>
+                  )}
+                  {resultado.fcMax && (
+                    <p className="text-[12px] text-white/50 mt-2">
+                      FC máx {resultado.fcEstimada ? 'estimada' : 'usada'}: {resultado.fcMax} bpm
+                    </p>
+                  )}
                 </div>
-                <button onClick={salvarTeste} disabled={salvandoT}
-                  className="px-4 py-2 rounded-xl bg-green-600/20 hover:bg-green-600 border border-green-500/30 hover:border-transparent text-[12px] font-semibold text-green-400 hover:text-white disabled:opacity-40 transition-all">
-                  {salvandoT ? 'Salvando...' : aluno?.enduranceProfile?.[modalidade]?.zonas ? 'Atualizar' : 'Salvar no aluno'}
-                </button>
-              </div>
+              )}
 
               {/* Zonas de ritmo / potência */}
               {resultado.zonas && (
                 <div>
-                  <p className="text-[10px] font-bold text-white/25 uppercase tracking-wider mb-2">
-                    {resultado.tipo === 'corrida' ? 'Zonas de ritmo' : 'Zonas de potência'}
+                  <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider mb-2 ml-0.5">
+                    {modalidade === 'corrida' ? 'Zonas de ritmo (pace)' : 'Zonas de potência'}
                   </p>
-                  <div className="space-y-1.5">
-                    {resultado.zonas.map(z => (
-                      <div key={z.zona} className="flex items-center gap-3 py-2 px-3 rounded-xl"
-                        style={{ background: z.cor + '12' }}>
-                        <span className="text-[11px] font-bold w-6" style={{ color: z.cor }}>{z.zona}</span>
-                        <span className="text-[11px] text-white/50 flex-1">{z.nome}</span>
-                        <span className="text-[12px] font-semibold text-white/80">{z.texto}</span>
+                  <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
+                    {resultado.zonas.map((z, i) => (
+                      <div key={z.zona} className={`flex items-center gap-3 px-4 py-3 ${i > 0 ? 'border-t border-white/[0.06]' : ''}`}>
+                        <div className="w-3 h-3 rounded-sm shrink-0" style={{ background: z.cor }} />
+                        <span className="text-[13px] text-white/85 flex-1">{z.zona} · {z.nome}</span>
+                        <span className="text-[13px] font-semibold text-white tabular-nums">{z.texto}</span>
                       </div>
                     ))}
                   </div>
@@ -729,21 +735,41 @@ export default function EndurancePage() {
               {/* Zonas de FC */}
               {resultado.zonasFC && (
                 <div>
-                  <p className="text-[10px] font-bold text-white/25 uppercase tracking-wider mb-1">
-                    Zonas de FC ({resultado.metodoFC}{resultado.fcEstimada ? ' · FCmáx estimada' : ''})
+                  <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider mb-2 ml-0.5">
+                    Zonas de FC · {resultado.metodoFC}
                   </p>
-                  <div className="space-y-1.5">
-                    {resultado.zonasFC.map(z => (
-                      <div key={z.zona} className="flex items-center gap-3 py-2 px-3 rounded-xl"
-                        style={{ background: z.cor + '12' }}>
-                        <span className="text-[11px] font-bold w-6" style={{ color: z.cor }}>{z.zona}</span>
-                        <span className="text-[11px] text-white/50 flex-1">{z.nome}</span>
-                        <span className="text-[12px] font-semibold text-white/80">{z.texto}</span>
+                  <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
+                    {resultado.zonasFC.map((z, i) => (
+                      <div key={z.zona} className={`flex items-center gap-3 px-4 py-3 ${i > 0 ? 'border-t border-white/[0.06]' : ''}`}>
+                        <div className="w-3 h-3 rounded-sm shrink-0" style={{ background: z.cor }} />
+                        <span className="text-[13px] text-white/85 flex-1">{z.zona} · {z.nome}</span>
+                        <span className="text-[13px] font-semibold text-white tabular-nums">{z.texto}</span>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
+
+              {/* Salvar */}
+              {(resultado.zonas || resultado.zonasFC) && (
+                <button onClick={salvarTeste} disabled={salvandoT}
+                  className="w-full py-3 rounded-xl flex items-center justify-center gap-2 text-[14px] font-semibold text-green-400 disabled:opacity-50 transition-all ring-1"
+                  style={{ background: 'rgba(52,211,153,0.12)', borderColor: 'rgba(52,211,153,0.40)' }}>
+                  {salvandoT ? 'Salvando...' : `Salvar no perfil de ${aluno?.nome?.split(' ')[0] || 'aluno'}`}
+                </button>
+              )}
+
+              {/* Remover */}
+              {aluno?.enduranceProfile?.[modalidade]?.zonas && (
+                <button onClick={removerTeste}
+                  className="w-full py-2.5 flex items-center justify-center gap-2 text-[13px] text-red-400/70 hover:text-red-400 transition-colors">
+                  <Trash2 size={14} /> Remover teste salvo (refazer)
+                </button>
+              )}
+
+              <p className="text-[11px] text-white/35 text-center leading-relaxed pt-1">
+                Valores de referência (Daniels/Coggan). Use a aba "Planilha" para montar os treinos.
+              </p>
             </div>
           )}
         </div>
@@ -762,7 +788,14 @@ export default function EndurancePage() {
         };
         const sugIds = new Set(modelosSug.map(m => m.id));
         return (
-          <div className="space-y-8">
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <button onClick={() => setAba('plano')}
+                className="flex items-center gap-1.5 text-[12px] text-white/40 hover:text-white transition-colors">
+                <ChevronLeft size={14} /> Planilha
+              </button>
+              <span className="text-[12px] font-bold text-white/60 uppercase tracking-wider">Modelos prontos</span>
+            </div>
             {tiposUniq.map(tipo => (
               <section key={tipo}>
                 <h3 className="text-[12px] font-bold text-white/50 uppercase tracking-wider mb-3">{TIPO_LABELS[tipo] || tipo}</h3>
@@ -819,13 +852,19 @@ export default function EndurancePage() {
             </div>
 
             {/* Montar semana */}
-            {fase && (
-              <button onClick={montarSemana} disabled={montando}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600 border border-blue-500/30 hover:border-transparent text-[12px] font-semibold text-blue-400 hover:text-white disabled:opacity-40 transition-all">
-                <Zap size={13} />
-                {montando ? 'Montando...' : 'Montar semana'}
+            <div className="flex items-center gap-2">
+              {fase && (
+                <button onClick={montarSemana} disabled={montando}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600 border border-blue-500/30 hover:border-transparent text-[12px] font-semibold text-blue-400 hover:text-white disabled:opacity-40 transition-all">
+                  <Zap size={13} />
+                  {montando ? 'Montando...' : 'Montar semana'}
+                </button>
+              )}
+              <button onClick={() => setAba('modelos')}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.07] text-[12px] text-white/60 hover:text-white transition-all">
+                <BookOpen size={13} /> Modelos
               </button>
-            )}
+            </div>
           </div>
 
           {/* Grid semanal */}
