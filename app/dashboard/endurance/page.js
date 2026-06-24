@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState, useCallback } from 'react';
 import {
   buscarAlunos, criarSessaoEndurance, buscarSessoesEndurance,
@@ -447,14 +447,14 @@ export default function EndurancePage() {
   // RENDER
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <div className="p-6 max-w-5xl mx-auto w-full">
+    <div className="px-8 pt-8 pb-8 max-w-\[1200px\] mx-auto w-full">
 
       {/* ── Modais ────────────────────────────────────────────────────────── */}
 
       {/* Editor de sessão */}
       {editor && (
         <div className="fixed inset-0 z-50 flex items-end justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-          <div className="w-full max-w-lg rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.08] overflow-hidden max-h-[88vh] flex flex-col">
+          <div className="w-full max-w-lg rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden max-h-[88vh] flex flex-col">
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
               <div>
                 <h2 className="text-[15px] font-bold text-white">{editor.id ? 'Editar treino' : 'Novo treino'}</h2>
@@ -496,7 +496,7 @@ export default function EndurancePage() {
                   <div>
                     <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-2">Título</p>
                     <input value={editor.titulo || ''} onChange={e => setEditor(x => ({...x, titulo:e.target.value}))}
-                      className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                      className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
                   </div>
                   {!editorSemVolume && (
                     <>
@@ -510,7 +510,7 @@ export default function EndurancePage() {
                               {m === 'distancia' ? 'Distância' : 'Tempo'}
                             </button>
                           ))}
-                          <div className="flex items-center gap-1.5 bg-[#111f38] rounded-xl px-3 py-2 ring-1 ring-white/[0.08] flex-1">
+                          <div className="flex items-center gap-1.5 bg-white/\[0\.04\] rounded-xl px-3 py-2 ring-1 ring-white/[0.08] flex-1">
                             <input type="number" value={editor.valorTxt || ''} onChange={e => setEditor(x => ({...x, valorTxt:e.target.value}))}
                               placeholder="0" className="flex-1 bg-transparent text-white text-[15px] font-semibold text-center focus:outline-none w-12" />
                             <span className="text-[12px] text-white/40">{editor.medida==='distancia' ? 'km' : 'min'}</span>
@@ -543,7 +543,7 @@ export default function EndurancePage() {
                   <div>
                     <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-2">{editor.tipo==='prova' ? 'Mensagem do dia' : 'Detalhes (opcional)'}</p>
                     <textarea value={editor.detalhe || ''} onChange={e => setEditor(x => ({...x, detalhe:e.target.value}))} rows={4}
-                      placeholder="Ex: 5x 800 m em Z4 com 400 m de trote" className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[12px] focus:outline-none focus:border-blue-500/60 transition-all resize-none leading-relaxed" />
+                      placeholder="Ex: 5x 800 m em Z4 com 400 m de trote" className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[12px] focus:outline-none focus:border-blue-500/60 transition-all resize-none leading-relaxed" />
                   </div>
                   {!editorSemVolume && (
                     <div className="flex gap-2">
@@ -570,7 +570,7 @@ export default function EndurancePage() {
       {/* Modal de modelos */}
       {modalMod && (
         <div className="fixed inset-0 z-50 flex items-end justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-          <div className="w-full max-w-lg rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.08] overflow-hidden max-h-[80vh] flex flex-col">
+          <div className="w-full max-w-lg rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden max-h-[80vh] flex flex-col">
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
               <h2 className="text-[15px] font-bold text-white">Modelos de treino</h2>
               <button onClick={() => setModalMod(false)} className="p-1.5 rounded-xl hover:bg-white/[0.08] text-white/40 hover:text-white transition-all"><X size={18} /></button>
@@ -712,7 +712,7 @@ export default function EndurancePage() {
       {/* Controles */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
         <select value={alunoId} onChange={e => setAlunoId(e.target.value)}
-          className="px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all min-w-[200px]">
+          className="px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all min-w-[200px]">
           <option value="">Selecione um aluno</option>
           {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
         </select>
@@ -758,7 +758,7 @@ export default function EndurancePage() {
           </div>
 
           {/* Card do teste */}
-          <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.08] p-5">
+          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] p-5">
             <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-4">Teste</p>
 
             {modalidade === 'corrida' ? (
@@ -778,10 +778,10 @@ export default function EndurancePage() {
                   <p className="text-[11px] text-white/40 mb-2">Tempo (min : seg)</p>
                   <div className="flex items-center gap-2">
                     <input type="number" value={minTeste} onChange={e => setMinTeste(e.target.value)} placeholder="min"
-                      className="w-24 px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[16px] font-bold text-center focus:outline-none focus:border-blue-500/60 transition-all" />
+                      className="w-24 px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[16px] font-bold text-center focus:outline-none focus:border-blue-500/60 transition-all" />
                     <span className="text-white/30 text-xl font-bold">:</span>
                     <input type="number" value={segTeste} onChange={e => setSegTeste(e.target.value)} placeholder="seg"
-                      className="w-24 px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[16px] font-bold text-center focus:outline-none focus:border-blue-500/60 transition-all" />
+                      className="w-24 px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[16px] font-bold text-center focus:outline-none focus:border-blue-500/60 transition-all" />
                   </div>
                 </div>
               </div>
@@ -801,7 +801,7 @@ export default function EndurancePage() {
                 <div>
                   <p className="text-[11px] text-white/40 mb-2">{testeCic==='rampa' ? 'Melhor potência de 1 min na rampa (W)' : 'Potência média no teste de 20 min (W)'}</p>
                   <input type="number" value={potencia} onChange={e => setPotencia(e.target.value)} placeholder="Ex.: 250"
-                    className="w-36 px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[14px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                    className="w-36 px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[14px] focus:outline-none focus:border-blue-500/60 transition-all" />
                   <p className="text-[11px] text-white/30 mt-1.5">{testeCic==='rampa' ? 'FTP = 75% da melhor potência de 1 min (MAP).' : 'FTP = 95% da potência média dos 20 min.'}</p>
                 </div>
               </div>
@@ -820,7 +820,7 @@ export default function EndurancePage() {
                   <div key={f.label}>
                     <p className="text-[11px] text-white/40 mb-1">{f.label}</p>
                     <input type="number" value={f.val} onChange={e => f.set(e.target.value)} placeholder={f.ph}
-                      className={`${f.w} px-3 py-2 rounded-xl bg-[#111f38] border border-white/[0.06] text-white text-[12px] text-center focus:outline-none focus:border-blue-500/50 transition-all`} />
+                      className={`${f.w} px-3 py-2 rounded-xl bg-white/\[0\.04\] border border-white/[0.06] text-white text-[12px] text-center focus:outline-none focus:border-blue-500/50 transition-all`} />
                   </div>
                 ))}
               </div>
@@ -849,7 +849,7 @@ export default function EndurancePage() {
               {resultado.zonas && (
                 <div>
                   <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider mb-2">{modalidade==='corrida' ? 'Zonas de ritmo (pace)' : 'Zonas de potência'}</p>
-                  <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.08] overflow-hidden">
+                  <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
                     {resultado.zonas.map((z, i) => (
                       <div key={z.zona} className={`flex items-center gap-3 px-4 py-3 ${i>0 ? 'border-t border-white/[0.06]' : ''}`}>
                         <div className="w-3 h-3 rounded-sm shrink-0" style={{ background:z.cor }} />
@@ -863,7 +863,7 @@ export default function EndurancePage() {
               {resultado.zonasFC && (
                 <div>
                   <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider mb-2">Zonas de FC · {resultado.metodoFC}</p>
-                  <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.08] overflow-hidden">
+                  <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
                     {resultado.zonasFC.map((z, i) => (
                       <div key={z.zona} className={`flex items-center gap-3 px-4 py-3 ${i>0 ? 'border-t border-white/[0.06]' : ''}`}>
                         <div className="w-3 h-3 rounded-sm shrink-0" style={{ background:z.cor }} />
@@ -896,7 +896,7 @@ export default function EndurancePage() {
       {alunoId && aba === 'plano' && (
         <div className="space-y-3">
           {/* Card da prova */}
-          <button onClick={abrirProva} className="w-full text-left flex items-center gap-3 bg-[#1E2A3B] rounded-2xl p-4 ring-1 ring-blue-500/25 hover:ring-blue-500/50 transition-all">
+          <button onClick={abrirProva} className="w-full text-left flex items-center gap-3 bg-[#0d1b2e] rounded-2xl p-4 ring-1 ring-blue-500/25 hover:ring-blue-500/50 transition-all">
             <Flag size={20} style={{ color: focoInfo.cor }} />
             <div className="flex-1 min-w-0">
               {dataProva ? (
@@ -947,7 +947,7 @@ export default function EndurancePage() {
                     return (
                       <button key={m.id}
                         onClick={() => { setAba('plano'); }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] text-white/80 font-medium transition-all ring-1 bg-[#1E2A3B] hover:bg-[#243044]"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] text-white/80 font-medium transition-all ring-1 bg-[#0d1b2e] hover:bg-[#243044]"
                         style={{ borderColor: t.cor+'55' }}>
                         {m.titulo}
                       </button>
@@ -966,16 +966,16 @@ export default function EndurancePage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
               <button onClick={() => { const n = new Date(semanaIni); n.setDate(n.getDate()-7); setSemanaIni(inicioDaSemana(n)); }}
-                className="p-2 rounded-xl bg-[#1E2A3B] ring-1 ring-white/[0.08] text-white/60 hover:text-white transition-all"><ChevronLeft size={18} /></button>
+                className="p-2 rounded-xl bg-[#0d1b2e] ring-1 ring-white/[0.08] text-white/60 hover:text-white transition-all"><ChevronLeft size={18} /></button>
               <div className="text-center px-3">
                 <p className="text-[14px] font-bold text-white">{dataCurta(iniKey)} – {dataCurta(fimKey)}</p>
                 <button onClick={() => setSemanaIni(inicioDaSemana())} className="text-[11px] text-blue-400 hover:text-blue-300 transition-colors">Ir para hoje</button>
               </div>
               <button onClick={() => { const n = new Date(semanaIni); n.setDate(n.getDate()+7); setSemanaIni(inicioDaSemana(n)); }}
-                className="p-2 rounded-xl bg-[#1E2A3B] ring-1 ring-white/[0.08] text-white/60 hover:text-white transition-all"><ChevronRight size={18} /></button>
+                className="p-2 rounded-xl bg-[#0d1b2e] ring-1 ring-white/[0.08] text-white/60 hover:text-white transition-all"><ChevronRight size={18} /></button>
             </div>
             {/* Volume */}
-            <div className="flex items-center gap-4 bg-[#1E2A3B] rounded-2xl px-4 py-2 ring-1 ring-white/[0.08]">
+            <div className="flex items-center gap-4 bg-[#0d1b2e] rounded-2xl px-4 py-2 ring-1 ring-white/[0.08]">
               {[{v:vol.treinos,l:'Treinos'},{v:formatarDistancia(vol.distancia),l:'Dist.'},{v:formatarDuracao(vol.tempo),l:'Tempo'}].map((x,i) => (
                 <div key={i} className={`text-center ${i>0 ? 'pl-4 border-l border-white/[0.08]' : ''}`}>
                   <p className="text-[15px] font-bold text-white">{x.v}</p>
@@ -1005,7 +1005,7 @@ export default function EndurancePage() {
             const lista = sessoesDoDia(key);
             const ehHoje = key === hojeKey;
             return (
-              <div key={key} className="rounded-2xl p-4 ring-1 transition-all" style={{ background:'#1E2A3B', borderColor: ehHoje ? 'rgba(96,165,250,0.4)' : 'rgba(255,255,255,0.07)' }}>
+              <div key={key} className="rounded-2xl p-4 ring-1 transition-all" style={{ background:'#0d1b2e', borderColor: ehHoje ? 'rgba(96,165,250,0.4)' : 'rgba(255,255,255,0.07)' }}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className={`text-[14px] font-bold ${ehHoje ? 'text-blue-400' : 'text-white'}`}>

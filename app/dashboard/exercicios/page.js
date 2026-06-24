@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState, useRef } from 'react';
 import {
   listarVideosExercicios, salvarVideoExercicio, removerVideoExercicio,
@@ -116,7 +116,7 @@ function ModalVideo({ item, onFechar, onSalvo }) {
               className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all"
             />
             {showSug && sugestoes.length > 0 && (
-              <div className="absolute left-0 right-0 top-full mt-1 z-10 rounded-xl bg-[#111f38] ring-1 ring-white/[0.08] overflow-hidden shadow-2xl">
+              <div className="absolute left-0 right-0 top-full mt-1 z-10 rounded-xl bg-white/\[0\.04\] ring-1 ring-white/[0.08] overflow-hidden shadow-2xl">
                 {sugestoes.map(s => (
                   <button key={s.nome}
                     onMouseDown={() => { setNome(s.nome); setSugestoes([]); setShowSug(false); }}

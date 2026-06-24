@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -89,7 +89,7 @@ function NovoAlunoModal({ onSalvo, onFechar }) {
               <div>
                 <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Tipo de serviço</label>
                 <select value={form.tipoServico} onChange={e => set('tipoServico', e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                  className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
                   <option value="presencial">Presencial</option>
                   <option value="online">Online</option>
                 </select>

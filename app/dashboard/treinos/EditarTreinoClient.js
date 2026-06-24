@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -117,7 +117,7 @@ function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
             <div>
               <label className="block text-[9px] font-semibold text-white/25 uppercase tracking-wider mb-1.5">Método</label>
               <select value={ex.metodo || ''} onChange={e => onChange(idx, 'metodo', e.target.value)}
-                className="w-full px-2.5 py-2 rounded-lg bg-[#111f38] border border-white/[0.06] text-white/70 text-[12px] focus:outline-none focus:border-blue-500/50 transition-all">
+                className="w-full px-2.5 py-2 rounded-lg bg-white/\[0\.04\] border border-white/[0.06] text-white/70 text-[12px] focus:outline-none focus:border-blue-500/50 transition-all">
                 <option value="">Padrão</option>
                 {Object.keys(METODOS).map(m => <option key={m} value={m}>{m}</option>)}
               </select>
@@ -391,7 +391,7 @@ export default function EditarTreino() {
                   placeholder="Nome do exercício..."
                   className="w-full px-2.5 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.07] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50" />
                 <select value={novoExGrupo} onChange={e => setNovoExGrupo(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#111f38] border border-white/[0.07] text-white/60 text-[12px] focus:outline-none">
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white/\[0\.04\] border border-white/[0.07] text-white/60 text-[12px] focus:outline-none">
                   <option value="">Grupo muscular</option>
                   {GRUPOS_NOMES.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -409,7 +409,7 @@ export default function EditarTreino() {
                 className="w-full pl-7 pr-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.07] text-white placeholder-white/20 text-[12px] focus:outline-none focus:border-blue-500/50 transition-all" />
             </div>
             <select value={grupoFiltro} onChange={e => setGrupo(e.target.value)}
-              className="w-full px-2.5 py-1.5 rounded-lg bg-[#111f38] border border-white/[0.07] text-white/50 text-[12px] focus:outline-none transition-all">
+              className="w-full px-2.5 py-1.5 rounded-lg bg-white/\[0\.04\] border border-white/[0.07] text-white/50 text-[12px] focus:outline-none transition-all">
               <option value="">Todos os grupos</option>
               {GRUPOS_NOMES.map(g => <option key={g} value={g}>{g}</option>)}
             </select>

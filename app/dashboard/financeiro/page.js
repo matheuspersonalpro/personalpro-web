@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState, useCallback } from 'react';
 import { buscarPagamentos, buscarAlunos, registrarPagamento, excluirPagamento, atualizarAluno, buscarConfigApp, salvarConfigApp } from '@/lib/firestore';
 import { gerarPixEMV } from '@/lib/pix';
@@ -118,7 +118,7 @@ function CobrarModal({ aluno, config, onClose, onSalvo, toast }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-      <div className="w-full max-w-sm rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.08] overflow-hidden">
+      <div className="w-full max-w-sm rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
           <div>
             <h2 className="text-[15px] font-bold text-white">Cobrar aluno</h2>
@@ -143,7 +143,7 @@ function CobrarModal({ aluno, config, onClose, onSalvo, toast }) {
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Valor (R$)</label>
               <input type="text" value={valor} onChange={e => setValor(e.target.value)} placeholder={fmt(aluno.valor||0)}
-                className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
             </div>
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Forma de pagamento</label>
@@ -337,7 +337,7 @@ export default function FinanceiroPage() {
   }).sort((a,b) => (a.nome||'').localeCompare(b.nome||''));
 
   return (
-    <div className="p-6 max-w-7xl mx-auto w-full">
+    <div className="px-8 pt-8 pb-8 max-w-\[1200px\] mx-auto w-full">
       {cobrando && <CobrarModal aluno={cobrando} config={config} toast={toast} onClose={() => setCobrando(null)} onSalvo={() => { setCobrando(null); carregar(); }} />}
 
       {/* Header */}
@@ -356,7 +356,7 @@ export default function FinanceiroPage() {
       {/* Abas */}
       <div className="flex gap-1 p-1 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] mb-6 w-fit">
         {[['resumo','Resumo'],['alunos','Alunos'],['recebimento','Recebimento']].map(([v,l]) => (
-          <button key={v} onClick={() => setAba(v)} className={`px-4 py-2 rounded-lg text-[12px] font-semibold transition-all ${aba===v ? 'bg-[#1E2A3B] text-white shadow-sm' : 'text-white/40 hover:text-white/70'}`}>{l}</button>
+          <button key={v} onClick={() => setAba(v)} className={`px-4 py-2 rounded-lg text-[12px] font-semibold transition-all ${aba===v ? 'bg-[#0d1b2e] text-white shadow-sm' : 'text-white/40 hover:text-white/70'}`}>{l}</button>
         ))}
       </div>
 
@@ -370,7 +370,7 @@ export default function FinanceiroPage() {
           {/* Modal registrar pagamento */}
           {showForm && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-              <div className="w-full max-w-md rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.08] overflow-hidden">
+              <div className="w-full max-w-md rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
                   <h2 className="text-[15px] font-bold text-white">Registrar pagamento</h2>
                   <button onClick={() => setShowForm(false)} className="p-1.5 text-white/40 hover:text-white"><X size={16} /></button>
@@ -379,7 +379,7 @@ export default function FinanceiroPage() {
                   <div>
                     <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Aluno</label>
                     <select value={form.alunoId} onChange={e => setForm(f => ({...f, alunoId: e.target.value}))}
-                      className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                      className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
                       <option value="">Selecione...</option>
                       {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
                     </select>
@@ -400,14 +400,14 @@ export default function FinanceiroPage() {
                     <div>
                       <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Forma</label>
                       <select value={form.forma} onChange={e => setForm(f=>({...f, forma:e.target.value}))}
-                        className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                        className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
                         {FORMAS.map(f => <option key={f}>{f}</option>)}
                       </select>
                     </div>
                     <div>
                       <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Tipo</label>
                       <select value={form.tipo} onChange={e => setForm(f=>({...f, tipo:e.target.value}))}
-                        className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                        className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
                         {TIPOS.map(t => <option key={t}>{t}</option>)}
                       </select>
                     </div>
@@ -436,7 +436,7 @@ export default function FinanceiroPage() {
               { label:'Média mensal', value: fmt(mediaMensal), sub:'Baseado no ano atual', subColor:'text-white/35' },
               { label:'Projeção mês seguinte', value: fmt(projecao), sub:'Média dos últimos 3 meses', subColor:'text-white/35' },
             ].map((k,i) => (
-              <div key={i} className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.06] p-4">
+              <div key={i} className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-4">
                 <p className="text-[10px] font-semibold text-white/35 uppercase tracking-wider mb-2">{k.label}</p>
                 <p className="text-[22px] font-bold text-white leading-none mb-1">{k.value}</p>
                 <p className={`text-[11px] ${k.subColor}`}>{k.sub}</p>
@@ -447,7 +447,7 @@ export default function FinanceiroPage() {
           {/* Meta + Gráfico */}
           <div className="grid grid-cols-3 gap-4">
             {/* Meta */}
-            <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.06] p-5">
+            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider">Meta do mês</p>
                 <button onClick={() => setEditMeta(true)} className="text-[11px] text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
@@ -455,7 +455,7 @@ export default function FinanceiroPage() {
               {editMeta ? (
                 <div className="space-y-2">
                   <input type="text" value={tempMeta} onChange={e => setTempMeta(e.target.value)} placeholder="Ex: 5000"
-                    className="w-full px-3 py-2 rounded-xl bg-[#111f38] border border-blue-500/30 text-white text-[13px] focus:outline-none transition-all" autoFocus />
+                    className="w-full px-3 py-2 rounded-xl bg-white/\[0\.04\] border border-blue-500/30 text-white text-[13px] focus:outline-none transition-all" autoFocus />
                   <div className="flex gap-2">
                     <button onClick={() => setEditMeta(false)} className="flex-1 py-1.5 rounded-lg border border-white/[0.08] text-[12px] text-white/40 hover:text-white transition-all">Cancelar</button>
                     <button onClick={salvarMeta} className="flex-1 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all">OK</button>
@@ -478,13 +478,13 @@ export default function FinanceiroPage() {
             </div>
 
             {/* Donut */}
-            <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.06] p-5">
+            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
               <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-3">Distribuição</p>
               <DonutChart presencial={recPresencial} consultoria={recConsultoria} />
             </div>
 
             {/* Inadimplência */}
-            <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.06] p-5">
+            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
               <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-3">Situação dos planos</p>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -504,13 +504,13 @@ export default function FinanceiroPage() {
           </div>
 
           {/* Gráfico 6 meses */}
-          <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.06] p-5">
+          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
             <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-4">Receita dos últimos 6 meses</p>
             <BarChart data={chart6} />
           </div>
 
           {/* Lista pagamentos do mês */}
-          <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.06] overflow-hidden">
+          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.05]">
               <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider">
                 {MESES[mesAtual]} {anoAtual} · {fmt(receitaMes)}
@@ -571,7 +571,7 @@ export default function FinanceiroPage() {
           )}
 
           {/* Lista completa */}
-          <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.06] overflow-hidden">
+          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
             <div className="px-5 py-3 border-b border-white/[0.05]">
               <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider">{alunosFiltrados.length} aluno{alunosFiltrados.length !== 1 ? 's' : ''}</p>
             </div>
@@ -615,7 +615,7 @@ export default function FinanceiroPage() {
       {!loading && aba === 'recebimento' && (
         <div className="grid grid-cols-2 gap-4">
           {/* Config PIX */}
-          <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.06] p-5">
+          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <QrCode size={16} className="text-blue-400" />
@@ -631,7 +631,7 @@ export default function FinanceiroPage() {
                   <div key={k}>
                     <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1">{l}</label>
                     <input value={cfgForm[k]} onChange={e => setCfgForm(f => ({...f, [k]: e.target.value}))} placeholder={k === 'pixLink' ? 'https://...' : ''}
-                      className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                      className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
                   </div>
                 ))}
                 <button onClick={salvarConfig} disabled={salvandoCfg} className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all">
@@ -662,7 +662,7 @@ export default function FinanceiroPage() {
           </div>
 
           {/* Asaas */}
-          <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.06] p-5">
+          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
             <div className="flex items-center gap-2 mb-4">
               <Zap size={16} className="text-amber-400" />
               <p className="text-[14px] font-bold text-white">Asaas (recorrência automática)</p>

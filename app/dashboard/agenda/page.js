@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState, useCallback } from 'react';
 import {
   buscarSessoes, buscarAlunos, criarSessao, atualizarSessao, excluirSessao,
@@ -72,7 +72,7 @@ function SessaoModal({ sessao, alunos, onSalvo, onFechar }) {
   }
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-      <div className="w-full max-w-md rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.08] overflow-hidden">
+      <div className="w-full max-w-md rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
           <h2 className="text-[15px] font-bold text-white">{sessao?.id ? 'Editar sessão' : 'Nova sessão'}</h2>
           <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all"><X size={16} /></button>
@@ -81,7 +81,7 @@ function SessaoModal({ sessao, alunos, onSalvo, onFechar }) {
           <div>
             <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Aluno *</label>
             <select value={form.alunoId} onChange={e => set('alunoId', e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+              className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
               <option value="">Selecione...</option>
               {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
             </select>
@@ -102,7 +102,7 @@ function SessaoModal({ sessao, alunos, onSalvo, onFechar }) {
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Tipo</label>
               <select value={form.tipo} onChange={e => set('tipo', e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
                 <option value="normal">Normal</option>
                 <option value="avaliacao">Avaliação</option>
                 <option value="reposicao">Reposição</option>
@@ -112,7 +112,7 @@ function SessaoModal({ sessao, alunos, onSalvo, onFechar }) {
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Status</label>
               <select value={form.status} onChange={e => set('status', e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
                 {Object.entries(STATUS_MAP).map(([v, { label }]) => <option key={v} value={v}>{label}</option>)}
               </select>
             </div>
@@ -339,7 +339,7 @@ export default function AgendaPage() {
   const trocasSemanaAtual = trocas.filter(t => t.semanaIso === getMondayISO());
 
   return (
-    <div className="p-6 max-w-7xl mx-auto w-full">
+    <div className="px-8 pt-8 pb-8 max-w-\[1200px\] mx-auto w-full">
 
       {/* Modais */}
       {modal && (
@@ -350,7 +350,7 @@ export default function AgendaPage() {
       {/* Modal Slot Livre */}
       {modalSlot && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-          <div className="w-full max-w-sm rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.08] p-6">
+          <div className="w-full max-w-sm rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[15px] font-bold text-white">Novo horário livre</h2>
               <button onClick={() => setModalSlot(false)} className="p-1.5 text-white/40 hover:text-white transition-all"><X size={16} /></button>
@@ -374,7 +374,7 @@ export default function AgendaPage() {
               <div className="mb-4">
                 <p className="text-[11px] text-white/40 mb-2">Data</p>
                 <input type="date" value={slotData} onChange={e => setSlotData(e.target.value)} min={new Date().toISOString().split('T')[0]}
-                  className="w-full px-3 py-2 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                  className="w-full px-3 py-2 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
               </div>
             )}
             <p className="text-[11px] text-white/40 mb-2">Horário</p>
@@ -395,7 +395,7 @@ export default function AgendaPage() {
       {/* Modal Troca de Horários */}
       {modalTroca && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-          <div className="w-full max-w-md rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.08] overflow-hidden max-h-[85vh] flex flex-col">
+          <div className="w-full max-w-md rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden max-h-[85vh] flex flex-col">
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
               <h2 className="text-[15px] font-bold text-white flex items-center gap-2"><ArrowLeftRight size={16} className="text-blue-400" /> Troca de Horário</h2>
               <button onClick={() => setModalTroca(false)} className="p-1.5 text-white/40 hover:text-white transition-all"><X size={16} /></button>
@@ -443,7 +443,7 @@ export default function AgendaPage() {
       {/* Modal Férias Personal */}
       {modalFerias && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-          <div className="w-full max-w-sm rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.08] p-6">
+          <div className="w-full max-w-sm rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[15px] font-bold text-white flex items-center gap-2"><Umbrella size={16} className="text-blue-400" /> Minhas Férias</h2>
               <button onClick={() => setModalFerias(false)} className="p-1.5 text-white/40 hover:text-white"><X size={16} /></button>
@@ -454,12 +454,12 @@ export default function AgendaPage() {
               <div className="flex-1">
                 <p className="text-[10px] text-white/30 mb-1">Início</p>
                 <input type="date" value={feriasInicio} onChange={e => setFeriasInicio(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                  className="w-full px-3 py-2 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
               </div>
               <div className="flex-1">
                 <p className="text-[10px] text-white/30 mb-1">Fim</p>
                 <input type="date" value={feriasFim} onChange={e => setFeriasFim(e.target.value)} min={feriasInicio}
-                  className="w-full px-3 py-2 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                  className="w-full px-3 py-2 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
               </div>
             </div>
             {feriasInicio && feriasFim && (
@@ -478,7 +478,7 @@ export default function AgendaPage() {
       {/* Modal Google Agenda */}
       {modalGoogle && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-          <div className="w-full max-w-sm rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.08] p-6 max-h-[80vh] flex flex-col">
+          <div className="w-full max-w-sm rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] p-6 max-h-[80vh] flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[15px] font-bold text-white flex items-center gap-2"><Calendar size={16} className="text-blue-400" /> Google Agenda</h2>
               <button onClick={() => setModalGoogle(false)} className="p-1.5 text-white/40 hover:text-white"><X size={16} /></button>
@@ -588,7 +588,7 @@ export default function AgendaPage() {
               <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
             </div>
           ) : sessoesNoDia.length === 0 ? (
-            <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.06] p-8 text-center">
+            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-8 text-center">
               <p className="text-[13px] text-white/25">Nenhuma sessão neste dia</p>
             </div>
           ) : (
@@ -596,7 +596,7 @@ export default function AgendaPage() {
               {sessoesNoDia.map(s => {
                 const presente = presencas[s.alunoId];
                 return (
-                  <div key={s.alunoId} className={`flex items-center gap-4 p-4 rounded-2xl ring-1 transition-all ${s.isTroca ? 'ring-blue-500/30 bg-blue-500/[0.04]' : 'ring-white/[0.06] bg-[#1E2A3B]'}`}>
+                  <div key={s.alunoId} className={`flex items-center gap-4 p-4 rounded-2xl ring-1 transition-all ${s.isTroca ? 'ring-blue-500/30 bg-blue-500/[0.04]' : 'ring-white/[0.06] bg-[#0d1b2e]'}`}>
                     <div className={`w-1 self-stretch rounded-full ${presente ? 'bg-green-400' : s.isTroca ? 'bg-blue-500' : 'bg-blue-600'}`} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -643,7 +643,7 @@ export default function AgendaPage() {
       {/* Seções inferiores */}
       <div className="mt-8 grid grid-cols-3 gap-4">
         {/* Horários para reposição */}
-        <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.06] overflow-hidden">
+        <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05]">
             <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">Horários livres ({slots.length})</p>
             <button onClick={() => setModalSlot(true)} className="w-6 h-6 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 hover:bg-blue-500/20 transition-all">
@@ -668,7 +668,7 @@ export default function AgendaPage() {
         </div>
 
         {/* Férias pendentes */}
-        <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.06] overflow-hidden">
+        <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
           <div className="px-4 py-3 border-b border-white/[0.05]">
             <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">Férias pendentes ({ferias.length})</p>
           </div>
@@ -694,7 +694,7 @@ export default function AgendaPage() {
         </div>
 
         {/* Reposições confirmadas */}
-        <div className="rounded-2xl bg-[#1E2A3B] ring-1 ring-white/[0.06] overflow-hidden">
+        <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
           <div className="px-4 py-3 border-b border-white/[0.05]">
             <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">Reposições ({solicitacoes.length})</p>
           </div>

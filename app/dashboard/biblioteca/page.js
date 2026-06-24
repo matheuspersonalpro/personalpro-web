@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
@@ -55,7 +55,7 @@ function ModalGerarPrograma({ programa, alunos, onFechar, onConcluido }) {
           <div>
             <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">Aluno</label>
             <select value={alunoId} onChange={e => setAlunoId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+              className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
               <option value="">Selecione um aluno...</option>
               {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
             </select>
