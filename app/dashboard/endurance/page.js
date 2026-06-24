@@ -3,13 +3,19 @@ import { useEffect, useState } from 'react';
 import {
   buscarAlunos, criarSessaoEndurance, buscarSessoesEndurance,
   deletarSessaoEndurance, definirProvaEndurance,
+  salvarTesteEndurance, removerTesteEndurance,
 } from '@/lib/firestore';
 import { tiposPorModalidade } from '@/lib/enduranceTreinos';
 import { fasePeriodizacao, semanasAteProva } from '@/lib/enduranceTreinos';
 import { modelosProntos, modelosSugeridos, semanaSugerida } from '@/lib/enduranceModelos';
 import {
+  calcularVDOT, zonasCorridaPorVDOT,
+  calcularFTP, calcularFTPRampa, zonasCiclismoPorFTP,
+  fcMaxTanaka, zonasFCPorFCMax, zonasFCKarvonen,
+} from '@/lib/enduranceZonas';
+import {
   ChevronLeft, ChevronRight, Plus, X, Trash2, Activity,
-  BookOpen, Calendar, Target, Zap, Flag,
+  BookOpen, Calendar, Target, Zap, Flag, Ruler, RotateCcw,
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
@@ -311,9 +317,21 @@ export default function EndurancePage() {
   const [carregando,   setCarregando]   = useState(false);
   const [montando,     setMontando]     = useState(false);
   const [modal,        setModal]        = useState(null);
-  const [aba,          setAba]          = useState('plano');
+  const [aba,          setAba]          = useState('zonas');
   const [modeloSel,    setModeloSel]    = useState(null);
   const [showProva,    setShowProva]    = useState(false);
+
+  // ── Zonas: estado da calculadora ─────────────────────────────────────────
+  const [distanciaM,   setDistanciaM]   = useState(5000);
+  const [minTeste,     setMinTeste]     = useState('');
+  const [segTeste,     setSegTeste]     = useState('');
+  const [potencia,     setPotencia]     = useState('');
+  const [testeCic,     setTesteCic]     = useState('20min');
+  const [idadeTeste,   setIdadeTeste]   = useState('');
+  const [fcMaxManual,  setFcMaxManual]  = useState('');
+  const [fcRepouso,    setFcRepouso]    = useState('');
+  const [resultado,    setResultado]    = useState(null);
+  const [salvandoT,    setSalvandoT]    = useState(false);
 
   const aluno = alunos.find(a => a.id === alunoId) || null;
   const perfil = aluno?.enduranceProfile?.[modalidade] || {};
@@ -352,6 +370,86 @@ export default function EndurancePage() {
     const lista = await buscarAlunos();
     setAlunos(lista);
   }
+
+  // ── Zonas: funções ────────────────────────────────────────────────────────
+  function calcularZonas() {
+    const idadeN   = parseInt(idadeTeste, 10);
+    const fcMaxN   = parseInt(fcMaxManual, 10);
+    const fcRepN   = parseInt(fcRepouso, 10);
+    const fcMax    = fcMaxN > 0 ? fcMaxN : (idadeN > 0 ? fcMaxTanaka(idadeN) : null);
+    const fcEstimada = !(fcMaxN > 0) && idadeN > 0;
+    const zonasFC  = fcMax
+      ? (fcRepN > 0 ? zonasFCKarvonen(fcMax, fcRepN) : zonasFCPorFCMax(fcMax))
+      : null;
+
+    if (modalidade === 'corrida') {
+      const tempoSeg = (parseInt(minTeste, 10) || 0) * 60 + (parseInt(segTeste, 10) || 0);
+      if (!distanciaM || tempoSeg <= 0) { toast('Preencha a distância e o tempo do teste.', 'error'); return; }
+      const vdot = calcularVDOT(distanciaM, tempoSeg);
+      const zonas = zonasCorridaPorVDOT(vdot);
+      setResultado({ tipo: 'corrida', destaque: `VDOT ${vdot.toFixed(1)}`, zonas, zonasFC, fcMax, fcEstimada, metodoFC: fcRepN > 0 ? 'Karvonen' : '% FCmáx' });
+      toast(`VDOT ${vdot.toFixed(1)} — zonas calculadas`);
+    } else {
+      const pot = parseInt(potencia, 10);
+      if (!pot || pot <= 0) { toast('Preencha a potência do teste.', 'error'); return; }
+      const ftp = testeCic === 'rampa' ? calcularFTPRampa(pot) : calcularFTP(pot);
+      const zonas = zonasCiclismoPorFTP(ftp);
+      setResultado({ tipo: 'ciclismo', destaque: `FTP ${ftp} W`, zonas, zonasFC, fcMax, fcEstimada, metodoFC: fcRepN > 0 ? 'Karvonen' : '% FCmáx' });
+      toast(`FTP ${ftp} W — zonas calculadas`);
+    }
+  }
+
+  async function salvarTeste() {
+    if (!alunoId || !resultado) return;
+    setSalvandoT(true);
+    try {
+      const dadosTeste = modalidade === 'corrida'
+        ? { distanciaM, min: minTeste, seg: segTeste, idade: idadeTeste, fcMaxManual, fcRepouso }
+        : { potencia, testeCic, idade: idadeTeste, fcMaxManual, fcRepouso };
+      await salvarTesteEndurance(alunoId, modalidade, dadosTeste, resultado);
+      const lista = await buscarAlunos();
+      setAlunos(lista);
+      toast('Zonas salvas no perfil do aluno.');
+    } catch { toast('Erro ao salvar.', 'error'); }
+    finally { setSalvandoT(false); }
+  }
+
+  async function removerTeste() {
+    if (!alunoId) return;
+    if (!window.confirm('Remover as zonas salvas deste aluno para refazer um novo teste?')) return;
+    try {
+      await removerTesteEndurance(alunoId, modalidade);
+      const lista = await buscarAlunos();
+      setAlunos(lista);
+      setResultado(null);
+      setMinTeste(''); setSegTeste(''); setPotencia('');
+      toast('Teste removido — faça um novo.');
+    } catch { toast('Erro ao remover.', 'error'); }
+  }
+
+  // Ao selecionar aluno, carrega zonas salvas
+  useEffect(() => {
+    if (!aluno) { setResultado(null); return; }
+    const perfAtual = aluno?.enduranceProfile?.[modalidade];
+    if (perfAtual?.zonas) {
+      setResultado(perfAtual.zonas);
+      const dt = perfAtual.dadosTeste || {};
+      setIdadeTeste(dt.idade || '');
+      setFcMaxManual(dt.fcMaxManual || '');
+      setFcRepouso(dt.fcRepouso || '');
+      if (modalidade === 'corrida') {
+        setDistanciaM(dt.distanciaM || 5000);
+        setMinTeste(dt.min || '');
+        setSegTeste(dt.seg || '');
+      } else {
+        setPotencia(dt.potencia || '');
+        setTesteCic(dt.testeCic || '20min');
+      }
+    } else {
+      setResultado(null);
+      setMinTeste(''); setSegTeste(''); setPotencia('');
+    }
+  }, [alunoId, modalidade]);
 
   async function montarSemana() {
     if (!alunoId) { toast('Selecione um aluno.', 'error'); return; }
@@ -428,18 +526,20 @@ export default function EndurancePage() {
           </button>
         )}
 
-        {alunoId && dataProva && (
-          <div className="ml-auto flex items-center gap-1 rounded-xl bg-white/[0.04] p-1">
-            <button onClick={() => setAba('plano')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${aba === 'plano' ? 'bg-blue-600 text-white shadow' : 'text-white/40 hover:text-white/70'}`}>
-              <Calendar size={12} /> Plano semanal
-            </button>
-            <button onClick={() => setAba('modelos')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${aba === 'modelos' ? 'bg-blue-600 text-white shadow' : 'text-white/40 hover:text-white/70'}`}>
-              <BookOpen size={12} /> Modelos prontos
-            </button>
-          </div>
-        )}
+        <div className="ml-auto flex items-center gap-1 rounded-xl bg-white/[0.04] p-1">
+          <button onClick={() => setAba('zonas')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${aba === 'zonas' ? 'bg-blue-600 text-white shadow' : 'text-white/40 hover:text-white/70'}`}>
+            <Ruler size={12} /> Zonas
+          </button>
+          <button onClick={() => setAba('plano')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${aba === 'plano' ? 'bg-blue-600 text-white shadow' : 'text-white/40 hover:text-white/70'}`}>
+            <Calendar size={12} /> Planilha
+          </button>
+          <button onClick={() => setAba('modelos')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${aba === 'modelos' ? 'bg-blue-600 text-white shadow' : 'text-white/40 hover:text-white/70'}`}>
+            <BookOpen size={12} /> Modelos
+          </button>
+        </div>
       </div>
 
       {/* ── Estado vazio: nenhum aluno selecionado ───────────────────────── */}
@@ -456,24 +556,6 @@ export default function EndurancePage() {
         </div>
       )}
 
-      {/* ── Estado vazio: aluno sem prova configurada ─────────────────────── */}
-      {alunoId && !dataProva && (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-            style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.15)' }}>
-            <Flag size={28} className="text-amber-400/60" />
-          </div>
-          <h3 className="text-[15px] font-semibold text-white/60 mb-2">Configure a prova do aluno</h3>
-          <p className="text-[12px] text-white/30 max-w-xs mb-5">
-            Defina a prova e a data alvo para que o plano de periodização seja gerado automaticamente.
-          </p>
-          <button onClick={() => setShowProva(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-semibold text-white transition-all"
-            style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)', boxShadow: '0 4px 20px rgba(37,99,235,0.25)' }}>
-            <Flag size={14} /> Configurar prova
-          </button>
-        </div>
-      )}
 
       {/* Banner de fase (quando aluno selecionado + prova configurada) */}
       {alunoId && fase && (
@@ -513,8 +595,162 @@ export default function EndurancePage() {
       )}
 
 
-      {/* ── Conteúdo das abas: só quando aluno + prova configurados ─────────── */}
-      {alunoId && dataProva && aba === 'modelos' ? (() => {
+      {/* ── Aba: Zonas ───────────────────────────────────────────────────────── */}
+      {alunoId && aba === 'zonas' && (
+        <div className="space-y-4">
+          {/* Intro */}
+          <div className="rounded-2xl bg-white/[0.03] ring-1 ring-white/[0.06] px-4 py-3 flex items-center gap-3">
+            <Ruler size={15} className="text-blue-400/70 shrink-0" />
+            <p className="text-[12px] text-white/40">
+              {modalidade === 'corrida'
+                ? 'Faça um teste contra-relógio e calcule as zonas de ritmo (VDOT — Daniels & Gilbert).'
+                : 'Use o teste de 20 min ou rampa para estimar o FTP e as zonas de potência (Coggan).'}
+            </p>
+          </div>
+
+          {/* Card do teste */}
+          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] p-5">
+            <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-4">Teste</p>
+
+            {modalidade === 'corrida' ? (
+              <div className="space-y-4">
+                <div>
+                  <p className="text-[11px] text-white/40 mb-2">Distância</p>
+                  <div className="flex gap-2">
+                    {[{ m: 3000, l: '3 km' }, { m: 5000, l: '5 km' }, { m: 10000, l: '10 km' }, { m: 21097, l: '21 km' }].map(d => (
+                      <button key={d.m} onClick={() => setDistanciaM(d.m)}
+                        className={`px-3 py-1.5 rounded-xl text-[12px] font-semibold transition-all ${distanciaM === d.m ? 'bg-blue-600 text-white' : 'bg-white/[0.05] text-white/50 hover:text-white'}`}>
+                        {d.l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[11px] text-white/40 mb-2">Tempo (min : seg)</p>
+                  <div className="flex items-center gap-2">
+                    <input type="number" value={minTeste} onChange={e => setMinTeste(e.target.value)} placeholder="min"
+                      className="w-20 px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] text-center focus:outline-none focus:border-blue-500/60 transition-all" />
+                    <span className="text-white/30 font-bold">:</span>
+                    <input type="number" value={segTeste} onChange={e => setSegTeste(e.target.value)} placeholder="seg"
+                      className="w-20 px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] text-center focus:outline-none focus:border-blue-500/60 transition-all" />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <p className="text-[11px] text-white/40 mb-2">Tipo de teste</p>
+                  <div className="flex gap-2">
+                    {[{ id: '20min', l: '20 min (FTP = 95%)' }, { id: 'rampa', l: 'Rampa (FTP = 75%)' }].map(t => (
+                      <button key={t.id} onClick={() => setTesteCic(t.id)}
+                        className={`px-3 py-1.5 rounded-xl text-[12px] font-semibold transition-all ${testeCic === t.id ? 'bg-blue-600 text-white' : 'bg-white/[0.05] text-white/50 hover:text-white'}`}>
+                        {t.l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[11px] text-white/40 mb-2">{testeCic === 'rampa' ? 'Melhor potência de 1 min (W)' : 'Potência média 20 min (W)'}</p>
+                  <input type="number" value={potencia} onChange={e => setPotencia(e.target.value)} placeholder="ex: 220"
+                    className="w-32 px-3 py-2.5 rounded-xl bg-[#111f38] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                </div>
+              </div>
+            )}
+
+            {/* Dados opcionais de FC */}
+            <div className="mt-4 pt-4 border-t border-white/[0.05]">
+              <p className="text-[10px] font-bold text-white/25 uppercase tracking-wider mb-3">Frequência cardíaca (opcional)</p>
+              <div className="flex flex-wrap gap-3">
+                <div>
+                  <p className="text-[11px] text-white/35 mb-1">Idade</p>
+                  <input type="number" value={idadeTeste} onChange={e => setIdadeTeste(e.target.value)} placeholder="anos"
+                    className="w-20 px-3 py-2 rounded-xl bg-[#111f38] border border-white/[0.06] text-white text-[12px] text-center focus:outline-none focus:border-blue-500/50 transition-all" />
+                </div>
+                <div>
+                  <p className="text-[11px] text-white/35 mb-1">FCmáx medida</p>
+                  <input type="number" value={fcMaxManual} onChange={e => setFcMaxManual(e.target.value)} placeholder="bpm"
+                    className="w-24 px-3 py-2 rounded-xl bg-[#111f38] border border-white/[0.06] text-white text-[12px] text-center focus:outline-none focus:border-blue-500/50 transition-all" />
+                </div>
+                <div>
+                  <p className="text-[11px] text-white/35 mb-1">FC repouso</p>
+                  <input type="number" value={fcRepouso} onChange={e => setFcRepouso(e.target.value)} placeholder="bpm"
+                    className="w-24 px-3 py-2 rounded-xl bg-[#111f38] border border-white/[0.06] text-white text-[12px] text-center focus:outline-none focus:border-blue-500/50 transition-all" />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 flex gap-2">
+              <button onClick={calcularZonas}
+                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
+                Calcular zonas
+              </button>
+              {aluno?.enduranceProfile?.[modalidade]?.zonas && (
+                <button onClick={removerTeste}
+                  className="p-2.5 rounded-xl bg-white/[0.05] hover:bg-red-500/10 border border-white/[0.06] hover:border-red-500/20 text-white/40 hover:text-red-400 transition-all">
+                  <RotateCcw size={14} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Resultados */}
+          {resultado && !resultado.erro && (
+            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-1">Resultado</p>
+                  <p className="text-[22px] font-bold text-white">{resultado.destaque}</p>
+                </div>
+                <button onClick={salvarTeste} disabled={salvandoT}
+                  className="px-4 py-2 rounded-xl bg-green-600/20 hover:bg-green-600 border border-green-500/30 hover:border-transparent text-[12px] font-semibold text-green-400 hover:text-white disabled:opacity-40 transition-all">
+                  {salvandoT ? 'Salvando...' : aluno?.enduranceProfile?.[modalidade]?.zonas ? 'Atualizar' : 'Salvar no aluno'}
+                </button>
+              </div>
+
+              {/* Zonas de ritmo / potência */}
+              {resultado.zonas && (
+                <div>
+                  <p className="text-[10px] font-bold text-white/25 uppercase tracking-wider mb-2">
+                    {resultado.tipo === 'corrida' ? 'Zonas de ritmo' : 'Zonas de potência'}
+                  </p>
+                  <div className="space-y-1.5">
+                    {resultado.zonas.map(z => (
+                      <div key={z.zona} className="flex items-center gap-3 py-2 px-3 rounded-xl"
+                        style={{ background: z.cor + '12' }}>
+                        <span className="text-[11px] font-bold w-6" style={{ color: z.cor }}>{z.zona}</span>
+                        <span className="text-[11px] text-white/50 flex-1">{z.nome}</span>
+                        <span className="text-[12px] font-semibold text-white/80">{z.texto}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Zonas de FC */}
+              {resultado.zonasFC && (
+                <div>
+                  <p className="text-[10px] font-bold text-white/25 uppercase tracking-wider mb-1">
+                    Zonas de FC ({resultado.metodoFC}{resultado.fcEstimada ? ' · FCmáx estimada' : ''})
+                  </p>
+                  <div className="space-y-1.5">
+                    {resultado.zonasFC.map(z => (
+                      <div key={z.zona} className="flex items-center gap-3 py-2 px-3 rounded-xl"
+                        style={{ background: z.cor + '12' }}>
+                        <span className="text-[11px] font-bold w-6" style={{ color: z.cor }}>{z.zona}</span>
+                        <span className="text-[11px] text-white/50 flex-1">{z.nome}</span>
+                        <span className="text-[12px] font-semibold text-white/80">{z.texto}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Conteúdo das abas Planilha / Modelos ─────────────────────────────── */}
+      {alunoId && aba === 'modelos' ? (() => {
         const modelos = modelosProntos(modalidade);
         const tiposUniq = [...new Set(modelos.map(m => m.tipo))];
         const TIPO_LABELS = {
@@ -571,7 +807,7 @@ export default function EndurancePage() {
             ))}
           </div>
         );
-      })() : (alunoId && dataProva) ? (
+      })() : (alunoId && aba === 'plano') ? (
         <>
           {/* Navegação semana */}
           <div className="flex items-center justify-between mb-4">
