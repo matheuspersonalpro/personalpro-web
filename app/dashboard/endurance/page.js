@@ -447,7 +447,7 @@ export default function EndurancePage() {
   // RENDER
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <div className="px-8 pt-8 pb-8 max-w-\[1200px\] mx-auto w-full">
+    <div className="px-8 pt-8 pb-8 max-w-[1200px] mx-auto w-full">
 
       {/* ── Modais ────────────────────────────────────────────────────────── */}
 
@@ -496,7 +496,7 @@ export default function EndurancePage() {
                   <div>
                     <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-2">Título</p>
                     <input value={editor.titulo || ''} onChange={e => setEditor(x => ({...x, titulo:e.target.value}))}
-                      className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                      className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
                   </div>
                   {!editorSemVolume && (
                     <>
@@ -510,7 +510,7 @@ export default function EndurancePage() {
                               {m === 'distancia' ? 'Distância' : 'Tempo'}
                             </button>
                           ))}
-                          <div className="flex items-center gap-1.5 bg-white/\[0\.04\] rounded-xl px-3 py-2 ring-1 ring-white/[0.08] flex-1">
+                          <div className="flex items-center gap-1.5 bg-white/[0.04] rounded-xl px-3 py-2 ring-1 ring-white/[0.08] flex-1">
                             <input type="number" value={editor.valorTxt || ''} onChange={e => setEditor(x => ({...x, valorTxt:e.target.value}))}
                               placeholder="0" className="flex-1 bg-transparent text-white text-[15px] font-semibold text-center focus:outline-none w-12" />
                             <span className="text-[12px] text-white/40">{editor.medida==='distancia' ? 'km' : 'min'}</span>
@@ -543,7 +543,7 @@ export default function EndurancePage() {
                   <div>
                     <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-2">{editor.tipo==='prova' ? 'Mensagem do dia' : 'Detalhes (opcional)'}</p>
                     <textarea value={editor.detalhe || ''} onChange={e => setEditor(x => ({...x, detalhe:e.target.value}))} rows={4}
-                      placeholder="Ex: 5x 800 m em Z4 com 400 m de trote" className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[12px] focus:outline-none focus:border-blue-500/60 transition-all resize-none leading-relaxed" />
+                      placeholder="Ex: 5x 800 m em Z4 com 400 m de trote" className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[12px] focus:outline-none focus:border-blue-500/60 transition-all resize-none leading-relaxed" />
                   </div>
                   {!editorSemVolume && (
                     <div className="flex gap-2">
@@ -712,7 +712,7 @@ export default function EndurancePage() {
       {/* Controles */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
         <select value={alunoId} onChange={e => setAlunoId(e.target.value)}
-          className="px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all min-w-[200px]">
+          className="px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all min-w-[200px]">
           <option value="">Selecione um aluno</option>
           {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
         </select>
@@ -778,10 +778,10 @@ export default function EndurancePage() {
                   <p className="text-[11px] text-white/40 mb-2">Tempo (min : seg)</p>
                   <div className="flex items-center gap-2">
                     <input type="number" value={minTeste} onChange={e => setMinTeste(e.target.value)} placeholder="min"
-                      className="w-24 px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[16px] font-bold text-center focus:outline-none focus:border-blue-500/60 transition-all" />
+                      className="w-24 px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[16px] font-bold text-center focus:outline-none focus:border-blue-500/60 transition-all" />
                     <span className="text-white/30 text-xl font-bold">:</span>
                     <input type="number" value={segTeste} onChange={e => setSegTeste(e.target.value)} placeholder="seg"
-                      className="w-24 px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[16px] font-bold text-center focus:outline-none focus:border-blue-500/60 transition-all" />
+                      className="w-24 px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[16px] font-bold text-center focus:outline-none focus:border-blue-500/60 transition-all" />
                   </div>
                 </div>
               </div>
@@ -801,7 +801,7 @@ export default function EndurancePage() {
                 <div>
                   <p className="text-[11px] text-white/40 mb-2">{testeCic==='rampa' ? 'Melhor potência de 1 min na rampa (W)' : 'Potência média no teste de 20 min (W)'}</p>
                   <input type="number" value={potencia} onChange={e => setPotencia(e.target.value)} placeholder="Ex.: 250"
-                    className="w-36 px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[14px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                    className="w-36 px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[14px] focus:outline-none focus:border-blue-500/60 transition-all" />
                   <p className="text-[11px] text-white/30 mt-1.5">{testeCic==='rampa' ? 'FTP = 75% da melhor potência de 1 min (MAP).' : 'FTP = 95% da potência média dos 20 min.'}</p>
                 </div>
               </div>
@@ -820,7 +820,7 @@ export default function EndurancePage() {
                   <div key={f.label}>
                     <p className="text-[11px] text-white/40 mb-1">{f.label}</p>
                     <input type="number" value={f.val} onChange={e => f.set(e.target.value)} placeholder={f.ph}
-                      className={`${f.w} px-3 py-2 rounded-xl bg-white/\[0\.04\] border border-white/[0.06] text-white text-[12px] text-center focus:outline-none focus:border-blue-500/50 transition-all`} />
+                      className={`${f.w} px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.06] text-white text-[12px] text-center focus:outline-none focus:border-blue-500/50 transition-all`} />
                   </div>
                 ))}
               </div>

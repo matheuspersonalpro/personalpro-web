@@ -143,7 +143,7 @@ function CobrarModal({ aluno, config, onClose, onSalvo, toast }) {
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Valor (R$)</label>
               <input type="text" value={valor} onChange={e => setValor(e.target.value)} placeholder={fmt(aluno.valor||0)}
-                className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
             </div>
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Forma de pagamento</label>
@@ -337,7 +337,7 @@ export default function FinanceiroPage() {
   }).sort((a,b) => (a.nome||'').localeCompare(b.nome||''));
 
   return (
-    <div className="px-8 pt-8 pb-8 max-w-\[1200px\] mx-auto w-full">
+    <div className="px-8 pt-8 pb-8 max-w-[1200px] mx-auto w-full">
       {cobrando && <CobrarModal aluno={cobrando} config={config} toast={toast} onClose={() => setCobrando(null)} onSalvo={() => { setCobrando(null); carregar(); }} />}
 
       {/* Header */}
@@ -379,7 +379,7 @@ export default function FinanceiroPage() {
                   <div>
                     <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Aluno</label>
                     <select value={form.alunoId} onChange={e => setForm(f => ({...f, alunoId: e.target.value}))}
-                      className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                      className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
                       <option value="">Selecione...</option>
                       {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
                     </select>
@@ -400,14 +400,14 @@ export default function FinanceiroPage() {
                     <div>
                       <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Forma</label>
                       <select value={form.forma} onChange={e => setForm(f=>({...f, forma:e.target.value}))}
-                        className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                        className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
                         {FORMAS.map(f => <option key={f}>{f}</option>)}
                       </select>
                     </div>
                     <div>
                       <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Tipo</label>
                       <select value={form.tipo} onChange={e => setForm(f=>({...f, tipo:e.target.value}))}
-                        className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                        className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
                         {TIPOS.map(t => <option key={t}>{t}</option>)}
                       </select>
                     </div>
@@ -455,7 +455,7 @@ export default function FinanceiroPage() {
               {editMeta ? (
                 <div className="space-y-2">
                   <input type="text" value={tempMeta} onChange={e => setTempMeta(e.target.value)} placeholder="Ex: 5000"
-                    className="w-full px-3 py-2 rounded-xl bg-white/\[0\.04\] border border-blue-500/30 text-white text-[13px] focus:outline-none transition-all" autoFocus />
+                    className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-blue-500/30 text-white text-[13px] focus:outline-none transition-all" autoFocus />
                   <div className="flex gap-2">
                     <button onClick={() => setEditMeta(false)} className="flex-1 py-1.5 rounded-lg border border-white/[0.08] text-[12px] text-white/40 hover:text-white transition-all">Cancelar</button>
                     <button onClick={salvarMeta} className="flex-1 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all">OK</button>
@@ -631,7 +631,7 @@ export default function FinanceiroPage() {
                   <div key={k}>
                     <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1">{l}</label>
                     <input value={cfgForm[k]} onChange={e => setCfgForm(f => ({...f, [k]: e.target.value}))} placeholder={k === 'pixLink' ? 'https://...' : ''}
-                      className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                      className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
                   </div>
                 ))}
                 <button onClick={salvarConfig} disabled={salvandoCfg} className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all">

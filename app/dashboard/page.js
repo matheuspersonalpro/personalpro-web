@@ -164,7 +164,7 @@ export default function DashboardPage() {
   const nome = personal?.nome?.split(' ')[0] || personal?.displayName?.split(' ')[0] || '';
 
   return (
-    <div className="px-8 pt-8 pb-8 max-w-\[1200px\] mx-auto w-full">
+    <div className="px-8 pt-8 pb-8 max-w-[1200px] mx-auto w-full">
 
       {/* Modal Aviso */}
       {showAviso && (
@@ -176,7 +176,7 @@ export default function DashboardPage() {
             </div>
             <p className="text-[12px] text-white/40 mb-3">Aparece na tela inicial dos alunos no app.</p>
             <textarea value={tempAviso} onChange={e => setTempAviso(e.target.value)} rows={4} placeholder="Ex: Aulas suspensas na semana do carnaval. Retomaremos na segunda-feira após o feriado."
-              className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all resize-none mb-3" />
+              className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all resize-none mb-3" />
             <div className="flex gap-2">
               <button onClick={() => setShowAviso(false)} className="flex-1 py-2.5 rounded-xl border border-white/[0.08] text-[13px] text-white/40 hover:text-white transition-all">Cancelar</button>
               <button onClick={publicarAviso} disabled={salvandoAv} className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all">
@@ -198,7 +198,7 @@ export default function DashboardPage() {
             <p className="text-[12px] text-white/40 leading-relaxed mb-4">É dezembro! Hora de revisar os valores. Defina o percentual de reajuste que será aplicado a todos os alunos ativos.</p>
             <div className="relative mb-4">
               <input type="text" value={pctReajuste} onChange={e => setPctReajuste(e.target.value)} placeholder="Ex: 10"
-                className="w-full px-4 py-3 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[20px] font-bold text-center focus:outline-none focus:border-blue-500/60 transition-all" />
+                className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[20px] font-bold text-center focus:outline-none focus:border-blue-500/60 transition-all" />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[18px] text-white/40 font-bold">%</span>
             </div>
             <button onClick={aplicarReajuste} disabled={aplicandoR || !pctReajuste} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-bold text-white disabled:opacity-40 transition-all mb-2">

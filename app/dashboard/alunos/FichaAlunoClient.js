@@ -50,7 +50,7 @@ function SelectField({ label, field, form, setForm, editing, options }) {
         <select
           value={form[field] || ''}
           onChange={e => setForm(f => ({ ...f, [field]: e.target.value }))}
-          className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all"
+          className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all"
         >
           {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
@@ -205,7 +205,7 @@ function NovaAvaliacaoModal({ alunoId, aluno, onSalvo, onFechar }) {
           <div>
             <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Protocolo</label>
             <select value={protocolo} onChange={e => { setProtocolo(e.target.value); setMedidas({}); }}
-              className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+              className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
               {PROTOCOLOS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
             </select>
           </div>
@@ -369,7 +369,7 @@ function AtribuirProgramaModal({ aluno, onSalvo, onFechar }) {
           <div>
             <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Programa</label>
             <select value={programaId} onChange={e => setProgramaId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+              className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
               {programas.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
             </select>
             {programaId && programas.find(p => p.id === programaId)?.desc && (

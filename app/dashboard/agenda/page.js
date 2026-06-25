@@ -81,7 +81,7 @@ function SessaoModal({ sessao, alunos, onSalvo, onFechar }) {
           <div>
             <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Aluno *</label>
             <select value={form.alunoId} onChange={e => set('alunoId', e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+              className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
               <option value="">Selecione...</option>
               {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
             </select>
@@ -102,7 +102,7 @@ function SessaoModal({ sessao, alunos, onSalvo, onFechar }) {
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Tipo</label>
               <select value={form.tipo} onChange={e => set('tipo', e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
                 <option value="normal">Normal</option>
                 <option value="avaliacao">Avaliação</option>
                 <option value="reposicao">Reposição</option>
@@ -112,7 +112,7 @@ function SessaoModal({ sessao, alunos, onSalvo, onFechar }) {
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Status</label>
               <select value={form.status} onChange={e => set('status', e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
                 {Object.entries(STATUS_MAP).map(([v, { label }]) => <option key={v} value={v}>{label}</option>)}
               </select>
             </div>
@@ -339,7 +339,7 @@ export default function AgendaPage() {
   const trocasSemanaAtual = trocas.filter(t => t.semanaIso === getMondayISO());
 
   return (
-    <div className="px-8 pt-8 pb-8 max-w-\[1200px\] mx-auto w-full">
+    <div className="px-8 pt-8 pb-8 max-w-[1200px] mx-auto w-full">
 
       {/* Modais */}
       {modal && (
@@ -374,7 +374,7 @@ export default function AgendaPage() {
               <div className="mb-4">
                 <p className="text-[11px] text-white/40 mb-2">Data</p>
                 <input type="date" value={slotData} onChange={e => setSlotData(e.target.value)} min={new Date().toISOString().split('T')[0]}
-                  className="w-full px-3 py-2 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                  className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
               </div>
             )}
             <p className="text-[11px] text-white/40 mb-2">Horário</p>
@@ -454,12 +454,12 @@ export default function AgendaPage() {
               <div className="flex-1">
                 <p className="text-[10px] text-white/30 mb-1">Início</p>
                 <input type="date" value={feriasInicio} onChange={e => setFeriasInicio(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                  className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
               </div>
               <div className="flex-1">
                 <p className="text-[10px] text-white/30 mb-1">Fim</p>
                 <input type="date" value={feriasFim} onChange={e => setFeriasFim(e.target.value)} min={feriasInicio}
-                  className="w-full px-3 py-2 rounded-xl bg-white/\[0\.04\] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                  className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
               </div>
             </div>
             {feriasInicio && feriasFim && (
