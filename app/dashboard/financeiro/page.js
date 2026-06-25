@@ -337,7 +337,7 @@ export default function FinanceiroPage() {
   }).sort((a,b) => (a.nome||'').localeCompare(b.nome||''));
 
   return (
-    <div className="px-8 pt-8 pb-8 max-w-[1200px] mx-auto w-full">
+    <div className="px-4 pt-4 pb-6 md:px-8 md:pt-8 md:pb-8 max-w-[1200px] mx-auto w-full">
       {cobrando && <CobrarModal aluno={cobrando} config={config} toast={toast} onClose={() => setCobrando(null)} onSalvo={() => { setCobrando(null); carregar(); }} />}
 
       {/* Header */}
@@ -429,7 +429,7 @@ export default function FinanceiroPage() {
           )}
 
           {/* KPIs */}
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { label:'Receita do mês', value: fmt(receitaMes), sub: `${variacaoMes >= 0 ? '+' : ''}${variacaoMes.toFixed(1)}% vs. mês anterior`, subColor: variacaoMes >= 0 ? 'text-green-400' : 'text-red-400' },
               { label:'Receita no ano', value: fmt(receitaAno), sub:`${pagamentos.filter(p => { const [,mo,a] = (p.data||'').split('/').map(Number); return a === anoAtual; }).length} pagamentos`, subColor:'text-white/35' },
@@ -445,7 +445,7 @@ export default function FinanceiroPage() {
           </div>
 
           {/* Meta + Gráfico */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Meta */}
             <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
               <div className="flex items-center justify-between mb-3">

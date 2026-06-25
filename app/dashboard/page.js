@@ -164,7 +164,7 @@ export default function DashboardPage() {
   const nome = personal?.nome?.split(' ')[0] || personal?.displayName?.split(' ')[0] || '';
 
   return (
-    <div className="px-8 pt-8 pb-8 max-w-[1200px] mx-auto w-full">
+    <div className="px-4 pt-4 pb-6 md:px-8 md:pt-8 md:pb-8 max-w-[1200px] mx-auto w-full">
 
       {/* Modal Aviso */}
       {showAviso && (
@@ -260,9 +260,9 @@ export default function DashboardPage() {
       </div>
 
       {/* Corpo */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Tabela alunos — 2 colunas */}
-        <div className="col-span-2 rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+        <div className="md:col-span-2 rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.05]">
             <span className="text-[12px] font-semibold text-white/60 uppercase tracking-wider">Alunos</span>
             <Link href="/dashboard/alunos" className="flex items-center gap-1 text-[11px] text-white/30 hover:text-white/60 transition-colors">

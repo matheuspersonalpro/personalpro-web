@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
@@ -10,7 +10,7 @@ import { logout } from '@/lib/auth';
 import {
   LayoutDashboard, Users, Dumbbell, DollarSign, LogOut,
   ChevronRight, CalendarDays, UserCircle, BookOpen, Video, Activity, CreditCard,
-  Lock, AlertTriangle,
+  Lock, AlertTriangle, Menu, X,
 } from 'lucide-react';
 
 const NAV = [
@@ -40,7 +40,6 @@ const LABEL_MAP = {
   novo: 'Novo',
 };
 
-// Páginas acessíveis mesmo sem assinatura
 const ROTAS_LIVRES = ['/dashboard/assinatura', '/dashboard/perfil'];
 
 function GatePaywall({ alunosCount, avaliacao }) {
@@ -72,10 +71,10 @@ export default function DashboardLayout({ children }) {
   const router   = useRouter();
   const pathname = usePathname();
 
-  const [alunosCount, setAlunosCount] = useState(0);
-  const [contando, setContando]       = useState(true);
+  const [alunosCount, setAlunosCount]     = useState(0);
+  const [contando, setContando]           = useState(true);
+  const [sidebarAberta, setSidebarAberta] = useState(false);
 
-  // Carrega contagem de alunos ativos uma vez por sessão (re-executa se uid mudar)
   useEffect(() => {
     if (!personal?.uid) return;
     setContando(true);
@@ -88,6 +87,8 @@ export default function DashboardLayout({ children }) {
     if (personal === null) router.replace('/login');
   }, [personal, router]);
 
+  useEffect(() => { setSidebarAberta(false); }, [pathname]);
+
   if (!personal) {
     return (
       <div className="flex h-full items-center justify-center bg-[#080f1d]">
@@ -98,10 +99,8 @@ export default function DashboardLayout({ children }) {
 
   const avaliacao     = avaliarAssinatura(personal.assinatura);
   const estaRotaLivre = ROTAS_LIVRES.some(r => pathname.startsWith(r));
-  // Gate ativo: mais de 3 alunos E assinatura não liberada E contagem já carregou
   const gateAtivo     = !contando && alunosCount > ALUNOS_GRATIS && !avaliacao.liberado;
   const mostrarGate   = gateAtivo && !estaRotaLivre;
-  // Aviso suave (banner) na home dashboard mesmo sem gate total
   const mostrarAlerta = gateAtivo && pathname === '/dashboard';
 
   const initials = personal.nome
@@ -117,17 +116,24 @@ export default function DashboardLayout({ children }) {
   return (
     <div className="flex h-full bg-[#080f1d]">
 
-      {/* ── Sidebar ────────────────────────────────────────────────────── */}
-      <aside className="w-[220px] shrink-0 flex flex-col"
+      {sidebarAberta && (
+        <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          onClick={() => setSidebarAberta(false)} />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-[260px] flex flex-col transition-transform duration-300 ease-in-out md:relative md:z-auto md:w-[220px] md:shrink-0 md:translate-x-0 ${sidebarAberta ? 'translate-x-0' : '-translate-x-full'}`}
         style={{ background: 'rgba(8,14,30,0.98)', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
 
-        {/* Marca */}
-        <div className="flex items-center gap-2.5 px-4 py-0 h-14 shrink-0"
+        <div className="flex items-center justify-between px-4 h-14 shrink-0"
           style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
           <Image src="/logo.png" alt="PersonalPro" width={120} height={36} style={{ objectFit: 'contain', height: 36, width: 'auto' }} priority />
+          <button className="md:hidden p-1.5 text-white/40 hover:text-white/80 rounded-lg transition-colors"
+            onClick={() => setSidebarAberta(false)}>
+            <X size={16} />
+          </button>
         </div>
 
-        {/* Nav */}
         <nav className="flex-1 px-2.5 py-4 overflow-y-auto">
           <p className="text-[9px] font-semibold uppercase tracking-[0.12em] px-3 mb-3"
             style={{ color: 'rgba(255,255,255,0.2)' }}>
@@ -157,9 +163,7 @@ export default function DashboardLayout({ children }) {
           })}
         </nav>
 
-        {/* Perfil + sair */}
         <div className="p-2.5 shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-          {/* Alerta de assinatura no rodapé da sidebar */}
           {gateAtivo && (
             <Link href="/dashboard/assinatura"
               className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 ring-1 ring-amber-500/20 mb-2 hover:bg-amber-500/15 transition-all">
@@ -168,7 +172,6 @@ export default function DashboardLayout({ children }) {
             </Link>
           )}
 
-          {/* Card do perfil */}
           <div className="flex items-center gap-2.5 px-3 py-3 rounded-xl mb-1"
             style={{ background: 'rgba(255,255,255,0.03)' }}>
             <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-[11px] font-bold text-white"
@@ -189,7 +192,6 @@ export default function DashboardLayout({ children }) {
             </div>
           </div>
 
-          {/* Botão sair */}
           <button
             onClick={() => logout().then(() => router.replace('/login'))}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] transition-all"
@@ -203,59 +205,60 @@ export default function DashboardLayout({ children }) {
         </div>
       </aside>
 
-      {/* ── Conteúdo ─────────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden min-w-0">
 
-        {/* Top bar */}
-        <header className="h-14 shrink-0 flex items-center justify-between px-8"
+        <header className="h-14 shrink-0 flex items-center justify-between px-4 md:px-8"
           style={{
             borderBottom: '1px solid rgba(255,255,255,0.05)',
             background: 'rgba(8,14,30,0.6)',
             backdropFilter: 'blur(12px)',
           }}>
-          {/* Breadcrumb */}
-          <nav className="flex items-center gap-1 text-[12px]">
-            {segs.map((seg, i) => {
-              const isLast = i === segs.length - 1;
-              const label = LABEL_MAP[seg] || (seg.length >= 16 ? 'Detalhe' : seg);
-              return (
-                <span key={i} className="flex items-center gap-1">
-                  {i > 0 && <ChevronRight size={11} style={{ color: 'rgba(255,255,255,0.15)' }} />}
-                  <span style={{ color: isLast ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.3)', fontWeight: isLast ? 500 : 400 }}>
-                    {label}
+          <div className="flex items-center gap-3 min-w-0">
+            <button className="md:hidden -ml-1 p-1.5 text-white/50 hover:text-white/80 rounded-lg transition-colors"
+              onClick={() => setSidebarAberta(true)}>
+              <Menu size={20} />
+            </button>
+            <nav className="flex items-center gap-1 text-[12px] min-w-0">
+              {segs.map((seg, i) => {
+                const isLast = i === segs.length - 1;
+                const label = LABEL_MAP[seg] || (seg.length >= 16 ? 'Detalhe' : seg);
+                return (
+                  <span key={i} className={`flex items-center gap-1 ${!isLast ? 'hidden sm:flex' : ''}`}>
+                    {i > 0 && <ChevronRight size={11} className="hidden sm:block" style={{ color: 'rgba(255,255,255,0.15)' }} />}
+                    <span className="truncate" style={{ color: isLast ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.3)', fontWeight: isLast ? 500 : 400 }}>
+                      {label}
+                    </span>
                   </span>
-                </span>
-              );
-            })}
-          </nav>
+                );
+              })}
+            </nav>
+          </div>
 
-          {/* Badge de alerta na topbar */}
           {gateAtivo && !estaRotaLivre && (
             <Link href="/dashboard/assinatura"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 ring-1 ring-amber-500/20 hover:bg-amber-500/15 transition-all text-[11px] text-amber-300/80">
-              <AlertTriangle size={11} className="text-amber-400" />
-              Assinatura expirada
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-500/10 ring-1 ring-amber-500/20 hover:bg-amber-500/15 transition-all text-[11px] text-amber-300/80 shrink-0 ml-2">
+              <AlertTriangle size={11} className="text-amber-400 shrink-0" />
+              <span className="hidden sm:inline">Assinatura expirada</span>
             </Link>
           )}
         </header>
 
-        {/* Banner de alerta no Dashboard home (não bloqueia, só avisa) */}
         {mostrarAlerta && (
-          <div className="shrink-0 bg-amber-500/10 border-b border-amber-500/15 px-8 py-2.5 flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="shrink-0 bg-amber-500/10 border-b border-amber-500/15 px-4 md:px-8 py-2.5 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
               <AlertTriangle size={13} className="text-amber-400 shrink-0" />
-              <p className="text-[12px] text-amber-300/80">
-                Você tem <strong>{alunosCount}</strong> alunos ativos. Ative sua assinatura para continuar usando o PersonalPro.
+              <p className="text-[12px] text-amber-300/80 truncate">
+                <strong>{alunosCount}</strong> alunos ativos
+                <span className="hidden sm:inline"> — Ative sua assinatura para continuar usando o PersonalPro.</span>
               </p>
             </div>
             <Link href="/dashboard/assinatura"
-              className="text-[11px] font-semibold text-amber-400 hover:text-amber-300 transition-colors whitespace-nowrap ml-4">
-              Ver planos →
+              className="text-[11px] font-semibold text-amber-400 hover:text-amber-300 transition-colors whitespace-nowrap">
+              Ver planos
             </Link>
           </div>
         )}
 
-        {/* Página — substituída pelo gate se bloqueada */}
         {mostrarGate
           ? <GatePaywall alunosCount={alunosCount} avaliacao={avaliacao} />
           : <main className="flex-1 overflow-y-auto">{children}</main>

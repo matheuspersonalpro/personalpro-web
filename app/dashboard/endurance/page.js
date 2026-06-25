@@ -447,7 +447,7 @@ export default function EndurancePage() {
   // RENDER
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <div className="px-8 pt-8 pb-8 max-w-[1200px] mx-auto w-full">
+    <div className="px-4 pt-4 pb-6 md:px-8 md:pt-8 md:pb-8 max-w-[1200px] mx-auto w-full">
 
       {/* ── Modais ────────────────────────────────────────────────────────── */}
 

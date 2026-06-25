@@ -535,7 +535,7 @@ function FotosTab({ alunoId }) {
       {!comparando && (
         <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
           <p className="text-[11px] font-semibold text-white/30 uppercase tracking-wider mb-4">Nova sessão de fotos</p>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {POSICOES.map(({ key, label }) => (
               <div key={key} className="flex flex-col items-center gap-2">
                 <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">{label}</p>
