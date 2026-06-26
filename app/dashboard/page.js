@@ -161,7 +161,7 @@ export default function DashboardPage() {
 
   const hora = new Date().getHours();
   const saudacao = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
-  const nome = personal?.nome?.split(' ')[0] || personal?.displayName?.split(' ')[0] || personal?.email?.split('@')[0] || '';
+  const nome = config?.nome?.split(' ')[0] || personal?.displayName?.split(' ')[0] || '';
 
   return (
     <div className="px-4 pt-4 pb-6 md:px-8 md:pt-8 md:pb-8 max-w-[1200px] mx-auto w-full">
