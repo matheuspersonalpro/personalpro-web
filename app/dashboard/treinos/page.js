@@ -79,19 +79,19 @@ export default function TreinosPage() {
           onCancel={() => setConfirmId(null)}
         />
       )}
-      <div className="flex items-end justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
         <div>
           <h1 className="text-[22px] font-bold text-white tracking-tight">Treinos</h1>
           <p className="text-[12px] text-white/35 mt-0.5">{treinos.length} treino{treinos.length !== 1 ? 's' : ''} na biblioteca</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-none">
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25" />
             <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar..."
-              className="pl-8 pr-4 py-2 rounded-xl bg-white/[0.05] border border-white/[0.07] text-white placeholder-white/25 text-[13px] focus:outline-none focus:border-blue-500/50 transition-all w-44" />
+              className="pl-8 pr-4 py-2 rounded-xl bg-white/[0.05] border border-white/[0.07] text-white placeholder-white/25 text-[13px] focus:outline-none focus:border-blue-500/50 transition-all w-full sm:w-44" />
           </div>
           <Link href="/dashboard/treinos?id=novo"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30 shrink-0">
             <Plus size={13} /> Novo treino
           </Link>
         </div>

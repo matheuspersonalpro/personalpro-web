@@ -211,19 +211,19 @@ export default function DashboardPage() {
       )}
 
       {/* Header */}
-      <div className="flex items-end justify-between mb-10">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
         <div>
           <p className="text-[11px] font-medium text-white/25 uppercase tracking-widest mb-2">
             {hoje.toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}
           </p>
-          <h1 className="text-[40px] font-black tracking-tight leading-[1.1]">
+          <h1 className="text-[32px] md:text-[40px] font-black tracking-tight leading-[1.1]">
             <span style={{ background:'linear-gradient(135deg,#fff 20%,rgba(255,255,255,0.55) 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
               {saudacao}{nome ? `, ${nome}` : ''}
             </span>
             <span className="text-blue-400">.</span>
           </h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button onClick={() => { setTempAviso(textoAviso); setShowAviso(true); }}
             className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold transition-all ${textoAviso ? 'bg-blue-500/15 text-blue-400 ring-1 ring-blue-500/25' : 'text-white/35 hover:text-white ring-1 ring-white/[0.08]'}`}>
             <Megaphone size={13} /> {textoAviso ? 'Aviso ativo' : 'Avisar alunos'}
@@ -253,7 +253,7 @@ export default function DashboardPage() {
       )}
 
       {/* KPIs */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
         <KpiCard icon={Users}         label="Alunos ativos"    value={ativos.length}       accent="blue" />
         <KpiCard icon={TrendingUp}    label="Receita do mês"
           value={`R$ ${receitaMes.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} accent="green" />
@@ -275,9 +275,10 @@ export default function DashboardPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/[0.04]">
-                {['Nome','Plano','Serviço','Vencimento'].map(h => (
-                  <th key={h} className="text-left px-5 py-3 text-[10px] font-semibold text-white/20 uppercase tracking-wider">{h}</th>
-                ))}
+                <th className="text-left px-4 py-3 text-[10px] font-semibold text-white/20 uppercase tracking-wider">Nome</th>
+                <th className="text-left px-4 py-3 text-[10px] font-semibold text-white/20 uppercase tracking-wider hidden sm:table-cell">Plano</th>
+                <th className="text-left px-4 py-3 text-[10px] font-semibold text-white/20 uppercase tracking-wider">Serviço</th>
+                <th className="text-left px-4 py-3 text-[10px] font-semibold text-white/20 uppercase tracking-wider hidden sm:table-cell">Vencimento</th>
               </tr>
             </thead>
             <tbody>
@@ -297,13 +298,13 @@ export default function DashboardPage() {
                         <span className="text-[13px] font-medium text-white/75 group-hover:text-white transition-colors">{a.nome}</span>
                       </Link>
                     </td>
-                    <td className="px-5 py-3.5 text-[12px] text-white/35">{a.plano || '—'}</td>
-                    <td className="px-5 py-3.5">
+                    <td className="px-4 py-3.5 text-[12px] text-white/35 hidden sm:table-cell">{a.plano || '—'}</td>
+                    <td className="px-4 py-3.5">
                       <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ${a.tipoServico === 'online' ? 'bg-purple-500/12 text-purple-400 ring-purple-500/20' : 'bg-blue-500/12 text-blue-400 ring-blue-500/20'}`}>
                         {a.tipoServico === 'online' ? 'Online' : 'Presencial'}
                       </span>
                     </td>
-                    <td className={`px-5 py-3.5 text-[12px] font-medium ${vencido ? 'text-red-400' : 'text-white/35'}`}>{a.vencimento || '—'}</td>
+                    <td className={`px-4 py-3.5 text-[12px] font-medium hidden sm:table-cell ${vencido ? 'text-red-400' : 'text-white/35'}`}>{a.vencimento || '—'}</td>
                   </tr>
                 );
               })}
