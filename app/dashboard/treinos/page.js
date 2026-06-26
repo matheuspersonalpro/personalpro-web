@@ -18,11 +18,17 @@ export default function TreinosPage() {
   const [busca, setBusca]     = useState('');
   const [loading, setLoading] = useState(true);
   const [confirmId, setConfirmId] = useState(null);
-  const [collapsed, setCollapsed]   = useState({});
+  const [collapsed, setCollapsed]   = useState(null); // null = ainda não inicializado
 
   const carregar = () => {
     Promise.all([buscarTreinosBiblioteca(), buscarAlunos()])
-      .then(([t, a]) => { setTreinos(t); setAlunos(a); })
+      .then(([t, a]) => {
+        setTreinos(t);
+        setAlunos(a);
+        // inicia todos recolhidos
+        const grupos = t.reduce((acc, x) => { acc[x.alunoId || '__sem_aluno__'] = true; return acc; }, {});
+        setCollapsed(grupos);
+      })
       .finally(() => setLoading(false));
   };
 
@@ -106,7 +112,7 @@ export default function TreinosPage() {
         <div className="space-y-3">
           {Object.entries(grupos).map(([alunoId, lista]) => {
             const nome = alunoId === '__sem_aluno__' ? null : nomeAluno(alunoId);
-            const isCollapsed = !!collapsed[alunoId];
+            const isCollapsed = collapsed === null ? true : !!collapsed[alunoId];
             return (
               <div key={alunoId} className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
                 <button
