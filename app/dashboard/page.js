@@ -216,8 +216,11 @@ export default function DashboardPage() {
           <p className="text-[11px] font-medium text-white/25 uppercase tracking-widest mb-2">
             {hoje.toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}
           </p>
-          <h1 className="text-[30px] font-bold text-white tracking-tight leading-none">
-            {saudacao}{nome ? `, ${nome}` : ''}.
+          <h1 className="text-[40px] font-black tracking-tight leading-[1.1]">
+            <span style={{ background:'linear-gradient(135deg,#fff 20%,rgba(255,255,255,0.55) 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
+              {saudacao}{nome ? `, ${nome}` : ''}
+            </span>
+            <span className="text-blue-400">.</span>
           </h1>
         </div>
         <div className="flex items-center gap-2">

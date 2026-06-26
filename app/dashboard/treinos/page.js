@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { buscarTreinosBiblioteca, buscarAlunos, excluirTreino } from '@/lib/firestore';
-import { Plus, Search, Dumbbell, ArrowUpRight, Trash2, User } from 'lucide-react';
+import { Plus, Search, Dumbbell, ArrowUpRight, Trash2, User, ChevronDown } from 'lucide-react';
 import ConfirmModal from '@/components/ConfirmModal';
 import { useToast } from '@/components/Toast';
 import EditarTreino from './EditarTreinoClient';
@@ -18,6 +18,7 @@ export default function TreinosPage() {
   const [busca, setBusca]     = useState('');
   const [loading, setLoading] = useState(true);
   const [confirmId, setConfirmId] = useState(null);
+  const [collapsed, setCollapsed]   = useState({});
 
   const carregar = () => {
     Promise.all([buscarTreinosBiblioteca(), buscarAlunos()])
@@ -102,54 +103,63 @@ export default function TreinosPage() {
           <p className="text-[13px] text-white/25">Nenhum treino encontrado.</p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-3">
           {Object.entries(grupos).map(([alunoId, lista]) => {
             const nome = alunoId === '__sem_aluno__' ? null : nomeAluno(alunoId);
+            const isCollapsed = !!collapsed[alunoId];
             return (
-              <div key={alunoId}>
-                <div className="flex items-center gap-2 mb-3">
+              <div key={alunoId} className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+                <button
+                  onClick={() => setCollapsed(c => ({ ...c, [alunoId]: !c[alunoId] }))}
+                  className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-white/[0.03] transition-all">
                   {nome ? (
                     <>
-                      <div className="w-6 h-6 rounded-full bg-blue-500/15 flex items-center justify-center text-[10px] font-bold text-blue-400">
+                      <div className="w-7 h-7 rounded-full bg-blue-500/15 flex items-center justify-center text-[11px] font-bold text-blue-400 shrink-0">
                         {nome[0]}
                       </div>
-                      <Link href={`/dashboard/alunos?id=${alunoId}`}
-                        className="text-[12px] font-semibold text-white/60 hover:text-white transition-colors flex items-center gap-1">
-                        {nome} <ArrowUpRight size={11} />
+                      <span className="text-[13px] font-semibold text-white/80">{nome}</span>
+                      <Link href={`/dashboard/alunos?id=${alunoId}`} onClick={e => e.stopPropagation()}
+                        className="text-white/20 hover:text-blue-400 transition-colors">
+                        <ArrowUpRight size={12} />
                       </Link>
                     </>
                   ) : (
                     <>
-                      <User size={13} className="text-white/25" />
-                      <span className="text-[12px] font-semibold text-white/35">Sem aluno vinculado</span>
+                      <div className="w-7 h-7 rounded-full bg-white/[0.05] flex items-center justify-center shrink-0">
+                        <User size={13} className="text-white/25" />
+                      </div>
+                      <span className="text-[13px] font-semibold text-white/35">Sem aluno vinculado</span>
                     </>
                   )}
-                  <span className="text-[10px] text-white/20 ml-1">{lista.length} treino{lista.length !== 1 ? 's' : ''}</span>
-                </div>
+                  <span className="text-[11px] text-white/25 ml-auto mr-1">{lista.length} treino{lista.length !== 1 ? 's' : ''}</span>
+                  <ChevronDown size={14} className={`text-white/25 transition-transform duration-200 ${isCollapsed ? '-rotate-90' : ''}`} />
+                </button>
 
-                <div className="grid grid-cols-3 gap-3">
-                  {lista.map(t => (
-                    <Link key={t.id} href={`/dashboard/treinos?id=${t.id}`}
-                      className="group relative rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] hover:ring-blue-500/25 hover:bg-[#101f38] p-4 transition-all">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                          <Dumbbell size={16} className="text-blue-400" strokeWidth={1.8} />
-                        </div>
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={e => deletar(t.id, e)}
-                            className="w-7 h-7 rounded-lg hover:bg-red-500/15 flex items-center justify-center text-white/25 hover:text-red-400 transition-all">
-                            <Trash2 size={13} />
-                          </button>
-                          <div className="w-7 h-7 rounded-lg hover:bg-white/[0.08] flex items-center justify-center text-white/25 hover:text-white transition-all">
-                            <ArrowUpRight size={13} />
+                {!isCollapsed && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 px-4 pb-4">
+                    {lista.map(t => (
+                      <Link key={t.id} href={`/dashboard/treinos?id=${t.id}`}
+                        className="group relative rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] hover:ring-blue-500/25 hover:bg-[#101f38] p-4 transition-all">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                            <Dumbbell size={16} className="text-blue-400" strokeWidth={1.8} />
+                          </div>
+                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={e => deletar(t.id, e)}
+                              className="w-7 h-7 rounded-lg hover:bg-red-500/15 flex items-center justify-center text-white/25 hover:text-red-400 transition-all">
+                              <Trash2 size={13} />
+                            </button>
+                            <div className="w-7 h-7 rounded-lg hover:bg-white/[0.08] flex items-center justify-center text-white/25 hover:text-white transition-all">
+                              <ArrowUpRight size={13} />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <p className="text-[13px] font-semibold text-white/80 group-hover:text-white transition-colors mb-1 leading-tight">{t.nome}</p>
-                      <p className="text-[11px] text-white/30">{t.exercicios?.length || 0} exercício{(t.exercicios?.length || 0) !== 1 ? 's' : ''}</p>
-                    </Link>
-                  ))}
-                </div>
+                        <p className="text-[13px] font-semibold text-white/80 group-hover:text-white transition-colors mb-1 leading-tight">{t.nome}</p>
+                        <p className="text-[11px] text-white/30">{t.exercicios?.length || 0} exercício{(t.exercicios?.length || 0) !== 1 ? 's' : ''}</p>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}

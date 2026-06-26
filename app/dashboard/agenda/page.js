@@ -543,34 +543,37 @@ export default function AgendaPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-[auto_1fr] gap-6">
-        {/* Coluna esquerda — nav semana + dias */}
-        <div className="w-[200px]">
-          {/* Nav semana */}
-          <div className="flex items-center gap-1 mb-4">
-            <button onClick={() => setWeekOffset(o => o - 1)} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all"><ChevronLeft size={15} /></button>
-            <button onClick={() => setWeekOffset(0)} className={`flex-1 text-center py-1.5 rounded-lg text-[11px] font-medium transition-all ${weekOffset===0 ? 'bg-white/[0.08] text-white' : 'text-white/40 hover:text-white/70'}`}>Hoje</button>
-            <button onClick={() => setWeekOffset(o => o + 1)} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all"><ChevronRight size={15} /></button>
-          </div>
-          {/* Dias */}
-          <div className="space-y-1">
-            {diasSemana.map((dia, i) => {
-              const iso = toISO(dia);
-              const ehH = iso === hojeISO;
-              const sels = sessoes.filter(s => s.data === iso);
-              return (
-                <button key={iso} onClick={() => setDiaSel(i)} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${diaSel===i ? 'bg-blue-600 text-white' : 'hover:bg-white/[0.04] text-white/60'}`}>
-                  <span className={`text-[11px] font-semibold w-8 uppercase tracking-wide ${diaSel===i ? 'text-blue-100' : ehH ? 'text-blue-400' : 'text-white/40'}`}>{DIAS_CURTO[dia.getDay()]}</span>
-                  <span className={`text-[16px] font-bold ${diaSel===i ? 'text-white' : ehH ? 'text-blue-400' : 'text-white/80'}`}>{dia.getDate()}</span>
-                  {sels.length > 0 && <span className={`ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full ${diaSel===i ? 'bg-white/20 text-white' : 'bg-blue-500/20 text-blue-400'}`}>{sels.length}</span>}
-                </button>
-              );
-            })}
-          </div>
+      {/* Nav semana + dias horizontais */}
+      <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-3 mb-5">
+        <div className="flex items-center gap-1 mb-3 px-1">
+          <button onClick={() => setWeekOffset(o => o - 1)} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all"><ChevronLeft size={15} /></button>
+          <button onClick={() => setWeekOffset(0)} className={`px-4 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${weekOffset===0 ? 'bg-white/[0.08] text-white' : 'text-white/40 hover:text-white/70'}`}>Hoje</button>
+          <button onClick={() => setWeekOffset(o => o + 1)} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all"><ChevronRight size={15} /></button>
+          <span className="text-[11px] text-white/25 ml-2">Semana {semanaLabel(seg)}</span>
         </div>
+        <div className="grid grid-cols-6 gap-1.5">
+          {diasSemana.map((dia, i) => {
+            const iso = toISO(dia);
+            const ehH = iso === hojeISO;
+            const sels = sessoes.filter(s => s.data === iso);
+            const sesNoDia = alunos.filter(a => a.tipoServico !== 'online' && Array.isArray(a.dias) && a.dias.includes(DIAS_LABEL[dia.getDay()]));
+            const total = sels.length + sesNoDia.length;
+            return (
+              <button key={iso} onClick={() => setDiaSel(i)}
+                className={`flex flex-col items-center gap-1 py-2.5 px-1 rounded-xl transition-all ${diaSel===i ? 'bg-blue-600 shadow-lg shadow-blue-900/40' : ehH ? 'ring-1 ring-blue-500/30 hover:bg-white/[0.04]' : 'hover:bg-white/[0.04]'}`}>
+                <span className={`text-[10px] font-bold uppercase tracking-widest ${diaSel===i ? 'text-blue-100' : ehH ? 'text-blue-400' : 'text-white/35'}`}>{DIAS_CURTO[dia.getDay()]}</span>
+                <span className={`text-[22px] font-black leading-none ${diaSel===i ? 'text-white' : ehH ? 'text-blue-400' : 'text-white/80'}`}>{dia.getDate()}</span>
+                <div className="h-1.5 flex items-center justify-center">
+                  {total > 0 && <div className={`w-1.5 h-1.5 rounded-full ${diaSel===i ? 'bg-white/60' : 'bg-blue-400/60'}`} />}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
-        {/* Coluna direita — sessões do dia */}
-        <div>
+      {/* Sessões do dia */}
+      <div>
           {/* Título do dia */}
           <div className="flex items-center justify-between mb-3">
             <div>
@@ -637,11 +640,10 @@ export default function AgendaPage() {
               </div>
             </div>
           )}
-        </div>
       </div>
 
       {/* Seções inferiores */}
-      <div className="mt-8 grid grid-cols-3 gap-4">
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Horários para reposição */}
         <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05]">
