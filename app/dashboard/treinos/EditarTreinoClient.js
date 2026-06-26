@@ -166,6 +166,9 @@ export default function EditarTreino() {
   const [templates,     setTemplates]     = useState([]);
   const [loadingTpl,    setLoadingTpl]    = useState(false);
 
+  // Mobile: alterna entre painel do treino e biblioteca (no desktop ambos aparecem)
+  const [mobileTab, setMobileTab] = useState('treino');
+
   useEffect(() => {
     if (!id) return;
     const alunoIdParam = searchParams.get('alunoId') || '';
@@ -252,7 +255,7 @@ export default function EditarTreino() {
     <div className="flex flex-col h-full">
 
       {/* ── Barra superior ───────────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-8 py-4 border-b border-white/[0.05] shrink-0 bg-[#080f1d]">
+      <div className="flex flex-wrap items-center justify-between gap-y-2 px-4 md:px-8 py-3 md:py-4 border-b border-white/[0.05] shrink-0 bg-[#080f1d]">
         <div className="flex items-center gap-3">
           <Link href="/dashboard/treinos"
             className="w-7 h-7 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/35 hover:text-white transition-all">
@@ -345,10 +348,27 @@ export default function EditarTreino() {
         </div>
       </div>
 
+      {/* ── Abas (somente mobile) ────────────────────────────────────── */}
+      <div className="md:hidden flex shrink-0 border-b border-white/[0.05] bg-[#080f1d]">
+        {[
+          { id: 'treino',     label: `Treino${form.exercicios?.length ? ` (${form.exercicios.length})` : ''}` },
+          { id: 'biblioteca', label: 'Biblioteca' },
+        ].map(t => (
+          <button key={t.id} onClick={() => setMobileTab(t.id)}
+            className={`flex-1 py-3 text-[12px] font-semibold transition-all ${
+              mobileTab === t.id
+                ? 'text-blue-400 border-b-2 border-blue-500'
+                : 'text-white/35 border-b-2 border-transparent'
+            }`}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
       <div className="flex flex-1 min-h-0">
 
         {/* ── Lista de exercícios do treino ─────────────────────────── */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className={`${mobileTab === 'treino' ? 'block' : 'hidden'} md:block flex-1 overflow-y-auto p-4 md:p-6`}>
           <div className="max-w-2xl space-y-2.5">
             {(form.exercicios || []).length === 0 ? (
               <div className="rounded-2xl border border-dashed border-white/[0.08] p-14 text-center">
@@ -373,7 +393,7 @@ export default function EditarTreino() {
         </div>
 
         {/* ── Sidebar: biblioteca ───────────────────────────────────── */}
-        <div className="w-[280px] shrink-0 border-l border-white/[0.05] flex flex-col bg-[#0a1628]">
+        <div className={`${mobileTab === 'biblioteca' ? 'flex' : 'hidden'} md:flex w-full md:w-[280px] shrink-0 border-l-0 md:border-l border-white/[0.05] flex-col bg-[#0a1628]`}>
 
           {/* Busca e filtro */}
           <div className="p-3 border-b border-white/[0.05] shrink-0 space-y-2">
