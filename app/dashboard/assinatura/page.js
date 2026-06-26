@@ -171,7 +171,7 @@ export default function AssinaturaPage() {
   );
 
   return (
-    <div className="p-8 max-w-4xl mx-auto w-full">
+    <div className="px-4 pt-5 pb-6 md:p-8 max-w-4xl mx-auto w-full">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-[22px] font-bold text-white tracking-tight flex items-center gap-2.5">

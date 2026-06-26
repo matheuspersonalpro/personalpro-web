@@ -105,7 +105,7 @@ export default function PerfilPage() {
   );
 
   return (
-    <div className="p-8 max-w-3xl mx-auto w-full">
+    <div className="px-4 pt-5 pb-6 md:p-8 max-w-3xl mx-auto w-full">
       <div className="mb-6">
         <h1 className="text-[22px] font-bold text-white tracking-tight">Meu Perfil</h1>
         <p className="text-[12px] text-white/35 mt-0.5">{personal?.email}</p>

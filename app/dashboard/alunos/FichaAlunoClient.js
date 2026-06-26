@@ -884,7 +884,7 @@ export default function FichaAluno() {
   }
 
   return (
-    <div className="p-8 max-w-5xl mx-auto w-full">
+    <div className="px-4 pt-5 pb-6 md:p-8 max-w-5xl mx-auto w-full">
       {novaAval && (
         <NovaAvaliacaoModal
           alunoId={id}
@@ -1142,7 +1142,8 @@ export default function FichaAluno() {
               <div className="px-6 py-4 border-b border-white/[0.05]">
                 <p className="text-[12px] font-semibold text-white/40 uppercase tracking-wider">Últimas avaliações</p>
               </div>
-              <table className="w-full">
+              <div className="overflow-x-auto">
+              <table className="w-full min-w-[520px]">
                 <thead>
                   <tr className="border-b border-white/[0.05]">
                     {['Data', 'Peso (kg)', 'Delta', '% Gord.', 'Delta', 'M. Magra', 'Delta'].map(h => (
@@ -1186,6 +1187,7 @@ export default function FichaAluno() {
                   })}
                 </tbody>
               </table>
+              </div>
             </div>
           </div>
         );

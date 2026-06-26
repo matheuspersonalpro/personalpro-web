@@ -75,7 +75,7 @@ export default function TreinosPage() {
   );
 
   return (
-    <div className="p-8 max-w-6xl mx-auto w-full">
+    <div className="px-4 pt-5 pb-6 md:p-8 max-w-6xl mx-auto w-full">
       {confirmId && (
         <ConfirmModal
           title="Excluir treino"

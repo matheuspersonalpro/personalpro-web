@@ -175,7 +175,7 @@ export default function AlunosPage() {
   );
 
   return (
-    <div className="p-8 max-w-6xl mx-auto w-full">
+    <div className="px-4 pt-5 pb-6 md:p-8 max-w-6xl mx-auto w-full">
       {novoModal && (
         <NovoAlunoModal
           onSalvo={() => { setNovoModal(false); carregar(); }}
@@ -223,9 +223,9 @@ export default function AlunosPage() {
           <thead>
             <tr className="border-b border-white/[0.05] bg-white/[0.01]">
               <th className="text-left px-6 py-3.5 text-[10px] font-semibold text-white/25 uppercase tracking-wider">Nome</th>
-              <th className="text-left px-6 py-3.5 text-[10px] font-semibold text-white/25 uppercase tracking-wider">Plano</th>
-              <th className="text-left px-6 py-3.5 text-[10px] font-semibold text-white/25 uppercase tracking-wider">Frequência</th>
-              <th className="text-left px-6 py-3.5 text-[10px] font-semibold text-white/25 uppercase tracking-wider">Serviço</th>
+              <th className="hidden md:table-cell text-left px-6 py-3.5 text-[10px] font-semibold text-white/25 uppercase tracking-wider">Plano</th>
+              <th className="hidden lg:table-cell text-left px-6 py-3.5 text-[10px] font-semibold text-white/25 uppercase tracking-wider">Frequência</th>
+              <th className="hidden md:table-cell text-left px-6 py-3.5 text-[10px] font-semibold text-white/25 uppercase tracking-wider">Serviço</th>
               <th className="text-left px-6 py-3.5 text-[10px] font-semibold text-white/25 uppercase tracking-wider">Vencimento</th>
               <th className="w-10" />
             </tr>
@@ -245,9 +245,9 @@ export default function AlunosPage() {
                     </div>
                   </Link>
                 </td>
-                <td className="px-6 py-3.5 text-[12px] text-white/40">{a.plano || '—'}</td>
-                <td className="px-6 py-3.5 text-[12px] text-white/40">{a.frequencia ? `${a.frequencia}×/sem` : '—'}</td>
-                <td className="px-6 py-3.5"><Badge tipo={a.tipoServico || 'presencial'} /></td>
+                <td className="hidden md:table-cell px-6 py-3.5 text-[12px] text-white/40">{a.plano || '—'}</td>
+                <td className="hidden lg:table-cell px-6 py-3.5 text-[12px] text-white/40">{a.frequencia ? `${a.frequencia}×/sem` : '—'}</td>
+                <td className="hidden md:table-cell px-6 py-3.5"><Badge tipo={a.tipoServico || 'presencial'} /></td>
                 <td className="px-6 py-3.5"><VencimentoCell vencimento={a.vencimento} /></td>
                 <td className="px-6 py-3.5">
                   <Link href={`/dashboard/alunos?id=${a.id}`}

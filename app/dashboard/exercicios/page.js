@@ -203,7 +203,7 @@ export default function ExerciciosPage() {
     : videos;
 
   return (
-    <div className="p-8 max-w-5xl mx-auto w-full">
+    <div className="px-4 pt-5 pb-6 md:p-8 max-w-5xl mx-auto w-full">
       {(modal === 'novo' || (modal && typeof modal === 'object')) && (
         <ModalVideo
           item={modal === 'novo' ? null : modal}
