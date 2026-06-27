@@ -1021,7 +1021,7 @@ export default function FichaAluno() {
             <Field label="Plano" field="plano" form={form} setForm={setForm} editing={editing} />
             <Field label="Frequência semanal" field="frequencia" form={form} setForm={setForm} editing={editing} type="number" />
             <Field label="Vencimento (DD/MM/AAAA)" field="vencimento" form={form} setForm={setForm} editing={editing} />
-            <Field label="Valor mensal (R$)" field="valorMensal" form={form} setForm={setForm} editing={editing} type="number" />
+            <Field label="Valor mensal (R$)" field="valor" form={form} setForm={setForm} editing={editing} type="number" />
           </div>
         </div>
       )}
