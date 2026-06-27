@@ -166,7 +166,7 @@ function NovaAvaliacaoModal({ alunoId, aluno, onSalvo, onFechar }) {
   const [obs, setObs]     = useState('');
   const [saving, setSaving] = useState(false);
 
-  const idade = calcIdade(aluno?.nascimento);
+  const idade = calcIdade(aluno?.dataNascimento);
   const ehPollock = protocolo === 'pollock7' || protocolo === 'pollock3m' || protocolo === 'pollock3f';
 
   const gcCalc = (() => {
@@ -1007,10 +1007,10 @@ export default function FichaAluno() {
             <Field label="Nome completo" field="nome" form={form} setForm={setForm} editing={editing} icon={User} />
             <Field label="E-mail" field="email" form={form} setForm={setForm} editing={editing} icon={Mail} />
             <Field label="Telefone" field="telefone" form={form} setForm={setForm} editing={editing} icon={Phone} />
-            <Field label="Data de nascimento" field="nascimento" form={form} setForm={setForm} editing={editing} icon={Calendar} />
+            <Field label="Data de nascimento" field="dataNascimento" form={form} setForm={setForm} editing={editing} icon={Calendar} />
             <SelectField label="Tipo de serviço" field="tipoServico" form={form} setForm={setForm} editing={editing}
               options={[{ value: 'presencial', label: 'Presencial' }, { value: 'online', label: 'Online' }]} />
-            <Field label="Observações" field="obs" form={form} setForm={setForm} editing={editing} />
+            <Field label="Observações" field="observacoes" form={form} setForm={setForm} editing={editing} />
           </div>
         </div>
       )}

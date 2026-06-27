@@ -42,7 +42,7 @@ function VencimentoCell({ vencimento }) {
 function NovoAlunoModal({ onSalvo, onFechar }) {
   const toast = useToast();
   const [form, setForm] = useState({
-    nome: '', email: '', telefone: '', nascimento: '',
+    nome: '', email: '', telefone: '', dataNascimento: '',
     tipoServico: 'presencial', plano: '', frequencia: '', vencimento: '', valorMensal: '',
   });
   const [saving, setSaving] = useState(false);
@@ -78,7 +78,7 @@ function NovoAlunoModal({ onSalvo, onFechar }) {
                 { k: 'nome',       label: 'Nome completo *', type: 'text',  col: 2 },
                 { k: 'email',      label: 'E-mail',          type: 'email', col: 1 },
                 { k: 'telefone',   label: 'Telefone',        type: 'tel',   col: 1 },
-                { k: 'nascimento', label: 'Nascimento',      type: 'text',  col: 1, placeholder: 'DD/MM/AAAA' },
+                { k: 'dataNascimento', label: 'Nascimento',  type: 'text',  col: 1, placeholder: 'DD/MM/AAAA' },
               ].map(({ k, label, type, col, placeholder }) => (
                 <div key={k} className={col === 2 ? 'col-span-2' : ''}>
                   <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">{label}</label>
