@@ -143,6 +143,11 @@ export default function AssinaturaPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Pré-preenche o CPF/CNPJ se já foi salvo numa assinatura anterior
+  useEffect(() => {
+    if (personal?.cpf) setCpf(formatCpfCnpj(personal.cpf));
+  }, [personal?.cpf]);
+
   const assinatura  = personal?.assinatura;
   const avaliacao   = avaliarAssinatura(assinatura);
   const planoAtual  = assinatura?.plano;
