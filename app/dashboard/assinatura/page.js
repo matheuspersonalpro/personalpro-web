@@ -83,7 +83,7 @@ function CardPlano({ plano, selecionado, onSelecionar, processando }) {
         ativo
           ? 'bg-blue-600/15 ring-2 ring-blue-500/60'
           : 'bg-[#0d1b2e] ring-1 ring-white/[0.06] hover:ring-blue-500/20 hover:bg-blue-900/10'
-      } ${plano.popular ? 'shadow-xl shadow-blue-900/20' : ''}`}
+      } ${plano.popular ? 'shadow-xl shadow-blue-900/20 pt-8' : ''}`}
     >
       {plano.popular && (
         <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">

@@ -300,7 +300,7 @@ export default function LandingPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {PLANOS.map(p => (
-            <div key={p.id} className={`relative rounded-2xl p-6 flex flex-col transition-all ${p.popular ? 'bg-blue-600 ring-2 ring-blue-400/50 shadow-2xl shadow-blue-900/40' : 'bg-[#0a1628] ring-1 ring-white/[0.06] hover:ring-white/[0.12]'}`}>
+            <div key={p.id} className={`relative rounded-2xl p-6 flex flex-col transition-all ${p.popular ? 'bg-blue-600 ring-2 ring-blue-400/50 shadow-2xl shadow-blue-900/40 pt-8' : 'bg-[#0a1628] ring-1 ring-white/[0.06] hover:ring-white/[0.12]'}`}>
               {p.badge && (
                 <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${p.popular ? 'bg-white text-blue-600' : 'bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/30'}`}>
                   {p.badge}
