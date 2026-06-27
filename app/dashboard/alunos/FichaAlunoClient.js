@@ -281,13 +281,38 @@ function NovaAvaliacaoModal({ alunoId, aluno, onSalvo, onFechar }) {
   );
 }
 
+// Lê as métricas de uma avaliação criada no APP (estrutura: tipoAvaliacao, peso topo,
+// resultado.percGordura / resultado.massaMagra). Mantém fallback p/ avaliações antigas do site (medidas.*).
+function metricasAvaliacao(av) {
+  const r = av?.resultado || {};
+  const m = av?.medidas || {};
+  const num = v => (v === '' || v == null ? null : parseFloat(String(v).replace(',', '.')));
+  return {
+    peso:        num(av?.peso ?? m.peso),
+    percGordura: num(r.percGordura ?? m.bf),
+    massaMagra:  num(r.massaMagra ?? m.mm),
+  };
+}
+
+const LABEL_TIPO_AVAL = {
+  pollock7: 'Pollock 7 dobras',
+  pollock3: 'Pollock 3 dobras',
+  inbody: 'InBody',
+  circunferencias: 'Circunferências',
+};
+
 function CardAvaliacao({ av, onExcluir }) {
   const [aberto, setAberto] = useState(false);
   const data = av.criadoEm?.seconds
     ? new Date(av.criadoEm.seconds * 1000).toLocaleDateString('pt-BR')
     : '—';
-
-  const campos = Object.entries(av.medidas || {}).filter(([, v]) => v !== '' && v != null);
+  const tipo = LABEL_TIPO_AVAL[av.tipoAvaliacao] || 'Avaliação';
+  const m = metricasAvaliacao(av);
+  const itens = [
+    m.peso != null        ? { label: 'Peso (kg)',   val: m.peso.toFixed(1) }        : null,
+    m.percGordura != null ? { label: '% Gordura',   val: m.percGordura.toFixed(1) } : null,
+    m.massaMagra != null  ? { label: 'Massa magra', val: m.massaMagra.toFixed(1) }  : null,
+  ].filter(Boolean);
 
   return (
     <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
@@ -297,8 +322,8 @@ function CardAvaliacao({ av, onExcluir }) {
             <ClipboardList size={15} className="text-green-400" />
           </div>
           <div className="text-left">
-            <p className="text-[13px] font-semibold text-white/80">Avaliação · {data}</p>
-            <p className="text-[11px] text-white/30">{campos.length} métricas registradas</p>
+            <p className="text-[13px] font-semibold text-white/80">{tipo} · {data}</p>
+            <p className="text-[11px] text-white/30">{itens.length} métrica{itens.length !== 1 ? 's' : ''}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -308,17 +333,14 @@ function CardAvaliacao({ av, onExcluir }) {
           <ArrowUpRight size={14} className={`text-white/20 transition-transform ${aberto ? 'rotate-90' : ''}`} />
         </div>
       </div>
-      {aberto && campos.length > 0 && (
+      {aberto && itens.length > 0 && (
         <div className="px-4 pb-4 grid grid-cols-3 gap-2 border-t border-white/[0.04] pt-3">
-          {campos.map(([key, val]) => {
-            const campo = MEDIDAS_CAMPOS.find(c => c.key === key);
-            return (
-              <div key={key} className="rounded-xl bg-white/[0.03] px-3 py-2">
-                <p className="text-[10px] text-white/30 mb-0.5">{campo?.label || key}</p>
-                <p className="text-[14px] font-bold text-white">{val}</p>
-              </div>
-            );
-          })}
+          {itens.map(it => (
+            <div key={it.label} className="rounded-xl bg-white/[0.03] px-3 py-2">
+              <p className="text-[10px] text-white/30 mb-0.5">{it.label}</p>
+              <p className="text-[14px] font-bold text-white">{it.val}</p>
+            </div>
+          ))}
         </div>
       )}
       {aberto && av.observacoes && (
@@ -1065,11 +1087,11 @@ export default function FichaAluno() {
 
       {aba === 'avaliacoes' && (
         <div className="space-y-3">
-          <div className="flex justify-end">
-            <button onClick={() => setNovaAval(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-green-600 hover:bg-green-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-green-900/20">
-              <Plus size={13} /> Nova avaliação
-            </button>
+          <div className="flex items-center gap-2 rounded-xl bg-blue-500/[0.07] ring-1 ring-blue-500/20 px-4 py-2.5">
+            <ClipboardList size={14} className="text-blue-400 shrink-0" />
+            <p className="text-[12px] text-blue-300/80">
+              As avaliações físicas são feitas pelo <strong>app PersonalPro</strong> (Pollock, InBody, etc.). Aqui você acompanha o histórico.
+            </p>
           </div>
           {avaliacoes.length === 0 ? (
             <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-12 text-center">
@@ -1107,9 +1129,9 @@ export default function FichaAluno() {
             : '—';
           return {
             data: label,
-            Peso: av.medidas?.peso ? parseFloat(av.medidas.peso) : undefined,
-            '%Gordura': av.medidas?.bf ? parseFloat(av.medidas.bf) : undefined,
-            'Massa Magra': av.medidas?.mm ? parseFloat(av.medidas.mm) : undefined,
+            Peso: metricasAvaliacao(av).peso ?? undefined,
+            '%Gordura': metricasAvaliacao(av).percGordura ?? undefined,
+            'Massa Magra': metricasAvaliacao(av).massaMagra ?? undefined,
           };
         });
 
@@ -1173,15 +1195,17 @@ export default function FichaAluno() {
                     const data = av.criadoEm?.seconds
                       ? new Date(av.criadoEm.seconds * 1000).toLocaleDateString('pt-BR')
                       : '—';
+                    const mAv   = metricasAvaliacao(av);
+                    const mPrev = prev ? metricasAvaliacao(prev) : {};
                     return (
                       <tr key={av.id} className={`border-b border-white/[0.03] ${i % 2 === 0 ? '' : 'bg-white/[0.01]'}`}>
                         <td className="px-4 py-3 text-[12px] text-white/50">{data}</td>
-                        <td className="px-4 py-3 text-[13px] font-semibold text-white/80">{fmt(av.medidas?.peso)}</td>
-                        <td className="px-4 py-3"><DeltaBadge val={delta(av.medidas?.peso, prev?.medidas?.peso)} inverted={false} /></td>
-                        <td className="px-4 py-3 text-[13px] font-semibold text-white/80">{fmt(av.medidas?.bf)}</td>
-                        <td className="px-4 py-3"><DeltaBadge val={delta(av.medidas?.bf, prev?.medidas?.bf)} inverted={true} /></td>
-                        <td className="px-4 py-3 text-[13px] font-semibold text-white/80">{fmt(av.medidas?.mm)}</td>
-                        <td className="px-4 py-3"><DeltaBadge val={delta(av.medidas?.mm, prev?.medidas?.mm)} inverted={false} /></td>
+                        <td className="px-4 py-3 text-[13px] font-semibold text-white/80">{fmt(mAv.peso)}</td>
+                        <td className="px-4 py-3"><DeltaBadge val={delta(mAv.peso, mPrev.peso)} inverted={false} /></td>
+                        <td className="px-4 py-3 text-[13px] font-semibold text-white/80">{fmt(mAv.percGordura)}</td>
+                        <td className="px-4 py-3"><DeltaBadge val={delta(mAv.percGordura, mPrev.percGordura)} inverted={true} /></td>
+                        <td className="px-4 py-3 text-[13px] font-semibold text-white/80">{fmt(mAv.massaMagra)}</td>
+                        <td className="px-4 py-3"><DeltaBadge val={delta(mAv.massaMagra, mPrev.massaMagra)} inverted={false} /></td>
                       </tr>
                     );
                   })}
