@@ -915,10 +915,10 @@ export default function FichaAluno() {
         onCancel={() => setConfirmAluno(false)}
       />
 
-      <Link href="/dashboard/alunos"
+      <button onClick={() => router.push('/dashboard/alunos/')}
         className="inline-flex items-center gap-1.5 text-[12px] text-white/35 hover:text-white/70 transition-colors mb-6">
         <ChevronLeft size={14} /> Alunos
-      </Link>
+      </button>
 
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-4">

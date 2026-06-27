@@ -225,7 +225,7 @@ export default function EditarTreino() {
     try {
       await salvarTreino(isNovo ? form : { ...form, id });
       toast('Treino salvo com sucesso.');
-      router.push(form.alunoId ? `/dashboard/alunos?id=${form.alunoId}` : '/dashboard/treinos');
+      router.push(form.alunoId ? `/dashboard/alunos/?id=${form.alunoId}` : '/dashboard/treinos/');
     } catch { toast('Erro ao salvar treino.', 'error'); }
     finally { setSaving(false); }
   }
@@ -257,10 +257,10 @@ export default function EditarTreino() {
       {/* ── Barra superior ───────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center justify-between gap-y-2 px-4 md:px-8 py-3 md:py-4 border-b border-white/[0.05] shrink-0 bg-[#080f1d]">
         <div className="flex items-center gap-3">
-          <Link href="/dashboard/treinos"
+          <button onClick={() => router.push('/dashboard/treinos/')}
             className="w-7 h-7 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/35 hover:text-white transition-all">
             <ChevronLeft size={16} />
-          </Link>
+          </button>
           <div>
             <input
               value={form.nome}
