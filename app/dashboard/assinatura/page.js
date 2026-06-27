@@ -126,6 +126,16 @@ export default function AssinaturaPage() {
   const [loadingAlunos, setLoading]   = useState(true);
   const [planoSel, setPlanoSel]       = useState('anual');
   const [processando, setProcessando] = useState(false);
+  const [cpf, setCpf]                 = useState('');
+
+  // Formata CPF (000.000.000-00) ou CNPJ (00.000.000/0000-00) conforme digita
+  function formatCpfCnpj(v) {
+    const d = v.replace(/\D/g, '').slice(0, 14);
+    if (d.length <= 11) {
+      return d.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    }
+    return d.replace(/(\d{2})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1/$2').replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+  }
 
   useEffect(() => {
     buscarAlunos()
@@ -139,9 +149,14 @@ export default function AssinaturaPage() {
   const alunosGratis = alunosAtivos <= ALUNOS_GRATIS;
 
   async function assinar() {
+    const cpfDigits = cpf.replace(/\D/g, '');
+    if (cpfDigits.length !== 11 && cpfDigits.length !== 14) {
+      toast('Informe um CPF ou CNPJ válido para assinar.', 'error');
+      return;
+    }
     setProcessando(true);
     try {
-      const { url } = await criarCheckoutAssinatura(planoSel);
+      const { url } = await criarCheckoutAssinatura(planoSel, cpfDigits);
       if (url) window.open(url, '_blank');
       else toast('Link de pagamento não retornado. Tente novamente.', 'error');
     } catch (e) {
@@ -226,6 +241,21 @@ export default function AssinaturaPage() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* CPF/CNPJ — exigido pelo Asaas para emitir a cobrança */}
+          <div className="mb-3">
+            <label className="block text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">
+              CPF ou CNPJ do titular
+            </label>
+            <input
+              value={cpf}
+              onChange={e => setCpf(formatCpfCnpj(e.target.value))}
+              inputMode="numeric"
+              placeholder="000.000.000-00"
+              className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder-white/20 text-[14px] focus:outline-none focus:border-blue-500/60 transition-all"
+            />
+            <p className="text-[11px] text-white/25 mt-1.5">Necessário para gerar a cobrança no Asaas.</p>
           </div>
 
           {/* CTA */}
