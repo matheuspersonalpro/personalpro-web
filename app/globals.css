@@ -10,6 +10,18 @@
   html, body { height: 100%; }
 }
 
+html {
+  /* Faz os controles nativos (dropdowns do select, date pickers, scrollbars)
+     renderizarem em modo escuro, combinando com o tema do app. */
+  color-scheme: dark;
+}
+
+/* Fallback explícito para o dropdown do <select> (fundo escuro nas opções) */
+select option {
+  background-color: #0d1b2e;
+  color: #f1f5f9;
+}
+
 body {
   background: #080f1d;
   color: #f1f5f9;
