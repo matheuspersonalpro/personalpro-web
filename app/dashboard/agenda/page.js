@@ -511,7 +511,7 @@ export default function AgendaPage() {
         <div>
           <h1 className="text-[22px] font-bold text-white">Agenda</h1>
           <p className="text-[12px] text-white/35 mt-0.5">
-            Semana {semanaLabel(seg)} · {sessoesAgendadas.length} sessão{sessoesAgendadas.length !== 1 ? 'ões' : ''} agendada{sessoesAgendadas.length !== 1 ? 's' : ''}
+            Semana {semanaLabel(seg)} · agenda recorrente dos alunos
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -523,9 +523,6 @@ export default function AgendaPage() {
           </button>
           <button onClick={() => setModalFerias(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold text-blue-400 ring-1 ring-blue-500/20 bg-blue-500/[0.08] hover:bg-blue-500/[0.15] transition-all">
             <Umbrella size={13} /> Férias
-          </button>
-          <button onClick={() => setModal({ sessao: null })} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
-            <Plus size={13} /> Nova sessão
           </button>
         </div>
       </div>
