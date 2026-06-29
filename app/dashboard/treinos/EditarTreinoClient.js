@@ -34,6 +34,17 @@ function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
   const ytId = extrairYoutubeId(videoUrl);
   const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : null;
 
+  // Séries = array de sets {reps, carga, pausa} (mesma estrutura do app).
+  // Fallback: migra treinos antigos do site (series como número + reps/descanso planos).
+  const series = Array.isArray(ex.series)
+    ? ex.series
+    : (Number(ex.series) > 0
+        ? Array.from({ length: Number(ex.series) }, () => ({ reps: ex.reps || '12', carga: ex.carga || '', pausa: ex.descanso || ex.pausa || '60s' }))
+        : []);
+  const setSet    = (sIdx, campo, val) => onChange(idx, 'series', series.map((s, i) => i === sIdx ? { ...s, [campo]: val } : s));
+  const addSet    = () => onChange(idx, 'series', [...series, { reps: series[series.length - 1]?.reps || '12', carga: '', pausa: series[series.length - 1]?.pausa || '60s' }]);
+  const removeSet = (sIdx) => onChange(idx, 'series', series.filter((_, i) => i !== sIdx));
+
   return (
     <div className="rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] overflow-hidden">
       {/* Player modal */}
@@ -98,36 +109,43 @@ function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
       </div>
       {open && (
         <div className="px-4 pb-4 space-y-3 border-t border-white/[0.04] pt-3">
-          <div className="grid grid-cols-4 gap-2">
-            {[
-              { label: 'Séries',     field: 'series',   type: 'number', placeholder: '3' },
-              { label: 'Reps',       field: 'reps',     type: 'text',   placeholder: '12' },
-              { label: 'Carga',      field: 'carga',    type: 'text',   placeholder: '—' },
-              { label: 'Descanso',   field: 'descanso', type: 'text',   placeholder: '60s' },
-            ].map(({ label, field, type, placeholder }) => (
-              <div key={field}>
-                <label className="block text-[9px] font-semibold text-white/25 uppercase tracking-wider mb-1.5">{label}</label>
-                <input type={type} value={ex[field] || ''} onChange={e => onChange(idx, field, e.target.value)}
-                  placeholder={placeholder}
-                  className="w-full px-2.5 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all" />
+          {/* Séries = lista de sets (reps / carga / descanso por set) — mesma estrutura do app */}
+          <div className="space-y-1.5">
+            <div className="grid gap-2 px-0.5" style={{ gridTemplateColumns: '22px 1fr 1fr 1fr 24px' }}>
+              <span />
+              <label className="text-[9px] font-semibold text-white/25 uppercase tracking-wider">Reps</label>
+              <label className="text-[9px] font-semibold text-white/25 uppercase tracking-wider">Carga</label>
+              <label className="text-[9px] font-semibold text-white/25 uppercase tracking-wider">Descanso</label>
+              <span />
+            </div>
+            {series.map((s, sIdx) => (
+              <div key={sIdx} className="grid gap-2 items-center" style={{ gridTemplateColumns: '22px 1fr 1fr 1fr 24px' }}>
+                <span className="text-[11px] text-white/30 text-center">{sIdx + 1}</span>
+                <input value={s.reps || ''} onChange={e => setSet(sIdx, 'reps', e.target.value)} placeholder="12"
+                  className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all" />
+                <input value={s.carga || ''} onChange={e => setSet(sIdx, 'carga', e.target.value)} placeholder="—"
+                  className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all" />
+                <input value={s.pausa || ''} onChange={e => setSet(sIdx, 'pausa', e.target.value)} placeholder="60s"
+                  className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all" />
+                <button onClick={() => removeSet(sIdx)} disabled={series.length <= 1}
+                  className="w-6 h-6 rounded-lg hover:bg-red-500/15 flex items-center justify-center text-white/20 hover:text-red-400 disabled:opacity-20 transition-all">
+                  <X size={12} />
+                </button>
               </div>
             ))}
+            <button onClick={addSet}
+              className="flex items-center gap-1 text-[11px] font-semibold text-blue-400/80 hover:text-blue-400 transition-colors pt-0.5">
+              <Plus size={12} /> Adicionar série
+            </button>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="block text-[9px] font-semibold text-white/25 uppercase tracking-wider mb-1.5">Método</label>
-              <select value={ex.metodo || ''} onChange={e => onChange(idx, 'metodo', e.target.value)}
-                className="w-full px-2.5 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/70 text-[12px] focus:outline-none focus:border-blue-500/50 transition-all">
-                <option value="">Padrão</option>
-                {Object.keys(METODOS).map(m => <option key={m} value={m}>{m}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-[9px] font-semibold text-white/25 uppercase tracking-wider mb-1.5">Observações</label>
-              <input value={ex.obs || ''} onChange={e => onChange(idx, 'obs', e.target.value)}
-                placeholder="Cadência, técnica..."
-                className="w-full px-2.5 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all" />
-            </div>
+          {/* Método */}
+          <div>
+            <label className="block text-[9px] font-semibold text-white/25 uppercase tracking-wider mb-1.5">Método</label>
+            <select value={ex.metodo || ''} onChange={e => onChange(idx, 'metodo', e.target.value)}
+              className="w-full px-2.5 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/70 text-[12px] focus:outline-none focus:border-blue-500/50 transition-all">
+              <option value="">Padrão</option>
+              {Object.keys(METODOS).map(m => <option key={m} value={m}>{m}</option>)}
+            </select>
           </div>
         </div>
       )}
@@ -188,7 +206,12 @@ export default function EditarTreino() {
       ...f,
       exercicios: [...(f.exercicios || []), {
         nome: ex.nome, grupo: ex.grupo || '',
-        series: 3, reps: '12', carga: '', descanso: '60s', obs: '', metodo: '',
+        series: [
+          { reps: '12', carga: '', pausa: '60s' },
+          { reps: '12', carga: '', pausa: '60s' },
+          { reps: '12', carga: '', pausa: '60s' },
+        ],
+        metodo: '',
       }],
     }));
   }
