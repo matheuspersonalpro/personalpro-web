@@ -1,10 +1,10 @@
-﻿'use client';
+'use client';
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   buscarAluno, buscarTreinos, atualizarAluno, excluirAluno,
-  buscarAvaliacoes, criarAvaliacao, excluirAvaliacao, buscarHistoricoDoAluno,
+  buscarAvaliacoes, excluirAvaliacao, buscarHistoricoDoAluno,
   atribuirProgramaMuscular, listarProgramas,
   buscarFotosEvolucao, uploadFotoEvolucao, salvarFotosEvolucao, deletarSessaoFotos,
   buscarPresencasDoAluno, registrarPresenca,
@@ -13,7 +13,7 @@ import {
   ChevronLeft, Pencil, Save, X, User, CreditCard, Dumbbell,
   Phone, Mail, Calendar, Plus, ArrowUpRight, ClipboardList, Trash2,
   TrendingUp, Weight, Camera, CalendarDays, CheckCircle2, XCircle,
-  ChevronRight, Calculator,
+  ChevronRight,
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useToast } from '@/components/Toast';
@@ -59,224 +59,6 @@ function SelectField({ label, field, form, setForm, editing, options }) {
           {options.find(o => o.value === form[field])?.label || <span className="text-white/25 font-normal">Não informado</span>}
         </p>
       )}
-    </div>
-  );
-}
-
-const MEDIDAS_CAMPOS = [
-  { key: 'peso',   label: 'Peso (kg)' },
-  { key: 'altura', label: 'Altura (cm)' },
-  { key: 'bf',     label: '% Gordura' },
-  { key: 'mm',     label: 'Massa Magra (kg)' },
-  { key: 'peito',  label: 'Peitoral (mm)' },
-  { key: 'abdom',  label: 'Abdome (mm)' },
-  { key: 'coxa',   label: 'Coxa (mm)' },
-  { key: 'tricep', label: 'Trícep (mm)' },
-  { key: 'axilar', label: 'Axilar (mm)' },
-  { key: 'suprai', label: 'Suprailíaca (mm)' },
-  { key: 'subesc', label: 'Subescapular (mm)' },
-  { key: 'cintura',label: 'Cintura (cm)' },
-  { key: 'quadril',label: 'Quadril (cm)' },
-  { key: 'braco',  label: 'Braço (cm)' },
-  { key: 'coxaC',  label: 'Coxa circunf. (cm)' },
-  { key: 'panturr',label: 'Panturrilha (cm)' },
-];
-
-// Fórmulas de composição corporal
-function calcPollock7(dobras, sexo, idade) {
-  const s = Object.values(dobras).reduce((a, v) => a + (parseFloat(v) || 0), 0);
-  if (s === 0 || !idade) return null;
-  const bd = sexo === 'F'
-    ? 1.097 - 0.00046971 * s + 0.00000056 * s * s - 0.00012828 * idade
-    : 1.112 - 0.00043499 * s + 0.00000055 * s * s - 0.00028826 * idade;
-  return parseFloat(((4.95 / bd - 4.5) * 100).toFixed(1));
-}
-function calcPollock3(dobras, sexo, idade) {
-  const s = Object.values(dobras).reduce((a, v) => a + (parseFloat(v) || 0), 0);
-  if (s === 0 || !idade) return null;
-  const bd = sexo === 'F'
-    ? 1.0994921 - 0.0009929 * s + 0.0000023 * s * s - 0.0001392 * idade
-    : 1.10938 - 0.0008267 * s + 0.0000016 * s * s - 0.0002574 * idade;
-  return parseFloat(((4.95 / bd - 4.5) * 100).toFixed(1));
-}
-function calcIdade(nascimento) {
-  if (!nascimento) return null;
-  const parts = nascimento.split('/');
-  if (parts.length !== 3) return null;
-  const [d, m, y] = parts;
-  const hoje = new Date();
-  const nasc = new Date(+y, +m - 1, +d);
-  let age = hoje.getFullYear() - nasc.getFullYear();
-  if (hoje < new Date(hoje.getFullYear(), nasc.getMonth(), nasc.getDate())) age--;
-  return age > 0 ? age : null;
-}
-
-const PROTOCOLOS = [
-  { id: 'completa',    label: 'Avaliação completa' },
-  { id: 'pollock7',    label: 'Pollock 7 dobras (%GC automático)' },
-  { id: 'pollock3m',   label: 'Pollock 3 dobras — Masculino' },
-  { id: 'pollock3f',   label: 'Pollock 3 dobras — Feminino' },
-  { id: 'inbody',      label: 'InBody / Bioimpedância' },
-  { id: 'circunfer',   label: 'Circunferências' },
-];
-
-const CAMPOS_PROTOCOLO = {
-  completa:  MEDIDAS_CAMPOS,
-  pollock7:  [
-    { key: 'peito',  label: 'Peitoral (mm)' },
-    { key: 'axilar', label: 'Axilar média (mm)' },
-    { key: 'subesc', label: 'Subescapular (mm)' },
-    { key: 'tricep', label: 'Trícep (mm)' },
-    { key: 'suprai', label: 'Suprailíaca (mm)' },
-    { key: 'abdom',  label: 'Abdome (mm)' },
-    { key: 'coxa',   label: 'Coxa (mm)' },
-  ],
-  pollock3m: [
-    { key: 'peito', label: 'Peitoral (mm)' },
-    { key: 'abdom', label: 'Abdome (mm)' },
-    { key: 'coxa',  label: 'Coxa (mm)' },
-  ],
-  pollock3f: [
-    { key: 'tricep', label: 'Trícep (mm)' },
-    { key: 'suprai', label: 'Suprailíaca (mm)' },
-    { key: 'coxa',   label: 'Coxa (mm)' },
-  ],
-  inbody: [
-    { key: 'peso',   label: 'Peso (kg)' },
-    { key: 'bf',     label: '% Gordura' },
-    { key: 'mm',     label: 'Massa Magra (kg)' },
-    { key: 'altura', label: 'Altura (cm)' },
-  ],
-  circunfer: [
-    { key: 'peso',    label: 'Peso (kg)' },
-    { key: 'altura',  label: 'Altura (cm)' },
-    { key: 'cintura', label: 'Cintura (cm)' },
-    { key: 'quadril', label: 'Quadril (cm)' },
-    { key: 'braco',   label: 'Braço (cm)' },
-    { key: 'coxaC',   label: 'Coxa circunf. (cm)' },
-    { key: 'panturr', label: 'Panturrilha (cm)' },
-  ],
-};
-
-function NovaAvaliacaoModal({ alunoId, aluno, onSalvo, onFechar }) {
-  const toast = useToast();
-  const [protocolo, setProtocolo] = useState('completa');
-  const [sexo, setSexo]   = useState(aluno?.sexo || 'M');
-  const [medidas, setMedidas] = useState({});
-  const [obs, setObs]     = useState('');
-  const [saving, setSaving] = useState(false);
-
-  const idade = calcIdade(aluno?.dataNascimento);
-  const ehPollock = protocolo === 'pollock7' || protocolo === 'pollock3m' || protocolo === 'pollock3f';
-
-  const gcCalc = (() => {
-    if (!ehPollock) return null;
-    const dobras = {};
-    (CAMPOS_PROTOCOLO[protocolo] || []).forEach(({ key }) => { if (medidas[key]) dobras[key] = medidas[key]; });
-    if (protocolo === 'pollock7') return calcPollock7(dobras, sexo, idade);
-    return calcPollock3(dobras, protocolo === 'pollock3f' ? 'F' : 'M', idade);
-  })();
-
-  async function salvar() {
-    setSaving(true);
-    try {
-      const medidasFinais = { ...medidas };
-      if (gcCalc !== null) medidasFinais.bf = String(gcCalc);
-      await criarAvaliacao({ alunoId, medidas: medidasFinais, observacoes: obs, protocolo });
-      toast('Avaliação registrada.');
-      onSalvo();
-    } catch { toast('Erro ao salvar avaliação.', 'error'); }
-    finally { setSaving(false); }
-  }
-
-  const campos = CAMPOS_PROTOCOLO[protocolo] || MEDIDAS_CAMPOS;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}>
-      <div className="w-full max-w-2xl rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
-          <h2 className="text-[15px] font-bold text-white">Nova Avaliação</h2>
-          <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all">
-            <X size={16} />
-          </button>
-        </div>
-        <div className="overflow-y-auto p-6 space-y-5">
-          {/* Seletor de protocolo */}
-          <div>
-            <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Protocolo</label>
-            <select value={protocolo} onChange={e => { setProtocolo(e.target.value); setMedidas({}); }}
-              className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
-              {PROTOCOLOS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
-            </select>
-          </div>
-
-          {/* Sexo (apenas para Pollock) */}
-          {ehPollock && (
-            <div className="flex items-center gap-4">
-              <div className="flex-1">
-                <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Sexo biológico</label>
-                <div className="flex gap-2">
-                  {[{ v: 'M', l: 'Masculino' }, { v: 'F', l: 'Feminino' }].map(({ v, l }) => (
-                    <button key={v} onClick={() => setSexo(v)} type="button"
-                      className={`flex-1 py-2 rounded-xl text-[13px] font-semibold transition-all ${sexo === v ? 'bg-blue-600 text-white' : 'bg-white/[0.04] text-white/40 hover:bg-white/[0.07]'}`}>
-                      {l}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="flex-1">
-                <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Idade</label>
-                <div className="px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] text-[13px] text-white/60">
-                  {idade ? `${idade} anos` : <span className="text-amber-400/70">Informe nascimento no cadastro</span>}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Campos do protocolo */}
-          <div className="grid grid-cols-3 gap-3">
-            {campos.map(({ key, label }) => (
-              <div key={key}>
-                <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">{label}</label>
-                <input type="number" step="0.1"
-                  value={medidas[key] || ''}
-                  onChange={e => setMedidas(m => ({ ...m, [key]: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all"
-                  placeholder="—" />
-              </div>
-            ))}
-          </div>
-
-          {/* Resultado Pollock em tempo real */}
-          {ehPollock && (
-            <div className={`flex items-center gap-3 rounded-xl p-4 ${gcCalc !== null ? 'bg-emerald-500/10 ring-1 ring-emerald-500/20' : 'bg-white/[0.04] ring-1 ring-white/[0.06]'}`}>
-              <Calculator size={18} className={gcCalc !== null ? 'text-emerald-400' : 'text-white/25'} />
-              <div>
-                <p className="text-[10px] font-semibold text-white/30 uppercase tracking-wider">% Gordura calculado</p>
-                <p className={`text-[20px] font-bold ${gcCalc !== null ? 'text-emerald-400' : 'text-white/25'}`}>
-                  {gcCalc !== null ? `${gcCalc}%` : '—'}
-                </p>
-                {gcCalc !== null && <p className="text-[10px] text-white/30">Será salvo automaticamente em % Gordura</p>}
-              </div>
-            </div>
-          )}
-
-          <div>
-            <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Observações</label>
-            <textarea value={obs} onChange={e => setObs(e.target.value)} rows={2}
-              className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all resize-none"
-              placeholder="Observações da avaliação..." />
-          </div>
-        </div>
-        <div className="px-6 py-4 border-t border-white/[0.06] flex justify-end gap-2">
-          <button onClick={onFechar} className="px-4 py-2 rounded-xl border border-white/[0.08] text-[13px] text-white/50 hover:text-white hover:border-white/15 transition-all">
-            Cancelar
-          </button>
-          <button onClick={salvar} disabled={saving} className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-blue-900/30">
-            {saving ? 'Salvando...' : 'Salvar avaliação'}
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
@@ -848,7 +630,6 @@ export default function FichaAluno() {
   const [form,      setForm]      = useState({});
   const [saving,    setSaving]    = useState(false);
   const [aba,       setAba]       = useState('dados');
-  const [novaAval,  setNovaAval]  = useState(false);
   const [atribuirPrograma, setAtribuirPrograma] = useState(false);
   const [confirmExcluirId, setConfirmExcluirId] = useState(null);
   const [confirmAluno, setConfirmAluno] = useState(false);
@@ -907,14 +688,6 @@ export default function FichaAluno() {
 
   return (
     <div className="px-4 pt-5 pb-6 md:p-8 max-w-5xl mx-auto w-full">
-      {novaAval && (
-        <NovaAvaliacaoModal
-          alunoId={id}
-          aluno={aluno}
-          onSalvo={() => { setNovaAval(false); buscarAvaliacoes(id).then(setAvaliacoes); }}
-          onFechar={() => setNovaAval(false)}
-        />
-      )}
       {atribuirPrograma && (
         <AtribuirProgramaModal
           aluno={aluno}
