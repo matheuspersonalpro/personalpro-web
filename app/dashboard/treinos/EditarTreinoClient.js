@@ -160,6 +160,7 @@ export default function EditarTreino() {
   const router       = useRouter();
   const toast        = useToast();
   const isNovo       = id === 'novo';
+  const isTemplate   = searchParams.get('template') === 'true'; // criando um MODELO (Biblioteca)
 
   const [form,      setForm]      = useState({ nome: '', alunoId: '', diaSemana: '', exercicios: [] });
   const [alunos,    setAlunos]    = useState([]);
@@ -191,7 +192,7 @@ export default function EditarTreino() {
         setExCustom(ec);
         setVideosMap(vids || {});
         if (!isNovo && treino) setForm(treino);
-        else setForm(f => ({ ...f, alunoId: alunoIdParam }));
+        else setForm(f => ({ ...f, alunoId: alunoIdParam, template: isTemplate }));
       })
       .finally(() => setLoading(false));
   }, [id, isNovo]);
@@ -242,8 +243,12 @@ export default function EditarTreino() {
     setSaving(true);
     try {
       await salvarTreino(isNovo ? form : { ...form, id });
-      toast('Treino salvo com sucesso.');
-      router.push(form.alunoId ? `/dashboard/alunos/?id=${form.alunoId}` : '/dashboard/treinos/');
+      toast(form.template ? 'Modelo salvo na biblioteca.' : 'Treino salvo com sucesso.');
+      router.push(
+        form.template ? '/dashboard/biblioteca/'
+          : form.alunoId ? `/dashboard/alunos/?id=${form.alunoId}`
+          : '/dashboard/treinos/'
+      );
     } catch { toast('Erro ao salvar treino.', 'error'); }
     finally { setSaving(false); }
   }
@@ -283,7 +288,7 @@ export default function EditarTreino() {
             <input
               value={form.nome}
               onChange={e => { setErroNome(false); setForm(f => ({ ...f, nome: e.target.value })); }}
-              placeholder="Nome do treino..."
+              placeholder={form.template ? 'Nome do modelo...' : 'Nome do treino...'}
               className={`text-[18px] font-bold text-white bg-transparent focus:outline-none placeholder-white/20 w-72 ${erroNome ? 'placeholder-red-400' : ''}`}
               style={erroNome ? { borderBottom: '1px solid rgba(239,68,68,0.6)' } : {}}
             />
@@ -292,12 +297,14 @@ export default function EditarTreino() {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Aluno */}
-          <select value={form.alunoId || ''} onChange={e => setForm(f => ({ ...f, alunoId: e.target.value }))}
-            className="px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/60 text-[12px] focus:outline-none focus:border-blue-500/50 transition-all">
-            <option value="">Sem aluno</option>
-            {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
-          </select>
+          {/* Aluno — modelos da biblioteca não têm aluno vinculado */}
+          {!form.template && (
+            <select value={form.alunoId || ''} onChange={e => setForm(f => ({ ...f, alunoId: e.target.value }))}
+              className="px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/60 text-[12px] focus:outline-none focus:border-blue-500/50 transition-all">
+              <option value="">Sem aluno</option>
+              {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
+            </select>
+          )}
 
           <button onClick={salvar} disabled={saving}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-blue-900/30">
