@@ -13,11 +13,78 @@ import {
   ChevronLeft, Pencil, Save, X, User, CreditCard, Dumbbell,
   Phone, Mail, Calendar, Plus, ArrowUpRight, ClipboardList, Trash2,
   TrendingUp, Weight, Camera, CalendarDays, CheckCircle2, XCircle,
-  ChevronRight,
+  ChevronRight, ChevronDown, Play,
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useToast } from '@/components/Toast';
 import ConfirmModal from '@/components/ConfirmModal';
+import { METODOS } from '@/lib/treinoData';
+
+// Card de treino só-leitura (visualização igual ao mobile): expande mostrando
+// exercícios com séries, método e vídeo. O botão "Editar" leva ao editor.
+function TreinoCard({ treino }) {
+  const [open, setOpen] = useState(false);
+  const exs = treino.exercicios || [];
+  return (
+    <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+      <div className="flex items-center gap-2 p-4">
+        <button onClick={() => setOpen(o => !o)} className="flex items-center gap-3 flex-1 min-w-0 text-left">
+          <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
+            <Dumbbell size={16} className="text-blue-400" strokeWidth={1.8} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] font-semibold text-white/80 truncate">{treino.nome}</p>
+            <p className="text-[11px] text-white/30">{exs.length} exercício{exs.length !== 1 ? 's' : ''}</p>
+          </div>
+          <ChevronDown size={16} className={`text-white/25 transition-transform shrink-0 ${open ? '' : '-rotate-90'}`} />
+        </button>
+        <Link href={`/dashboard/treinos?id=${treino.id}`}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-[11px] font-semibold text-white/50 hover:text-white transition-all shrink-0">
+          <Pencil size={11} /> Editar
+        </Link>
+      </div>
+      {open && (
+        <div className="px-4 pb-4 space-y-2 border-t border-white/[0.04] pt-3">
+          {exs.length === 0 ? (
+            <p className="text-[12px] text-white/25 text-center py-4">Sem exercícios neste treino.</p>
+          ) : exs.map((ex, i) => {
+            const sets   = ex.series || [];
+            const n      = sets.length;
+            const reps   = [...new Set(sets.map(s => s.reps).filter(Boolean))].join(' / ');
+            const pausa  = sets[0]?.pausa || ex.pausa || '';
+            const metodo = ex.metodo ? METODOS[ex.metodo] : null;
+            return (
+              <div key={i} className="rounded-xl bg-white/[0.03] ring-1 ring-white/[0.05] p-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-[13px] font-semibold text-white/85">{ex.nome}</p>
+                    {ex.grupo && <p className="text-[10px] text-white/30">{ex.grupo}</p>}
+                  </div>
+                  {ex.metodo && (
+                    <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full shrink-0"
+                      style={metodo ? { background: metodo.cor + '22', color: metodo.cor } : { background: 'rgba(96,165,250,0.15)', color: '#60a5fa' }}>
+                      {ex.metodo}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center flex-wrap gap-x-4 gap-y-1 mt-2 text-[11px] text-white/45">
+                  <span><span className="text-white/30">Séries:</span> {n}{reps ? ` × ${reps}` : ''}</span>
+                  {pausa && <span><span className="text-white/30">Descanso:</span> {pausa}</span>}
+                  {ex.videoUrl && (
+                    <a href={ex.videoUrl} target="_blank" rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-blue-400/80 hover:text-blue-400 transition-colors">
+                      <Play size={11} /> Ver vídeo
+                    </a>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function Field({ label, value, field, form, setForm, editing, type = 'text', icon: Icon }) {
   return (
@@ -839,21 +906,7 @@ export default function FichaAluno() {
               <p className="text-[13px] text-white/30">Nenhum treino cadastrado para este aluno.</p>
             </div>
           ) : (
-            treinos.map(t => (
-              <Link key={t.id} href={`/dashboard/treinos?id=${t.id}`}
-                className="flex items-center justify-between p-4 rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] hover:ring-white/[0.10] hover:bg-[#101f38] transition-all group">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                    <Dumbbell size={16} className="text-blue-400" strokeWidth={1.8} />
-                  </div>
-                  <div>
-                    <p className="text-[13px] font-semibold text-white/80 group-hover:text-white transition-colors">{t.nome}</p>
-                    <p className="text-[11px] text-white/30">{t.exercicios?.length || 0} exercícios</p>
-                  </div>
-                </div>
-                <ArrowUpRight size={15} className="text-white/20 group-hover:text-white/50 transition-colors" />
-              </Link>
-            ))
+            treinos.map(t => <TreinoCard key={t.id} treino={t} />)
           )}
         </div>
       )}
