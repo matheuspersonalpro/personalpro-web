@@ -107,11 +107,12 @@ function CardPlano({ plano, selecionado, onSelecionar, processando }) {
           {ativo && <Check size={11} className="text-white" strokeWidth={3} />}
         </div>
       </div>
-      <div className="mb-1">
-        <span className="text-[26px] font-bold text-white">{fmtBRL(plano.preco)}</span>
+      <div className="mb-1 flex items-end gap-1">
+        <span className="text-[26px] font-bold text-white">{fmtBRL(plano.porMes)}</span>
+        <span className="text-[12px] text-white/40 mb-0.5">/mês</span>
       </div>
       <p className="text-[11px] text-white/35">
-        {fmtBRL(plano.porMes)}/mês
+        {fmtBRL(plano.preco)} no total
         {plano.de && <span className="ml-2 line-through text-white/20">{fmtBRL(plano.de)}</span>}
       </p>
     </button>
