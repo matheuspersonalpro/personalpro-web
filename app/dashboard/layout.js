@@ -99,7 +99,8 @@ export default function DashboardLayout({ children }) {
 
   const avaliacao     = avaliarAssinatura(personal.assinatura);
   const estaRotaLivre = ROTAS_LIVRES.some(r => pathname.startsWith(r));
-  const gateAtivo     = !contando && alunosCount > ALUNOS_GRATIS && !avaliacao.liberado;
+  // admin (dono do app) nunca paga a própria assinatura — sempre liberado.
+  const gateAtivo     = !personal.admin && !contando && alunosCount > ALUNOS_GRATIS && !avaliacao.liberado;
   const mostrarGate   = gateAtivo && !estaRotaLivre;
   const mostrarAlerta = gateAtivo && pathname === '/dashboard';
 
