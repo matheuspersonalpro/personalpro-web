@@ -15,16 +15,32 @@ const ESTADO_UI = {
   ativa:     { cor: 'text-emerald-400', bg: 'bg-emerald-500/10',  ring: 'ring-emerald-500/20',  icone: ShieldCheck,  label: 'Assinatura ativa' },
   pendente:  { cor: 'text-amber-400',   bg: 'bg-amber-500/10',    ring: 'ring-amber-500/20',    icone: AlertCircle,  label: 'Pagamento pendente' },
   bloqueada: { cor: 'text-red-400',     bg: 'bg-red-500/10',      ring: 'ring-red-500/20',      icone: AlertCircle,  label: 'Assinatura bloqueada' },
+  admin:     { cor: 'text-emerald-400', bg: 'bg-emerald-500/10',  ring: 'ring-emerald-500/20',  icone: ShieldCheck,  label: 'Acesso completo' },
 };
 
 const LABEL_PLANO = {
   mensal: '1 mês', trimestral: '3 meses', semestral: '6 meses', anual: '12 meses',
 };
 
-function StatusCard({ avaliacao, alunosAtivos, planoLabel }) {
-  const ui = ESTADO_UI[avaliacao.estado] || ESTADO_UI.sem;
+function StatusCard({ avaliacao, alunosAtivos, planoLabel, admin }) {
+  // admin (dono do app) tem acesso liberado — nunca mostra "bloqueada".
+  const ui = admin ? ESTADO_UI.admin : (ESTADO_UI[avaliacao.estado] || ESTADO_UI.sem);
   const Icone = ui.icone;
   const alunosGratis = alunosAtivos <= ALUNOS_GRATIS;
+
+  if (admin) {
+    return (
+      <div className={`rounded-2xl ring-1 p-6 flex items-start gap-4 ${ui.bg} ${ui.ring}`}>
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${ui.bg} ring-1 ${ui.ring}`}>
+          <Icone size={20} className={ui.cor} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className={`text-[15px] font-bold ${ui.cor}`}>{ui.label}</p>
+          <p className="text-[13px] text-white/50 mt-1">Conta com acesso ilimitado — sem necessidade de assinatura.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`rounded-2xl ring-1 p-6 flex items-start gap-4 ${ui.bg} ${ui.ring}`}>
@@ -203,7 +219,7 @@ export default function AssinaturaPage() {
       </div>
 
       {/* Status atual */}
-      <StatusCard avaliacao={avaliacao} alunosAtivos={alunosAtivos} planoLabel={LABEL_PLANO[planoAtual] || planoAtual} />
+      <StatusCard avaliacao={avaliacao} alunosAtivos={alunosAtivos} planoLabel={LABEL_PLANO[planoAtual] || planoAtual} admin={personal?.admin === true} />
 
       {/* Planos — só mostra se não for grátis */}
       {!alunosGratis && (
