@@ -1,11 +1,13 @@
 ﻿'use client';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { buscarAlunos, criarAluno } from '@/lib/firestore';
 import { Search, ArrowUpRight, Clock, XCircle, CheckCircle2, Filter, Plus, X, User } from 'lucide-react';
 import FichaAluno from './FichaAlunoClient';
 import { useToast } from '@/components/Toast';
+import { usePersonal } from '@/lib/AuthContext';
+import { ALUNOS_GRATIS, avaliarAssinatura } from '@/lib/assinatura';
 
 function Badge({ tipo }) {
   const map = {
@@ -129,6 +131,8 @@ export default function AlunosPage() {
   const searchParams = useSearchParams();
   const alunoId      = searchParams.get('id');
   const toast        = useToast();
+  const router       = useRouter();
+  const personal     = usePersonal();
 
   const [alunos,   setAlunos]   = useState([]);
   const [busca,    setBusca]    = useState('');
@@ -168,6 +172,22 @@ export default function AlunosPage() {
     inadimplentes: alunos.filter(a => classificar(a) === 'inadimplente').length,
   };
 
+  // Bloqueio do plano grátis: ao clicar em "Novo aluno" já no limite (3) sem
+  // assinatura liberada, manda pra tela de assinatura em vez de criar o 4º.
+  const alunosAtivos  = alunos.filter(a => a.ativo !== false).length;
+  const bloqueadoNovo = personal && personal.admin !== true
+    && alunosAtivos >= ALUNOS_GRATIS
+    && !avaliarAssinatura(personal.assinatura).liberado;
+
+  function novoAluno() {
+    if (bloqueadoNovo) {
+      toast(`Plano grátis: até ${ALUNOS_GRATIS} alunos. Assine para adicionar mais.`, 'error');
+      router.push('/dashboard/assinatura');
+      return;
+    }
+    setNovoModal(true);
+  }
+
   if (loading) return (
     <div className="flex items-center justify-center h-full">
       <div className="w-7 h-7 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -188,7 +208,7 @@ export default function AlunosPage() {
           <h1 className="text-[22px] font-bold text-white tracking-tight">Alunos</h1>
           <p className="text-[12px] text-white/35 mt-0.5">{alunos.length} aluno{alunos.length !== 1 ? 's' : ''} cadastrado{alunos.length !== 1 ? 's' : ''}</p>
         </div>
-        <button onClick={() => setNovoModal(true)}
+        <button onClick={novoAluno}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
           <Plus size={14} /> Novo aluno
         </button>
