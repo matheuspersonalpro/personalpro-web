@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { buscarAlunos } from '@/lib/firestore';
 import {
   PLANOS, ALUNOS_GRATIS, fmtBRL, avaliarAssinatura,
-  criarCheckoutAssinatura, iniciarTrialAssinatura,
+  criarCheckoutAssinatura, iniciarTrialAssinatura, verificarPagamentoAssinatura,
 } from '@/lib/assinatura';
 import { usePersonal } from '@/lib/AuthContext';
 import { CreditCard, Check, Zap, Clock, ShieldCheck, AlertCircle, ExternalLink } from 'lucide-react';
@@ -179,10 +179,26 @@ export default function AssinaturaPage() {
     setProcessando(true);
     try {
       const { url } = await criarCheckoutAssinatura(planoSel, cpfDigits);
-      if (url) window.open(url, '_blank');
+      // Redireciona na MESMA aba. window.open('_blank') depois de um await é
+      // tratado como popup não-solicitado e bloqueado pelo navegador (era por
+      // isso que "nada acontecia" e só a cobrança era gerada).
+      if (url) window.location.href = url;
       else toast('Link de pagamento não retornado. Tente novamente.', 'error');
     } catch (e) {
       toast(e.message || 'Erro ao iniciar checkout. Tente novamente.', 'error');
+    } finally {
+      setProcessando(false);
+    }
+  }
+
+  async function jaPaguei() {
+    setProcessando(true);
+    try {
+      const { status } = await verificarPagamentoAssinatura();
+      if (status === 'ativa') toast('Pagamento confirmado! Acesso liberado. 🎉');
+      else toast('Ainda não identifiquei o pagamento. Se acabou de pagar, aguarde ~1 min e tente de novo.', 'error');
+    } catch (e) {
+      toast(e.message || 'Não consegui verificar agora. Tente de novo.', 'error');
     } finally {
       setProcessando(false);
     }
@@ -301,6 +317,15 @@ export default function AssinaturaPage() {
           <p className="text-[11px] text-white/25 text-center mt-2.5">
             Você será redirecionado para o checkout seguro do Asaas. O status atualiza automaticamente após a confirmação do pagamento.
           </p>
+
+          {/* Fallback manual: se o webhook atrasar, verifica o pagamento na hora. */}
+          <button
+            onClick={jaPaguei}
+            disabled={processando}
+            className="w-full mt-2 py-2.5 text-[12px] text-white/45 hover:text-white/80 disabled:opacity-40 transition-all"
+          >
+            Já paguei — verificar agora
+          </button>
         </div>
       )}
 
