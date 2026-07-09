@@ -13,7 +13,7 @@ import {
   formatarDistancia, formatarDuracao, volumeSemanal,
   semanasAteProva, fasePeriodizacao, mapaZonas, anotarZonasDetalhe,
 } from '@/lib/enduranceTreinos';
-import { modelosProntos, modelosSugeridos, semanaSugerida } from '@/lib/enduranceModelos';
+import { modelosProntos, modelosSugeridos, semanaSugerida, nivelDoPerfil } from '@/lib/enduranceModelos';
 import {
   calcularVDOT, zonasCorridaPorVDOT,
   calcularFTP, calcularFTPRampa, zonasCiclismoPorFTP,
@@ -89,6 +89,10 @@ export default function EndurancePage() {
   // ── Derivados ─────────────────────────────────────────────────────────────
   const aluno   = alunos.find(a => a.id === alunoId) || null;
   const perfil  = aluno?.enduranceProfile?.[modalidade] || {};
+  // Nível do aluno (iniciante|intermediario|avancado) a partir do teste salvo —
+  // escala o VOLUME das semanas sugeridas. Sem teste, cai em 'intermediario'.
+  // Antes o site não calculava isso: TODO aluno recebia plano intermediário fixo.
+  const nivelAluno = nivelDoPerfil(modalidade, perfil);
   const dias    = diasDaSemana(semanaIni);
   const iniKey  = chaveData(dias[0]);
   const fimKey  = chaveData(dias[6]);
@@ -278,7 +282,7 @@ export default function EndurancePage() {
   // ─────────────────────────────────────────────────────────────────────────
   async function montarSemana() {
     if (!alunoId) return;
-    const plano = semanaSugerida(modalidade, focoInfo.chave, distProva, semRest);
+    const plano = semanaSugerida(modalidade, focoInfo.chave, distProva, semRest, nivelAluno, null);
     const livres = dias.filter(d => {
       const k = chaveData(d);
       return sessoesDoDia(k).length === 0 && !(dataProva && k >= dataProva);
@@ -346,7 +350,7 @@ export default function EndurancePage() {
       const sR = semanasAteProva(dataProva, cursor);
       const fase = fasePeriodizacao(sR, distProva);
       const chave = fase?.chave || 'geral';
-      const plano = semanaSugerida(modalidade, chave, distProva, sR);
+      const plano = semanaSugerida(modalidade, chave, distProva, sR, nivelAluno, null);
       const dS = diasDaSemana(cursor);
       totalSessoes += plano.filter((d, i) => {
         if (d.rest) return false;
@@ -375,7 +379,7 @@ export default function EndurancePage() {
         const sR = semanasAteProva(dataProva, cursor);
         const fase = fasePeriodizacao(sR, distProva);
         const chave = fase?.chave || 'geral';
-        const plano = semanaSugerida(modalidade, chave, distProva, sR);
+        const plano = semanaSugerida(modalidade, chave, distProva, sR, nivelAluno, null);
         const dS = diasDaSemana(cursor);
         for (let i = 0; i < 7; i++) {
           const item = plano[i]; if (!item || item.rest) continue;
