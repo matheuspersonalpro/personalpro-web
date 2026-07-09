@@ -21,7 +21,7 @@ const FEATURES = [
     icon: Dumbbell,
     title: 'Treinos personalizados',
     desc: 'Monte programas com biblioteca de exercícios, vídeos e periodização automática de 12 meses.',
-    color: 'indigo',
+    color: 'sky',
   },
   {
     icon: DollarSign,
@@ -33,7 +33,7 @@ const FEATURES = [
     icon: CalendarDays,
     title: 'Agenda inteligente',
     desc: 'Gerencie sessões, trocas de horário, férias e reposições sem conflitos.',
-    color: 'purple',
+    color: 'blue',
   },
   {
     icon: Activity,
@@ -114,12 +114,11 @@ const FAQS = [
 ];
 
 const ACCENT = {
-  blue:   { bg: 'bg-blue-500/10',   text: 'text-blue-400',   ring: 'ring-blue-500/20' },
-  indigo: { bg: 'bg-indigo-500/10', text: 'text-indigo-400', ring: 'ring-indigo-500/20' },
-  green:  { bg: 'bg-green-500/10',  text: 'text-green-400',  ring: 'ring-green-500/20' },
-  purple: { bg: 'bg-purple-500/10', text: 'text-purple-400', ring: 'ring-purple-500/20' },
-  amber:  { bg: 'bg-amber-500/10',  text: 'text-amber-400',  ring: 'ring-amber-500/20' },
-  pink:   { bg: 'bg-pink-500/10',   text: 'text-pink-400',   ring: 'ring-pink-500/20' },
+  blue:  { bg: 'bg-blue-500/10',  text: 'text-blue-400',  ring: 'ring-blue-500/20' },
+  sky:   { bg: 'bg-sky-500/10',   text: 'text-sky-400',   ring: 'ring-sky-500/20' },
+  green: { bg: 'bg-green-500/10', text: 'text-green-400', ring: 'ring-green-500/20' },
+  amber: { bg: 'bg-amber-500/10', text: 'text-amber-400', ring: 'ring-amber-500/20' },
+  pink:  { bg: 'bg-pink-500/10',  text: 'text-pink-400',  ring: 'ring-pink-500/20' },
 };
 
 function FaqItem({ q, a }) {
@@ -213,7 +212,7 @@ export default function LandingPage() {
                     { label: 'Alunos', value: '12', color: 'text-blue-400', bg: 'bg-blue-500/10' },
                     { label: 'Receita', value: 'R$2.4k', color: 'text-green-400', bg: 'bg-green-500/10' },
                     { label: 'Vencendo', value: '3', color: 'text-amber-400', bg: 'bg-amber-500/10' },
-                    { label: 'Em dia', value: '9', color: 'text-purple-400', bg: 'bg-purple-500/10' },
+                    { label: 'Em dia', value: '9', color: 'text-blue-400', bg: 'bg-blue-500/10' },
                   ].map(c => (
                     <div key={c.label} className={`${c.bg} rounded-2xl p-3`}>
                       <p className={`text-[18px] font-black ${c.color}`}>{c.value}</p>

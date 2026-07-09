@@ -307,7 +307,7 @@ export default function DashboardPage() {
                     </td>
                     <td className="px-4 py-3.5 text-[12px] text-white/35 hidden sm:table-cell">{a.plano || '—'}</td>
                     <td className="px-4 py-3.5">
-                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ${a.tipoServico === 'online' ? 'bg-purple-500/12 text-purple-400 ring-purple-500/20' : 'bg-blue-500/12 text-blue-400 ring-blue-500/20'}`}>
+                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ${a.tipoServico === 'online' ? 'bg-blue-500/12 text-blue-400 ring-blue-500/20' : 'bg-blue-500/12 text-blue-400 ring-blue-500/20'}`}>
                         {a.tipoServico === 'online' ? 'Online' : 'Presencial'}
                       </span>
                     </td>

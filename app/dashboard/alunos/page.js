@@ -11,7 +11,7 @@ import { ALUNOS_GRATIS, avaliarAssinatura } from '@/lib/assinatura';
 
 function Badge({ tipo }) {
   const map = {
-    online:     'bg-purple-500/15 text-purple-400 ring-purple-500/20',
+    online:     'bg-blue-500/15 text-blue-400 ring-blue-500/20',
     presencial: 'bg-blue-500/15 text-blue-400 ring-blue-500/20',
   };
   const cls = map[tipo] || map.presencial;
@@ -257,7 +257,7 @@ export default function AlunosPage() {
                 className={`border-b border-white/[0.03] last:border-0 hover:bg-white/[0.025] transition-colors group ${i % 2 === 1 ? 'bg-white/[0.01]' : ''}`}>
                 <td className="px-6 py-3.5">
                   <Link href={`/dashboard/alunos?id=${a.id}`} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-500/20 flex items-center justify-center text-[11px] font-bold text-blue-400 shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-sky-500/20 flex items-center justify-center text-[11px] font-bold text-blue-400 shrink-0">
                       {a.nome?.[0]}
                     </div>
                     <div>

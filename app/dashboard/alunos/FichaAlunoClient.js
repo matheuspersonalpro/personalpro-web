@@ -263,7 +263,7 @@ function AtribuirProgramaModal({ aluno, onSalvo, onFechar }) {
             Cancelar
           </button>
           <button onClick={atribuir} disabled={salvando || !programaId}
-            className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-indigo-900/30">
+            className="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-sky-900/30">
             {salvando ? 'Atribuindo...' : 'Atribuir'}
           </button>
         </div>
@@ -301,7 +301,7 @@ function ComparacaoModal({ sessA, sessB, onFechar }) {
           {/* Cabeçalhos */}
           <div className="grid grid-cols-2 gap-4 mb-5">
             {[sessA, sessB].map((sess, i) => (
-              <div key={i} className={`rounded-xl px-4 py-2.5 text-center ring-1 ${i === 0 ? 'bg-blue-500/10 ring-blue-500/20' : 'bg-purple-500/10 ring-purple-500/20'}`}>
+              <div key={i} className={`rounded-xl px-4 py-2.5 text-center ring-1 ${i === 0 ? 'bg-blue-500/10 ring-blue-500/20' : 'bg-blue-500/10 ring-blue-500/20'}`}>
                 <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: i === 0 ? '#60a5fa' : '#c084fc' }}>
                   {i === 0 ? 'ANTES' : 'DEPOIS'}
                 </p>
@@ -439,7 +439,7 @@ function FotosTab({ alunoId }) {
           <div className="flex items-center gap-2">
             {comparando && selecionadas.length === 2 && (
               <button onClick={() => setVerComparacao(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-[12px] font-semibold text-white transition-all">
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all">
                 Ver comparação
               </button>
             )}
@@ -485,7 +485,7 @@ function FotosTab({ alunoId }) {
                       ? selecionada
                         ? ordemSel === 0
                           ? 'bg-blue-500/10 ring-inset ring-1 ring-blue-500/30 cursor-pointer'
-                          : 'bg-purple-500/10 ring-inset ring-1 ring-purple-500/30 cursor-pointer'
+                          : 'bg-blue-500/10 ring-inset ring-1 ring-blue-500/30 cursor-pointer'
                         : 'hover:bg-white/[0.03] cursor-pointer'
                       : ''
                   }`}>
@@ -493,7 +493,7 @@ function FotosTab({ alunoId }) {
                   {comparando && (
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 font-bold text-[12px] ring-2 transition-all ${
                       selecionada && ordemSel === 0 ? 'bg-blue-500 ring-blue-500/50 text-white' :
-                      selecionada && ordemSel === 1 ? 'bg-purple-500 ring-purple-500/50 text-white' :
+                      selecionada && ordemSel === 1 ? 'bg-blue-500 ring-blue-500/50 text-white' :
                       'ring-white/[0.12] text-white/20 bg-transparent'
                     }`}>
                       {selecionada ? (ordemSel === 0 ? 'A' : 'B') : (idx + 1)}
@@ -504,7 +504,7 @@ function FotosTab({ alunoId }) {
                     <div className="flex items-center gap-2 mb-2">
                       <p className="text-[12px] font-semibold text-white/60">{data}</p>
                       {selecionada && (
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${ordemSel === 0 ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'}`}>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${ordemSel === 0 ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-500/20 text-blue-400'}`}>
                           {ordemSel === 0 ? 'ANTES' : 'DEPOIS'}
                         </span>
                       )}
@@ -784,7 +784,7 @@ export default function FichaAluno() {
 
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/25 to-indigo-500/25 flex items-center justify-center text-xl font-bold text-blue-400 ring-1 ring-blue-500/20">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/25 to-sky-500/25 flex items-center justify-center text-xl font-bold text-blue-400 ring-1 ring-blue-500/20">
             {aluno.nome?.[0]}
           </div>
           <div>
@@ -800,7 +800,7 @@ export default function FichaAluno() {
               </span>
               <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ${
                 aluno.tipoServico === 'online'
-                  ? 'bg-purple-500/15 text-purple-400 ring-purple-500/20'
+                  ? 'bg-blue-500/15 text-blue-400 ring-blue-500/20'
                   : 'bg-blue-500/15 text-blue-400 ring-blue-500/20'
               }`}>
                 {aluno.tipoServico === 'online' ? 'Online' : 'Presencial'}
@@ -892,7 +892,7 @@ export default function FichaAluno() {
         <div className="space-y-3">
           <div className="flex justify-end gap-2">
             <button onClick={() => setAtribuirPrograma(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-[12px] font-semibold text-indigo-300 hover:text-indigo-200 transition-all">
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-sky-500/30 bg-sky-500/10 hover:bg-sky-500/20 text-[12px] font-semibold text-sky-300 hover:text-sky-200 transition-all">
               <Dumbbell size={13} /> Atribuir programa
             </button>
             <Link href={`/dashboard/treinos?id=novo&alunoId=${id}`}
@@ -1091,8 +1091,8 @@ function AcordiaoCarga({ nome, entradas }) {
       <button onClick={() => setAberto(o => !o)}
         className="w-full flex items-center justify-between p-4 hover:bg-white/[0.02] transition-colors">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-indigo-500/10 flex items-center justify-center">
-            <Weight size={14} className="text-indigo-400" />
+          <div className="w-8 h-8 rounded-xl bg-sky-500/10 flex items-center justify-center">
+            <Weight size={14} className="text-sky-400" />
           </div>
           <div className="text-left">
             <p className="text-[13px] font-semibold text-white/80">{nome}</p>

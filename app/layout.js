@@ -1,11 +1,13 @@
 import './globals.css';
-import { Inter } from 'next/font/google';
+import { Outfit } from 'next/font/google';
 import { AuthProvider } from '@/lib/AuthContext';
 import { ToastProvider } from '@/components/Toast';
 
-const inter = Inter({
+// Outfit — mesma fonte do app mobile, pra identidade visual unificada
+// (antes o site usava Inter, que destoava do app e tinha cara genérica).
+const outfit = Outfit({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-outfit',
   display: 'swap',
 });
 
@@ -17,7 +19,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="pt-BR" className={`h-full ${inter.variable}`}>
+    <html lang="pt-BR" className={`h-full ${outfit.variable}`}>
       <body className="h-full bg-[#080f1d] text-white antialiased">
         <AuthProvider>
           <ToastProvider>{children}</ToastProvider>
