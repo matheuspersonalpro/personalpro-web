@@ -163,7 +163,8 @@ export default function AlunosPage() {
       if (filtro === 'vencendo') return classificar(a) === 'vencendo';
       if (filtro === 'inadimplentes') return classificar(a) === 'inadimplente';
       return classificar(a) === 'ativo';
-    });
+    })
+    .sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
 
   const counts = {
     todos: alunos.length,

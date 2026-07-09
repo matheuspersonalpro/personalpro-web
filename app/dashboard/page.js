@@ -82,7 +82,8 @@ export default function DashboardPage() {
   }, []);
 
   const hoje = new Date(); hoje.setHours(0,0,0,0);
-  const mesStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+  const mesAtual = hoje.getMonth();       // 0-11
+  const anoAtual = hoje.getFullYear();
 
   const ativos        = alunos.filter(a => a.status !== 'inativo');
   const inadimplentes = alunos.filter(a => {
@@ -96,8 +97,14 @@ export default function DashboardPage() {
     const diff = (new Date(+y, m-1, +d) - hoje) / 86400000;
     return diff >= 0 && diff <= 7;
   });
+  // Pagamentos são salvos como DD/MM/YYYY (mesmo formato lido no Financeiro) —
+  // filtra por mês+ano parseando a data BR, não por prefixo YYYY-MM (que nunca
+  // casava, deixando a receita do mês sempre zerada no painel).
   const receitaMes = pagamentos
-    .filter(p => (p.data||'').startsWith(mesStr))
+    .filter(p => {
+      const [, mo, a] = (p.data || '').split('/').map(Number);
+      return mo === mesAtual + 1 && a === anoAtual;
+    })
     .reduce((s,p) => s + Number(p.valor||0), 0);
 
   const hojeISO = hoje.toISOString().split('T')[0];
