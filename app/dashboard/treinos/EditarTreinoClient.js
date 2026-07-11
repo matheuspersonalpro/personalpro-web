@@ -56,9 +56,23 @@ function buildGrupos(exercicios) {
 let _gidSeq = 0;
 const novoGrupoId = () => `g_${Date.now().toString(36)}_${_gidSeq++}`;
 
+// Resume o array de séries em "4×10-12  ·  60s" — mesma lógica do app.
+function resumirSeries(series) {
+  if (!series?.length) return null;
+  const qtd = series.length;
+  const repsVals = [...new Set(series.map(s => s.reps).filter(v => v && v.trim()))];
+  const reps = repsVals.length > 0 ? repsVals[0] : null;
+  const carga = series.find(s => s.carga?.trim())?.carga?.trim() || '';
+  const pausa = series.find(s => s.pausa?.trim())?.pausa?.trim() || '';
+  const partes = [reps ? `${qtd}×${reps}` : `${qtd} séries`];
+  if (carga) partes.push(carga);
+  if (pausa) partes.push(pausa);
+  return partes.join('  ·  ');
+}
+
 // ── Card de um exercício no treino ─────────────────────────────────────────
 function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [showPlayer, setShowPlayer] = useState(false);
   const metodoInfo = ex.metodo ? METODOS[ex.metodo] : null;
   const ytId = extrairYoutubeId(videoUrl);
@@ -118,6 +132,7 @@ function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
         <div className="flex-1 min-w-0">
           <p className="text-[13px] font-semibold text-white/80 truncate">{ex.nome}</p>
           <div className="flex items-center gap-2">
+            {!open && resumirSeries(series) && <p className="text-[10px] text-blue-400/70">{resumirSeries(series)}</p>}
             {ex.grupo && <p className="text-[10px] text-white/30">{ex.grupo}</p>}
             {metodoInfo && (
               <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
@@ -306,6 +321,20 @@ export default function EditarTreino() {
     }));
   }
 
+  // Aplica a periodização escolhida a TODOS os exercícios já no treino (não só
+  // aos próximos que forem adicionados) — senão a troca do chip parece "não
+  // fazer nada" quando o treino já tem exercícios.
+  function selecionarPeriodizacao(periId) {
+    const novoId = periId === periodizacao ? '' : periId;
+    setPeriodizacao(novoId);
+    const peri = PERIODIZACOES.find(p => p.id === novoId);
+    if (!peri || !(form.exercicios || []).length) return;
+    setForm(f => ({
+      ...f,
+      exercicios: f.exercicios.map((ex, idx) => ({ ...ex, series: peri.gerarSeries(idx) })),
+    }));
+  }
+
   async function criarExercicio() {
     if (!novoExNome.trim()) return;
     setCriandoEx(true);
@@ -424,12 +453,12 @@ export default function EditarTreino() {
                 <p className="text-[10px] font-semibold text-white/35 uppercase tracking-wider">Periodização</p>
               </div>
               <div className="flex flex-wrap gap-1.5">
-                <button onClick={() => setPeriodizacao('')}
+                <button onClick={() => selecionarPeriodizacao('')}
                   className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-all ${
                     !periodizacao ? 'bg-white/[0.08] text-white border-white/20' : 'bg-transparent text-white/35 border-white/[0.08] hover:text-white/60'
                   }`}>Padrão</button>
                 {PERIODIZACOES.map(p => (
-                  <button key={p.id} onClick={() => setPeriodizacao(v => v === p.id ? '' : p.id)}
+                  <button key={p.id} onClick={() => selecionarPeriodizacao(p.id)}
                     title={p.info}
                     style={periodizacao === p.id ? { background: p.corBg, color: p.cor, borderColor: p.cor } : {}}
                     className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-all ${
@@ -439,7 +468,7 @@ export default function EditarTreino() {
               </div>
               {periodizacao && (
                 <p className="text-[10px] text-white/30 mt-2">
-                  {PERIODIZACOES.find(p => p.id === periodizacao)?.descricao} — aplica aos próximos exercícios adicionados
+                  {PERIODIZACOES.find(p => p.id === periodizacao)?.descricao} — aplicado a todos os exercícios do treino
                 </p>
               )}
             </div>
