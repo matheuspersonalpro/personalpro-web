@@ -1,9 +1,9 @@
 ﻿'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { buscarAlunos, buscarPagamentos, buscarSessoes, buscarConfigApp, salvarConfigApp } from '@/lib/firestore';
+import { buscarAlunos, buscarPagamentos, buscarSessoes, buscarConfigApp, salvarConfigApp, buscarFeriasPendentes, atualizarStatusFerias, aprovarFeriasEEstenderPlano } from '@/lib/firestore';
 import { usePersonal } from '@/lib/AuthContext';
-import { Users, TrendingUp, AlertTriangle, Clock, ArrowUpRight, CheckCircle2, CalendarDays, Cake, MessageCircle, Megaphone, X, Percent, ChevronDown } from 'lucide-react';
+import { Users, TrendingUp, AlertTriangle, Clock, ArrowUpRight, CheckCircle2, CalendarDays, Cake, MessageCircle, Megaphone, X, Percent, ChevronDown, Umbrella } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
 function KpiCard({ icon: Icon, label, value, sub, accent }) {
@@ -46,7 +46,9 @@ export default function DashboardPage() {
   const [pagamentos, setPagamentos] = useState([]);
   const [sessoes,    setSessoes]    = useState([]);
   const [config,     setConfig]     = useState({});
+  const [ferias,     setFerias]     = useState([]);
   const [loading,    setLoading]    = useState(true);
+  const [aprovandoId, setAprovandoId] = useState(null);
 
   // Aviso
   const [showAviso,   setShowAviso]   = useState(false);
@@ -66,11 +68,12 @@ export default function DashboardPage() {
     setReajusteDone(done);
     if (new Date().getMonth() === 11 && !done) setShowReajuste(true);
 
-    Promise.allSettled([buscarAlunos(), buscarPagamentos(), buscarSessoes(), buscarConfigApp()])
-      .then(([ra, rp, rs, rc]) => {
+    Promise.allSettled([buscarAlunos(), buscarPagamentos(), buscarSessoes(), buscarConfigApp(), buscarFeriasPendentes()])
+      .then(([ra, rp, rs, rc, rf]) => {
         if (ra.status === 'fulfilled') setAlunos(ra.value);
         if (rp.status === 'fulfilled') setPagamentos(rp.value);
         if (rs.status === 'fulfilled') setSessoes(rs.value);
+        if (rf.status === 'fulfilled') setFerias(rf.value);
         if (rc.status === 'fulfilled') {
           const cfg = rc.value || {};
           setConfig(cfg);
@@ -140,6 +143,38 @@ export default function DashboardPage() {
       setShowAviso(false);
       toast(tempAviso ? 'Aviso publicado para os alunos.' : 'Aviso removido.');
     } catch { toast('Erro ao publicar aviso.', 'error'); } finally { setSalvandoAv(false); }
+  }
+
+  async function aprovarFerias(feria) {
+    const aluno = alunos.find(a => a.id === feria.alunoId);
+    if (!aluno)            { toast('Aluno não encontrado.', 'error'); return; }
+    if (!aluno.vencimento) { toast(`${aluno.nome} sem vencimento cadastrado.`, 'error'); return; }
+    const dias = Number(feria.dias || 0);
+    if (!dias)             { toast('Sem quantidade de dias na solicitação.', 'error'); return; }
+    if (!window.confirm(`Aprovar ${dias} dia${dias !== 1 ? 's' : ''} de férias de ${aluno.nome}?\n\nO plano será estendido a partir de ${aluno.vencimento}.`)) return;
+    setAprovandoId(feria.id);
+    try {
+      const novoVenc = await aprovarFeriasEEstenderPlano(feria.id, feria.alunoId, dias, aluno.vencimento);
+      setFerias(f => f.filter(x => x.id !== feria.id));
+      toast(`Aprovado. Novo vencimento: ${novoVenc}`);
+    } catch (e) {
+      toast(e.message || 'Não foi possível aprovar.', 'error');
+    } finally {
+      setAprovandoId(null);
+    }
+  }
+
+  async function recusarFerias(feria) {
+    setAprovandoId(feria.id);
+    try {
+      await atualizarStatusFerias(feria.id, 'recusada');
+      setFerias(f => f.filter(x => x.id !== feria.id));
+      toast('Solicitação recusada.');
+    } catch {
+      toast('Erro ao recusar.', 'error');
+    } finally {
+      setAprovandoId(null);
+    }
   }
 
   async function aplicarReajuste() {
@@ -383,6 +418,47 @@ export default function DashboardPage() {
                           <MessageCircle size={13} />
                         </a>
                       )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Férias pendentes */}
+          {ferias.length > 0 && (
+            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-amber-500/15 overflow-hidden">
+              <div className="px-5 py-4 border-b border-white/[0.05] flex items-center gap-2">
+                <Umbrella size={13} className="text-amber-400" />
+                <span className="text-[12px] font-semibold text-amber-400/70 uppercase tracking-wider">Férias pendentes</span>
+              </div>
+              <div className="p-3 space-y-2">
+                {ferias.map(feria => {
+                  const aluno = alunos.find(a => a.id === feria.alunoId);
+                  const ocupado = aprovandoId === feria.id;
+                  return (
+                    <div key={feria.id} className="px-2 py-2.5 rounded-lg bg-white/[0.02]">
+                      <div className="flex items-center gap-2.5 mb-2">
+                        <div className="w-6 h-6 rounded-full bg-amber-500/15 flex items-center justify-center text-[10px] font-bold text-amber-400 shrink-0">
+                          {aluno?.nome?.[0] || '?'}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[12px] text-white/65 truncate">{aluno?.nome || 'Aluno'}</p>
+                          <p className="text-[10px] text-white/30">
+                            {feria.dataInicio || '—'} a {feria.dataFim || '—'}{feria.dias ? `  ·  ${feria.dias} dias` : ''}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => aprovarFerias(feria)} disabled={ocupado}
+                          className="flex-1 py-1.5 rounded-lg bg-green-500/12 text-green-400 text-[11px] font-semibold hover:bg-green-500/20 disabled:opacity-40 transition-all">
+                          {ocupado ? '...' : 'Aprovar'}
+                        </button>
+                        <button onClick={() => recusarFerias(feria)} disabled={ocupado}
+                          className="flex-1 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-[11px] font-semibold hover:bg-red-500/20 disabled:opacity-40 transition-all">
+                          {ocupado ? '...' : 'Recusar'}
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
