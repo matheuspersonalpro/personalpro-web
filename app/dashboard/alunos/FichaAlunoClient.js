@@ -1084,6 +1084,22 @@ export default function FichaAluno() {
   );
 }
 
+// Agrupa séries CONSECUTIVAS com reps+carga iguais num só chip ("3× 15-20 ·
+// 13,75kg") — evita repetir o mesmo valor 3x quando o aluno usou a mesma
+// carga em todas as séries (o caso mais comum). Séries diferentes entre si
+// (drop-set, pirâmide) continuam aparecendo separadas.
+function agruparSeries(series) {
+  const grupos = [];
+  for (const s of series) {
+    const reps = s.reps || '';
+    const carga = s.carga ?? s.peso ?? '';
+    const ultimo = grupos[grupos.length - 1];
+    if (ultimo && ultimo.reps === reps && ultimo.carga === carga) ultimo.qtd++;
+    else grupos.push({ reps, carga, qtd: 1 });
+  }
+  return grupos;
+}
+
 function AcordiaoCarga({ nome, entradas }) {
   const [aberto, setAberto] = useState(false);
   return (
@@ -1115,9 +1131,9 @@ function AcordiaoCarga({ nome, entradas }) {
                   {h.treinoNome && <p className="text-[10px] text-white/20 mt-0.5 truncate">{h.treinoNome}</p>}
                 </div>
                 <div className="flex flex-wrap gap-1.5 flex-1">
-                  {series.length > 0 ? series.map((s, si) => (
-                    <span key={si} className="text-[11px] px-2 py-1 rounded-lg bg-white/[0.05] text-white/55 font-mono">
-                      {s.reps ? `${s.reps}x` : ''}{s.carga ? ` ${s.carga}kg` : (s.peso ? ` ${s.peso}kg` : '')}
+                  {series.length > 0 ? agruparSeries(series).map((g, gi) => (
+                    <span key={gi} className="text-[11px] px-2 py-1 rounded-lg bg-white/[0.05] text-white/55 font-mono">
+                      {g.qtd > 1 ? `${g.qtd}× ` : ''}{g.reps ? `${g.reps}x` : ''}{g.carga ? ` ${g.carga}kg` : ''}
                     </span>
                   )) : (
                     <span className="text-[11px] text-white/25">Sem séries registradas</span>
