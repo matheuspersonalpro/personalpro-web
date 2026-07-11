@@ -6,10 +6,10 @@ import {
   buscarTreino, buscarAlunos, salvarTreino, buscarExerciciosCustom, criarExercicioCustom,
   buscarVideosExercicios,
 } from '@/lib/firestore';
-import { BIBLIOTECA, GRUPOS_NOMES, METODOS } from '@/lib/treinoData';
+import { BIBLIOTECA, GRUPOS_NOMES, METODOS, PERIODIZACOES } from '@/lib/treinoData';
 import {
   ChevronLeft, Save, Search, Plus, X, Dumbbell, GripVertical,
-  ChevronDown, ChevronUp, Zap, Play,
+  ChevronDown, ChevronUp, Zap, Play, Layers, Check,
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
@@ -25,6 +25,36 @@ function normalizarBusca(s) {
 function extrairYoutubeId(url) {
   return (url || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([^&?#/]+)/)?.[1] || null;
 }
+
+// ── Agrupamento (Bi-set/Tri-set/Circuito) — mesma lógica do app ────────────
+const METODOS_AGRUPAMENTO = { 'Bi-set': 2, 'Tri-set': 3, 'Circuito': 4 };
+const GRUPO_COR = {
+  'Bi-set':   { cor: '#60a5fa', bg: 'rgba(96,165,250,0.08)', border: 'rgba(96,165,250,0.35)' },
+  'Tri-set':  { cor: '#60a5fa', bg: 'rgba(96,165,250,0.08)', border: 'rgba(96,165,250,0.35)' },
+  'Circuito': { cor: '#34d399', bg: 'rgba(52,211,153,0.08)', border: 'rgba(52,211,153,0.35)' },
+};
+
+// Monta grupos consecutivos por grupoId, pra renderização
+function buildGrupos(exercicios) {
+  const resultado = [];
+  let i = 0;
+  while (i < exercicios.length) {
+    const ex = exercicios[i];
+    if (ex.grupoId) {
+      const grupo = [];
+      const gid = ex.grupoId;
+      while (i < exercicios.length && exercicios[i].grupoId === gid) { grupo.push(i); i++; }
+      resultado.push({ tipo: 'grupo', indices: grupo, metodo: ex.metodo, grupoId: gid });
+    } else {
+      resultado.push({ tipo: 'solo', indices: [i] });
+      i++;
+    }
+  }
+  return resultado;
+}
+
+let _gidSeq = 0;
+const novoGrupoId = () => `g_${Date.now().toString(36)}_${_gidSeq++}`;
 
 // ── Card de um exercício no treino ─────────────────────────────────────────
 function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
@@ -183,6 +213,14 @@ export default function EditarTreino() {
   // Mobile: alterna entre painel do treino e biblioteca (no desktop ambos aparecem)
   const [mobileTab, setMobileTab] = useState('treino');
 
+  // Periodização — se marcada, todo exercício novo já entra com as séries do
+  // preset (reps/pausa). "Ondulatório" varia a fase conforme a posição no treino.
+  const [periodizacao, setPeriodizacao] = useState('');
+
+  // Agrupamento (Bi-set/Tri-set/Circuito) — modo de seleção múltipla
+  const [modoAgrupar, setModoAgrupar] = useState(false);
+  const [selecionados, setSelecionados] = useState([]); // índices selecionados, em ordem de clique
+
   useEffect(() => {
     if (!id) return;
     const alunoIdParam = searchParams.get('alunoId') || '';
@@ -198,18 +236,19 @@ export default function EditarTreino() {
   }, [id, isNovo]);
 
   function addEx(ex) {
-    setForm(f => ({
-      ...f,
-      exercicios: [...(f.exercicios || []), {
-        nome: ex.nome, grupo: ex.grupo || '',
-        series: [
-          { reps: '12', carga: '', pausa: '60s' },
-          { reps: '12', carga: '', pausa: '60s' },
-          { reps: '12', carga: '', pausa: '60s' },
-        ],
-        metodo: '',
-      }],
-    }));
+    setForm(f => {
+      const idx = (f.exercicios || []).length;
+      const peri = PERIODIZACOES.find(p => p.id === periodizacao);
+      const series = peri ? peri.gerarSeries(idx) : [
+        { reps: '12', carga: '', pausa: '60s' },
+        { reps: '12', carga: '', pausa: '60s' },
+        { reps: '12', carga: '', pausa: '60s' },
+      ];
+      return {
+        ...f,
+        exercicios: [...(f.exercicios || []), { nome: ex.nome, grupo: ex.grupo || '', series, metodo: '', grupoId: '' }],
+      };
+    });
   }
 
   function updateEx(idx, field, val) {
@@ -222,6 +261,49 @@ export default function EditarTreino() {
 
   function removeEx(idx) {
     setForm(f => ({ ...f, exercicios: f.exercicios.filter((_, i) => i !== idx) }));
+  }
+
+  // ── Arrastar pra reordenar (HTML5 drag-and-drop nativo) ──────────────────
+  const [dragIdx, setDragIdx] = useState(null);
+  function moverEx(de, para) {
+    if (de === para) return;
+    setForm(f => {
+      const exs = [...f.exercicios];
+      const [item] = exs.splice(de, 1);
+      exs.splice(para, 0, item);
+      return { ...f, exercicios: exs };
+    });
+  }
+
+  // ── Agrupamento (Bi-set/Tri-set/Circuito) ────────────────────────────────
+  function toggleSelecionado(idx) {
+    setSelecionados(s => s.includes(idx) ? s.filter(i => i !== idx) : [...s, idx]);
+  }
+  function agruparSelecionados(metodoNome) {
+    const qtd = METODOS_AGRUPAMENTO[metodoNome];
+    if (selecionados.length !== qtd) return;
+    const ordenados = [...selecionados].sort((a, b) => a - b);
+    for (let i = 1; i < ordenados.length; i++) {
+      if (ordenados[i] !== ordenados[i - 1] + 1) {
+        toast('Selecione exercícios consecutivos (um em seguida do outro na lista).', 'error');
+        return;
+      }
+    }
+    const gid = novoGrupoId();
+    setForm(f => {
+      const exs = [...f.exercicios];
+      ordenados.forEach(idx => { exs[idx] = { ...exs[idx], grupoId: gid, metodo: metodoNome }; });
+      return { ...f, exercicios: exs };
+    });
+    setSelecionados([]);
+    setModoAgrupar(false);
+    toast(`${metodoNome} criado.`);
+  }
+  function desagrupar(grupoId) {
+    setForm(f => ({
+      ...f,
+      exercicios: f.exercicios.map(ex => ex.grupoId === grupoId ? { ...ex, grupoId: '', metodo: '' } : ex),
+    }));
   }
 
   async function criarExercicio() {
@@ -335,6 +417,33 @@ export default function EditarTreino() {
         {/* ── Lista de exercícios do treino ─────────────────────────── */}
         <div className={`${mobileTab === 'treino' ? 'block' : 'hidden'} md:block flex-1 overflow-y-auto p-4 md:p-6`}>
           <div className="max-w-2xl space-y-2.5">
+            {/* Periodização — aplica ao adicionar exercícios novos */}
+            <div className="rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] p-3">
+              <div className="flex items-center gap-1.5 mb-2">
+                <Layers size={12} className="text-blue-400/70" />
+                <p className="text-[10px] font-semibold text-white/35 uppercase tracking-wider">Periodização</p>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                <button onClick={() => setPeriodizacao('')}
+                  className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-all ${
+                    !periodizacao ? 'bg-white/[0.08] text-white border-white/20' : 'bg-transparent text-white/35 border-white/[0.08] hover:text-white/60'
+                  }`}>Padrão</button>
+                {PERIODIZACOES.map(p => (
+                  <button key={p.id} onClick={() => setPeriodizacao(v => v === p.id ? '' : p.id)}
+                    title={p.info}
+                    style={periodizacao === p.id ? { background: p.corBg, color: p.cor, borderColor: p.cor } : {}}
+                    className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-all ${
+                      periodizacao === p.id ? '' : 'bg-transparent text-white/35 border-white/[0.08] hover:text-white/60'
+                    }`}>{p.nome}</button>
+                ))}
+              </div>
+              {periodizacao && (
+                <p className="text-[10px] text-white/30 mt-2">
+                  {PERIODIZACOES.find(p => p.id === periodizacao)?.descricao} — aplica aos próximos exercícios adicionados
+                </p>
+              )}
+            </div>
+
             {(form.exercicios || []).length === 0 ? (
               <div className="rounded-2xl border border-dashed border-white/[0.08] p-14 text-center">
                 <Dumbbell size={28} className="text-white/15 mx-auto mb-3" strokeWidth={1.5} />
@@ -347,11 +456,77 @@ export default function EditarTreino() {
                   <p className="text-[11px] font-semibold text-white/30 uppercase tracking-wider">
                     {form.exercicios.length} exercício{form.exercicios.length !== 1 ? 's' : ''}
                   </p>
+                  <button onClick={() => { setModoAgrupar(v => !v); setSelecionados([]); }}
+                    className={`flex items-center gap-1 text-[11px] font-semibold transition-colors ${modoAgrupar ? 'text-blue-400' : 'text-white/30 hover:text-white/60'}`}>
+                    <Layers size={12} /> {modoAgrupar ? 'Cancelar' : 'Agrupar (bi/tri-set)'}
+                  </button>
                 </div>
-                {form.exercicios.map((ex, idx) => (
-                  <ExCard key={idx} ex={ex} idx={idx} onChange={updateEx} onRemove={removeEx}
-                    videoUrl={ex.videoUrl || videosMap[ex.nome]?.videoUrl || null} />
-                ))}
+
+                {modoAgrupar && (
+                  <div className="flex items-center gap-2 mb-2 px-1">
+                    <span className="text-[10px] text-white/30">{selecionados.length} selecionado{selecionados.length !== 1 ? 's' : ''} — escolha consecutivos:</span>
+                    {Object.entries(METODOS_AGRUPAMENTO).map(([nome, qtd]) => (
+                      <button key={nome} disabled={selecionados.length !== qtd} onClick={() => agruparSelecionados(nome)}
+                        className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-blue-500/12 text-blue-400 hover:bg-blue-500/20 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
+                        {nome} ({qtd})
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {buildGrupos(form.exercicios).map(item => {
+                  if (item.tipo === 'solo') {
+                    const idx = item.indices[0];
+                    const ex = form.exercicios[idx];
+                    return (
+                      <div key={idx} draggable={!modoAgrupar}
+                        onDragStart={() => setDragIdx(idx)}
+                        onDragOver={e => e.preventDefault()}
+                        onDrop={() => { if (dragIdx !== null) moverEx(dragIdx, idx); setDragIdx(null); }}
+                        onDragEnd={() => setDragIdx(null)}
+                        className={`flex items-start gap-2 transition-opacity ${dragIdx === idx ? 'opacity-40' : ''}`}>
+                        {modoAgrupar && (
+                          <button onClick={() => toggleSelecionado(idx)}
+                            className={`mt-3.5 w-5 h-5 rounded-md border shrink-0 flex items-center justify-center transition-all ${
+                              selecionados.includes(idx) ? 'bg-blue-600 border-blue-500' : 'border-white/20 hover:border-white/40'
+                            }`}>
+                            {selecionados.includes(idx) && <Check size={12} className="text-white" />}
+                          </button>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <ExCard ex={ex} idx={idx} onChange={updateEx} onRemove={removeEx}
+                            videoUrl={ex.videoUrl || videosMap[ex.nome]?.videoUrl || null} />
+                        </div>
+                      </div>
+                    );
+                  }
+                  const gc = GRUPO_COR[item.metodo] || GRUPO_COR['Bi-set'];
+                  return (
+                    <div key={item.grupoId} className="rounded-xl p-2 space-y-2" style={{ background: gc.bg, border: `1px solid ${gc.border}` }}>
+                      <div className="flex items-center justify-between px-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: gc.cor }}>
+                          {item.metodo} · {item.indices.length} exercícios sem descanso entre eles
+                        </span>
+                        <button onClick={() => desagrupar(item.grupoId)}
+                          className="text-[10px] text-white/30 hover:text-white/60 transition-colors">Desagrupar</button>
+                      </div>
+                      {item.indices.map(idx => {
+                        const ex = form.exercicios[idx];
+                        return (
+                          <div key={idx} draggable={!modoAgrupar}
+                            onDragStart={() => setDragIdx(idx)}
+                            onDragOver={e => e.preventDefault()}
+                            onDrop={() => { if (dragIdx !== null) moverEx(dragIdx, idx); setDragIdx(null); }}
+                            onDragEnd={() => setDragIdx(null)}
+                            className={dragIdx === idx ? 'opacity-40' : ''}>
+                            <ExCard ex={ex} idx={idx} onChange={updateEx} onRemove={removeEx}
+                              videoUrl={ex.videoUrl || videosMap[ex.nome]?.videoUrl || null} />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
               </>
             )}
           </div>
