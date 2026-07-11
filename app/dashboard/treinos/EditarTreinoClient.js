@@ -85,9 +85,6 @@ function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
     : (Number(ex.series) > 0
         ? Array.from({ length: Number(ex.series) }, () => ({ reps: ex.reps || '12', carga: ex.carga || '', pausa: ex.descanso || ex.pausa || '60s' }))
         : []);
-  const setSet    = (sIdx, campo, val) => onChange(idx, 'series', series.map((s, i) => i === sIdx ? { ...s, [campo]: val } : s));
-  const addSet    = () => onChange(idx, 'series', [...series, { reps: series[series.length - 1]?.reps || '12', carga: '', pausa: series[series.length - 1]?.pausa || '60s' }]);
-  const removeSet = (sIdx) => onChange(idx, 'series', series.filter((_, i) => i !== sIdx));
 
   return (
     <div className="rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] overflow-hidden">
@@ -154,34 +151,33 @@ function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
       </div>
       {open && (
         <div className="px-4 pb-4 space-y-3 border-t border-white/[0.04] pt-3">
-          {/* Séries = lista de sets (reps / carga / descanso por set) — mesma estrutura do app */}
-          <div className="space-y-1.5">
-            <div className="grid gap-2 px-0.5" style={{ gridTemplateColumns: '22px 1fr 1fr 1fr 24px' }}>
-              <span />
+          {/* Uma linha só: nº de séries + reps/carga/descanso aplicados a TODOS os
+              sets de uma vez — evita editar linha por linha quando são iguais
+              (a maioria dos casos). Séries com valores diferentes entre si
+              (ex.: pirâmide) continuam possíveis via periodização, só não dá
+              pra ajustar set-a-set aqui. */}
+          <div className="space-y-1">
+            <div className="grid gap-2 px-0.5" style={{ gridTemplateColumns: '70px 1fr 1fr 1fr' }}>
+              <label className="text-[9px] font-semibold text-white/25 uppercase tracking-wider">Séries</label>
               <label className="text-[9px] font-semibold text-white/25 uppercase tracking-wider">Reps</label>
               <label className="text-[9px] font-semibold text-white/25 uppercase tracking-wider">Carga</label>
               <label className="text-[9px] font-semibold text-white/25 uppercase tracking-wider">Descanso</label>
-              <span />
             </div>
-            {series.map((s, sIdx) => (
-              <div key={sIdx} className="grid gap-2 items-center" style={{ gridTemplateColumns: '22px 1fr 1fr 1fr 24px' }}>
-                <span className="text-[11px] text-white/30 text-center">{sIdx + 1}</span>
-                <input value={s.reps || ''} onChange={e => setSet(sIdx, 'reps', e.target.value)} placeholder="12"
-                  className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all" />
-                <input value={s.carga || ''} onChange={e => setSet(sIdx, 'carga', e.target.value)} placeholder="—"
-                  className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all" />
-                <input value={s.pausa || ''} onChange={e => setSet(sIdx, 'pausa', e.target.value)} placeholder="60s"
-                  className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all" />
-                <button onClick={() => removeSet(sIdx)} disabled={series.length <= 1}
-                  className="w-6 h-6 rounded-lg hover:bg-red-500/15 flex items-center justify-center text-white/20 hover:text-red-400 disabled:opacity-20 transition-all">
-                  <X size={12} />
-                </button>
-              </div>
-            ))}
-            <button onClick={addSet}
-              className="flex items-center gap-1 text-[11px] font-semibold text-blue-400/80 hover:text-blue-400 transition-colors pt-0.5">
-              <Plus size={12} /> Adicionar série
-            </button>
+            <div className="grid gap-2 items-center" style={{ gridTemplateColumns: '70px 1fr 1fr 1fr' }}>
+              <input type="number" min={1} value={series.length}
+                onChange={e => {
+                  const n = Math.max(1, parseInt(e.target.value, 10) || 1);
+                  const base = series[0] || { reps: '12', carga: '', pausa: '60s' };
+                  onChange(idx, 'series', Array.from({ length: n }, () => ({ ...base })));
+                }}
+                className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] text-center focus:outline-none focus:border-blue-500/50 transition-all" />
+              <input value={series[0]?.reps || ''} onChange={e => onChange(idx, 'series', series.map(s => ({ ...s, reps: e.target.value })))} placeholder="12"
+                className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all" />
+              <input value={series[0]?.carga || ''} onChange={e => onChange(idx, 'series', series.map(s => ({ ...s, carga: e.target.value })))} placeholder="—"
+                className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all" />
+              <input value={series[0]?.pausa || ''} onChange={e => onChange(idx, 'series', series.map(s => ({ ...s, pausa: e.target.value })))} placeholder="60s"
+                className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all" />
+            </div>
           </div>
           {/* Método */}
           <div>
