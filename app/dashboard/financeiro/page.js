@@ -1,8 +1,9 @@
 ﻿'use client';
 import { useEffect, useState, useCallback } from 'react';
 import { buscarPagamentos, buscarAlunos, registrarPagamento, excluirPagamento, atualizarAluno, buscarConfigApp, salvarConfigApp } from '@/lib/firestore';
+import { buscarCobrancasAssinatura } from '@/lib/asaas';
 import { gerarPixEMV } from '@/lib/pix';
-import { TrendingUp, Plus, X, ChevronLeft, ChevronRight, Trash2, DollarSign, Users, CreditCard, Target, Zap, QrCode, ExternalLink, Check, AlertTriangle, Copy } from 'lucide-react';
+import { TrendingUp, Plus, X, ChevronLeft, ChevronRight, Trash2, DollarSign, Users, CreditCard, Target, Zap, QrCode, ExternalLink, Check, AlertTriangle, Copy, RefreshCw } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -11,6 +12,11 @@ const FORMAS = ['PIX','Dinheiro','Cartão de Crédito','Cartão de Débito','Tra
 
 function fmt(v) { return (v||0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' }); }
 function fmtPct(v) { return `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`; }
+function fmtDataISO(iso) {
+  if (!iso) return null;
+  const [a, m, d] = iso.split('-');
+  return d && m && a ? `${d}/${m}/${a}` : null;
+}
 
 function BarChart({ data }) {
   const max = Math.max(...data.map(d => d.total), 1);
@@ -237,6 +243,82 @@ export default function FinanceiroPage() {
   }, []);
 
   useEffect(() => { carregar(); }, [carregar]);
+
+  // ── Sincronização Asaas ──────────────────────────────────────────────────────
+  // Espelha screens/personal/FinanceiroPersonal.js (app mobile): busca as
+  // cobranças de cada assinatura ativa, guarda o "próximo recebimento" (valor
+  // bruto, líquido real e data prevista de crédito) e, se detectar um pagamento
+  // novo que ainda não foi registrado aqui, registra e estende o vencimento
+  // automaticamente (a assinatura Asaas é sempre mensal, mesmo em planos
+  // trimestrais/semestrais — cada pagamento avança exatamente 1 mês).
+  const [sincronizando, setSincronizando] = useState(false);
+
+  const sincronizarAsaas = useCallback(async () => {
+    setSincronizando(true);
+    try {
+      const listaAlunos = await buscarAlunos();
+      const comAsaas = listaAlunos.filter(a => a.asaasSubscriptionId && a.cobrancaAutomatica);
+      if (!comAsaas.length) return;
+      let houveMudanca = false;
+
+      const pad = n => String(n).padStart(2, '0');
+      const fmtBR = d => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+
+      for (const aluno of comAsaas) {
+        try {
+          const cobr = await buscarCobrancasAssinatura(aluno.asaasSubscriptionId);
+          const lista = cobr?.data || [];
+          const patch = {};
+
+          const aCaminho = lista
+            .filter(c => c.status === 'PENDING' || c.status === 'CONFIRMED')
+            .sort((a, b) => new Date(a.dueDate || 0) - new Date(b.dueDate || 0))[0];
+          const proximoRecebimento = aCaminho ? {
+            valor:       aCaminho.value ?? null,
+            netValue:    aCaminho.netValue ?? null,
+            dataCredito: aCaminho.estimatedCreditDate || aCaminho.creditDate || null,
+            dueDate:     aCaminho.dueDate || null,
+            status:      aCaminho.status || null,
+            billingType: aCaminho.billingType || null,
+          } : null;
+          if (JSON.stringify(aluno.proximoRecebimento || null) !== JSON.stringify(proximoRecebimento)) {
+            patch.proximoRecebimento = proximoRecebimento;
+          }
+
+          const pagas = lista.filter(c => c.status === 'RECEIVED' || c.status === 'CONFIRMED');
+          const ultima = pagas[0];
+          const dataUltima = ultima && (ultima.paymentDate || ultima.confirmedDate);
+          if (ultima && dataUltima && aluno.ultimoPagamentoAsaasId !== ultima.id) {
+            let base = new Date();
+            if (aluno.vencimento) {
+              const [d, m, a] = aluno.vencimento.split('/').map(Number);
+              const v = new Date(a, m - 1, d);
+              if (v > base) base = v;
+            }
+            base.setMonth(base.getMonth() + 1);
+            await registrarPagamento({
+              alunoId:   aluno.id,
+              alunoNome: aluno.nome,
+              valor:     ultima.value,
+              forma:     'Asaas',
+              data:      fmtBR(new Date()),
+              tipo:      aluno.plano || aluno.tipo || 'Mensal',
+              descricao: `Mensalidade automática Asaas — ${aluno.nome}`,
+            });
+            patch.vencimento = fmtBR(base);
+            patch.ultimoPagamentoAsaasId = ultima.id;
+          }
+
+          if (Object.keys(patch).length) { await atualizarAluno(aluno.id, patch); houveMudanca = true; }
+        } catch {}
+      }
+      if (houveMudanca) carregar();
+    } finally {
+      setSincronizando(false);
+    }
+  }, [carregar]);
+
+  useEffect(() => { sincronizarAsaas(); }, [sincronizarAsaas]);
 
   // ── Estatísticas ──────────────────────────────────────────────────────────────
   const agora = new Date();
@@ -598,6 +680,11 @@ export default function FinanceiroPage() {
                             {status==='vencido' ? `venceu ${a.vencimento}` : `vence ${a.vencimento}`}
                           </p>
                         )}
+                        {a.asaasSubscriptionId && a.proximoRecebimento && (
+                          <p className="text-[10px] text-amber-400/70 flex items-center justify-end gap-1 mt-0.5">
+                            <Zap size={9} /> {fmt(a.proximoRecebimento.netValue ?? a.proximoRecebimento.valor)} em {fmtDataISO(a.proximoRecebimento.dataCredito || a.proximoRecebimento.dueDate) || '—'}
+                          </p>
+                        )}
                       </div>
                       <button onClick={() => setCobrando(a)} className="opacity-0 group-hover:opacity-100 flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-500/15 text-[11px] font-semibold text-blue-400 hover:bg-blue-500/25 transition-all">
                         <DollarSign size={11} /> Cobrar
@@ -663,27 +750,45 @@ export default function FinanceiroPage() {
 
           {/* Asaas */}
           <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <Zap size={16} className="text-amber-400" />
-              <p className="text-[14px] font-bold text-white">Asaas (recorrência automática)</p>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Zap size={16} className="text-amber-400" />
+                <p className="text-[14px] font-bold text-white">Asaas (recorrência automática)</p>
+              </div>
+              <button onClick={sincronizarAsaas} disabled={sincronizando}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-400 text-[11px] font-semibold hover:bg-amber-500/20 disabled:opacity-40 transition-all">
+                <RefreshCw size={12} className={sincronizando ? 'animate-spin' : ''} /> {sincronizando ? 'Sincronizando...' : 'Sincronizar agora'}
+              </button>
             </div>
             <p className="text-[12px] text-white/40 leading-relaxed mb-4">
-              O Asaas automatiza cobranças recorrentes, envia boletos e links de pagamento por WhatsApp, e confirma pagamentos automaticamente. As chaves são gerenciadas no app mobile.
+              Cobranças recorrentes automáticas — pagamentos confirmados no Asaas atualizam o vencimento do aluno e entram na lista de pagamentos sozinhos. As chaves são gerenciadas no app mobile.
             </p>
-            <div className="space-y-2">
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.05]">
-                <Check size={14} className="text-green-400 shrink-0 mt-0.5" />
-                <p className="text-[12px] text-white/50">Cobranças automáticas mensais/trimestrais</p>
-              </div>
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.05]">
-                <Check size={14} className="text-green-400 shrink-0 mt-0.5" />
-                <p className="text-[12px] text-white/50">Link de pagamento por WhatsApp</p>
-              </div>
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.05]">
-                <Check size={14} className="text-green-400 shrink-0 mt-0.5" />
-                <p className="text-[12px] text-white/50">Confirmação automática no app mobile</p>
-              </div>
-            </div>
+            {(() => {
+              const comAsaas = alunos.filter(a => a.asaasSubscriptionId && a.cobrancaAutomatica);
+              if (!comAsaas.length) {
+                return (
+                  <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.05]">
+                    <p className="text-[12px] text-white/40">Nenhum aluno com cobrança automática Asaas vinculada ainda.</p>
+                  </div>
+                );
+              }
+              return (
+                <div className="space-y-2">
+                  {comAsaas.map(a => (
+                    <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.05]">
+                      <span className="text-[12px] font-semibold text-white/70">{a.nome}</span>
+                      {a.proximoRecebimento ? (
+                        <span className="text-[11px] text-amber-400">
+                          {fmt(a.proximoRecebimento.netValue ?? a.proximoRecebimento.valor)} em {fmtDataISO(a.proximoRecebimento.dataCredito || a.proximoRecebimento.dueDate) || '—'}
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-white/25">sem cobrança pendente</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
