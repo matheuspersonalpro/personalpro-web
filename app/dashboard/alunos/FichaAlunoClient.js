@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   buscarAluno, buscarTreinos, atualizarAluno, excluirAluno,
   buscarAvaliacoes, excluirAvaliacao, buscarHistoricoDoAluno,
-  atribuirProgramaMuscular, listarProgramas,
+  atribuirProgramaMuscular, removerProgramaMuscular, listarProgramas,
   buscarFotosEvolucao, uploadFotoEvolucao, salvarFotosEvolucao, deletarSessaoFotos,
   buscarPresencasDoAluno, registrarPresenca,
 } from '@/lib/firestore';
@@ -700,6 +700,7 @@ export default function FichaAluno() {
   const [atribuirPrograma, setAtribuirPrograma] = useState(false);
   const [confirmExcluirId, setConfirmExcluirId] = useState(null);
   const [confirmAluno, setConfirmAluno] = useState(false);
+  const [confirmRemoverPrograma, setConfirmRemoverPrograma] = useState(false);
 
   const carregar = () => Promise.all([
     buscarAluno(id),
@@ -710,6 +711,15 @@ export default function FichaAluno() {
   }).finally(() => setLoading(false));
 
   useEffect(() => { if (id) carregar(); }, [id]);
+
+  async function removerProgramaAtual() {
+    try {
+      await removerProgramaMuscular(aluno);
+      setConfirmRemoverPrograma(false);
+      toast('Programa removido.');
+      carregar();
+    } catch { toast('Erro ao remover programa.', 'error'); }
+  }
 
   async function salvar() {
     setSaving(true);
@@ -775,6 +785,13 @@ export default function FichaAluno() {
         message="Todos os dados deste aluno serão removidos permanentemente. Esta ação não pode ser desfeita."
         onConfirm={excluirAlunoConfirmado}
         onCancel={() => setConfirmAluno(false)}
+      />
+      <ConfirmModal
+        open={confirmRemoverPrograma}
+        title="Remover programa?"
+        message="Os treinos gerados automaticamente pelo programa serão apagados (treinos manuais permanecem)."
+        onConfirm={removerProgramaAtual}
+        onCancel={() => setConfirmRemoverPrograma(false)}
       />
 
       <button onClick={() => router.push('/dashboard/alunos/')}
@@ -895,6 +912,12 @@ export default function FichaAluno() {
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-sky-500/30 bg-sky-500/10 hover:bg-sky-500/20 text-[12px] font-semibold text-sky-300 hover:text-sky-200 transition-all">
               <Dumbbell size={13} /> Atribuir programa
             </button>
+            {aluno?.programaMuscular && (
+              <button onClick={() => setConfirmRemoverPrograma(true)}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 text-[12px] font-semibold text-red-300 hover:text-red-200 transition-all">
+                <Trash2 size={13} /> Remover programa
+              </button>
+            )}
             <Link href={`/dashboard/treinos?id=novo&alunoId=${id}`}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
               <Plus size={13} /> Novo treino
