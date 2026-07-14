@@ -768,7 +768,7 @@ export default function FichaAluno() {
       {atribuirPrograma && (
         <AtribuirProgramaModal
           aluno={aluno}
-          onSalvo={() => { setAtribuirPrograma(false); buscarTreinos(id).then(setTreinos); }}
+          onSalvo={() => { setAtribuirPrograma(false); carregar(); }}
           onFechar={() => setAtribuirPrograma(false)}
         />
       )}
