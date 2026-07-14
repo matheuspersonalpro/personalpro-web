@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   buscarAluno, buscarTreinos, atualizarAluno, excluirAluno,
   buscarAvaliacoes, excluirAvaliacao, buscarHistoricoDoAluno,
-  atribuirProgramaMuscular, removerProgramaMuscular, listarProgramas,
+  atribuirProgramaMuscular, removerProgramaMuscular, sincronizarProgramaMuscular, listarProgramas,
   buscarFotosEvolucao, uploadFotoEvolucao, salvarFotosEvolucao, deletarSessaoFotos,
   buscarPresencasDoAluno, registrarPresenca,
 } from '@/lib/firestore';
@@ -706,7 +706,20 @@ export default function FichaAluno() {
     buscarAluno(id),
     buscarTreinos(id),
     buscarAvaliacoes(id),
-  ]).then(([a, t, av]) => {
+  ]).then(async ([a, t, av]) => {
+    // Se o aluno estiver num programa automático e já tiver passado o mês,
+    // avança sozinho ao abrir a ficha (mesmo comportamento do app mobile —
+    // antes o site não tinha isso, e o programa travava pra sempre no mês
+    // em que foi atribuído).
+    if (a?.programaMuscular) {
+      try {
+        const novoMes = await sincronizarProgramaMuscular(a);
+        if (novoMes && novoMes !== a.programaMuscular.mesAtual) {
+          a = { ...a, programaMuscular: { ...a.programaMuscular, mesAtual: novoMes } };
+          t = await buscarTreinos(id);
+        }
+      } catch (e) { console.error('Erro ao sincronizar programa muscular:', e); }
+    }
     setAluno(a); setForm(a || {}); setTreinos(t); setAvaliacoes(av);
   }).finally(() => setLoading(false));
 
