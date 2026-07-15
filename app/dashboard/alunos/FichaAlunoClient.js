@@ -223,7 +223,10 @@ function AtribuirProgramaModal({ aluno, onSalvo, onFechar }) {
       await atribuirProgramaMuscular(aluno, programaId, mes);
       toast('Programa atribuído com sucesso.');
       onSalvo();
-    } catch { toast('Erro ao atribuir programa.', 'error'); }
+    } catch (e) {
+      console.error('Erro ao atribuir programa:', e);
+      toast(`Erro ao atribuir programa: ${e?.code || e?.message || 'desconhecido'}`, 'error');
+    }
     finally { setSalvando(false); }
   }
 
@@ -748,7 +751,14 @@ export default function FichaAluno() {
       setConfirmRemoverPrograma(false);
       toast('Programa removido.');
       carregar();
-    } catch { toast('Erro ao remover programa.', 'error'); }
+    } catch (e) {
+      // NÃO engolir o erro: essa remoção já falhou pra outros personais e o
+      // catch mudo escondeu a causa, o que levou a um diagnóstico errado. O
+      // código do Firebase (ex.: permission-denied) precisa chegar em quem
+      // reporta, senão não dá pra saber o que aconteceu de verdade.
+      console.error('Erro ao remover programa:', e);
+      toast(`Erro ao remover programa: ${e?.code || e?.message || 'desconhecido'}`, 'error');
+    }
   }
 
   async function salvar() {
