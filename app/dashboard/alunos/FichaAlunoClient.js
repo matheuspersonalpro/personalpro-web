@@ -912,7 +912,7 @@ export default function FichaAluno() {
 
       {aba === 'dados' && (
         <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-6">
-          <div className="grid grid-cols-2 gap-x-8 gap-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
             <Field label="Nome completo" field="nome" form={form} setForm={setForm} editing={editing} icon={User} />
             <Field label="E-mail" field="email" form={form} setForm={setForm} editing={editing} icon={Mail} />
             <Field label="Telefone" field="telefone" form={form} setForm={setForm} editing={editing} icon={Phone} />
@@ -926,7 +926,7 @@ export default function FichaAluno() {
 
       {aba === 'plano' && (
         <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-6">
-          <div className="grid grid-cols-2 gap-x-8 gap-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
             <Field label="Plano" field="plano" form={form} setForm={setForm} editing={editing} />
             <Field label="Frequência semanal" field="frequencia" form={form} setForm={setForm} editing={editing} type="number" />
             <Field label="Vencimento (DD/MM/AAAA)" field="vencimento" form={form} setForm={setForm} editing={editing} />

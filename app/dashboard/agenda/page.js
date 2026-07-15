@@ -256,7 +256,8 @@ export default function AgendaPage() {
   }
 
   async function recusarFerias(feria) {
-    try { await atualizarStatusFerias(feria.id, 'recusada'); carregar(); } catch {}
+    try { await atualizarStatusFerias(feria.id, 'recusada'); carregar(); toast('Pedido de férias recusado.'); }
+    catch { toast('Erro ao recusar o pedido.', 'error'); }
   }
 
   async function adicionarSlot() {
@@ -308,7 +309,8 @@ export default function AgendaPage() {
       message: 'Os dois alunos voltam para os horários originais desta semana.',
       confirmLabel: 'Cancelar troca',
     })) return;
-    try { await deletarTrocaHorario(troca.id); carregar(); } catch {}
+    try { await deletarTrocaHorario(troca.id); carregar(); toast('Troca cancelada.'); }
+    catch { toast('Erro ao cancelar a troca.', 'error'); }
   }
 
   async function aplicarFeriasPersonal() {
@@ -327,15 +329,29 @@ export default function AgendaPage() {
     try {
       const pad = n => String(n).padStart(2,'0');
       const fmt = d => `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+      // Conta sucesso/falha por aluno: antes o catch do laço era vazio, então
+      // um aluno que falhasse era pulado em silêncio E o aviso final ainda
+      // dizia que aplicou pra TODOS (usava presenciais.length), escondendo o
+      // problema — o plano dele ficava sem os dias de férias sem ninguém saber.
+      const falhas = [];
+      let sucesso = 0;
       for (const aluno of presenciais) {
         try {
           let base = aluno.vencimento ? (() => { const [d,m,a] = aluno.vencimento.split('/').map(Number); return new Date(a,m-1,d); })() : new Date();
           base.setDate(base.getDate() + numDias);
           await atualizarAluno(aluno.id, { vencimento: fmt(base) });
-        } catch {}
+          sucesso++;
+        } catch {
+          falhas.push(aluno.nome);
+        }
       }
       setModalFerias(false); setFeriasInicio(''); setFeriasFim('');
-      carregar(); toast(`Férias aplicadas — ${numDias} dia(s) acrescidos a ${presenciais.length} aluno(s).`);
+      carregar();
+      if (falhas.length) {
+        toast(`${numDias} dia(s) aplicados a ${sucesso} aluno(s). NÃO consegui aplicar em: ${falhas.join(', ')}.`, 'error');
+      } else {
+        toast(`Férias aplicadas — ${numDias} dia(s) acrescidos a ${sucesso} aluno(s).`);
+      }
     } catch { toast('Erro ao aplicar férias.', 'error'); } finally { setAplicandoF(false); }
   }
 
@@ -543,6 +559,13 @@ export default function AgendaPage() {
           </button>
           <button onClick={() => setModalFerias(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold text-blue-400 ring-1 ring-blue-500/20 bg-blue-500/[0.08] hover:bg-blue-500/[0.15] transition-all">
             <Umbrella size={13} /> Férias
+          </button>
+          {/* O SessaoModal já sabia criar sessão nova, mas só abria clicando
+              numa sessão JÁ existente — não havia como agendar uma sessão
+              avulsa. Abre com o dia selecionado já preenchido. */}
+          <button onClick={() => setModal({ sessao: { data: diaAtualISO } })}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
+            <Plus size={13} /> Nova sessão
           </button>
         </div>
       </div>

@@ -285,6 +285,15 @@ export default function AlunosPage() {
                   <p className="text-[13px] text-white/25">
                     {busca ? 'Nenhum aluno encontrado.' : 'Nenhum aluno cadastrado ainda.'}
                   </p>
+                  {/* Ação direto no estado vazio — sem isso, quem chega na lista
+                      zerada precisa caçar o botão no topo. Usa novoAluno() (não o
+                      modal direto) pra respeitar o limite do plano grátis. */}
+                  {!busca && (
+                    <button onClick={novoAluno}
+                      className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
+                      <Plus size={13} /> Novo aluno
+                    </button>
+                  )}
                 </td>
               </tr>
             )}

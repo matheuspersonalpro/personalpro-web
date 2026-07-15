@@ -267,6 +267,7 @@ export default function DashboardPage() {
             <p className="text-[12px] text-white/40 leading-relaxed mb-4">É dezembro! Hora de revisar os valores. Defina o percentual de reajuste que será aplicado a todos os alunos ativos.</p>
             <div className="relative mb-4">
               <input type="text" value={pctReajuste} onChange={e => setPctReajuste(e.target.value)} placeholder="Ex: 10"
+                onKeyDown={e => { if (e.key === 'Enter' && pctReajuste && !aplicandoR) aplicarReajuste(); }}
                 className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[20px] font-bold text-center focus:outline-none focus:border-blue-500/60 transition-all" />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[18px] text-white/40 font-bold">%</span>
             </div>

@@ -555,6 +555,7 @@ export default function FinanceiroPage() {
               {editMeta ? (
                 <div className="space-y-2">
                   <input type="text" value={tempMeta} onChange={e => setTempMeta(e.target.value)} placeholder="Ex: 5000"
+                    onKeyDown={e => { if (e.key === 'Enter') salvarMeta(); if (e.key === 'Escape') setEditMeta(false); }}
                     className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-blue-500/30 text-white text-[13px] focus:outline-none transition-all" autoFocus />
                   <div className="flex gap-2">
                     <button onClick={() => setEditMeta(false)} className="flex-1 py-1.5 rounded-lg border border-white/[0.08] text-[12px] text-white/40 hover:text-white transition-all">Cancelar</button>
