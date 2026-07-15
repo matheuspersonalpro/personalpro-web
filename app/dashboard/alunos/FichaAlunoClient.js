@@ -952,7 +952,14 @@ export default function FichaAluno() {
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-sky-500/30 bg-sky-500/10 hover:bg-sky-500/20 text-[12px] font-semibold text-sky-300 hover:text-sky-200 transition-all">
               <Dumbbell size={13} /> Atribuir programa
             </button>
-            {aluno?.programaMuscular && (
+            {/* Mostra o botão se o aluno TEM treinos de programa, mesmo sem o
+                metadado `programaMuscular`. Atribuições feitas pelo site antes
+                da correção do metadado criaram os treinos mas não gravaram o
+                campo — esses alunos ficaram com treinos de programa e NENHUM
+                jeito de removê-los, porque o botão dependia só do metadado.
+                A remoção já apaga por `origem: 'programa'` e o deleteField é
+                inofensivo se o campo não existir, então isso cura os órfãos. */}
+            {(aluno?.programaMuscular || treinos.some(t => t.origem === 'programa')) && (
               <button onClick={() => setConfirmRemoverPrograma(true)}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 text-[12px] font-semibold text-red-300 hover:text-red-200 transition-all">
                 <Trash2 size={13} /> Remover programa
