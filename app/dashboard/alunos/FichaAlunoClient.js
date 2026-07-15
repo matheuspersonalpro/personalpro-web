@@ -347,6 +347,7 @@ function FotosTab({ alunoId }) {
   const [comparando, setComparando] = useState(false);
   const [selecionadas, setSelecionadas] = useState([]);
   const [verComparacao, setVerComparacao] = useState(false);
+  const [confirmSessaoId, setConfirmSessaoId] = useState(null);
   const refs = { frente: useRef(), costas: useRef(), lateral: useRef() };
 
   useEffect(() => {
@@ -380,9 +381,17 @@ function FotosTab({ alunoId }) {
   }
 
   async function excluirSessao(sessaoId) {
-    await deletarSessaoFotos(sessaoId);
-    setHistorico(h => h.filter(s => s.id !== sessaoId));
-    toast('Sessão excluída.');
+    try {
+      await deletarSessaoFotos(sessaoId);
+      setHistorico(h => h.filter(s => s.id !== sessaoId));
+      setConfirmSessaoId(null);
+      toast('Sessão excluída.');
+    } catch {
+      // Sem isso, uma falha sumia com a sessão da tela mesmo continuando
+      // salva no banco — o personal achava que apagou e ela voltava no
+      // próximo carregamento.
+      toast('Erro ao excluir a sessão de fotos.', 'error');
+    }
   }
 
   function toggleSelecao(sessId) {
@@ -401,6 +410,14 @@ function FotosTab({ alunoId }) {
       {verComparacao && sessA && sessB && (
         <ComparacaoModal sessA={sessA} sessB={sessB} onFechar={() => setVerComparacao(false)} />
       )}
+
+      <ConfirmModal
+        open={!!confirmSessaoId}
+        title="Excluir sessão de fotos?"
+        message="As fotos desta sessão serão removidas permanentemente. Esta ação não pode ser desfeita."
+        onConfirm={() => excluirSessao(confirmSessaoId)}
+        onCancel={() => setConfirmSessaoId(null)}
+      />
 
       {/* Nova sessão (só mostra fora do modo comparação) */}
       {!comparando && (
@@ -520,7 +537,7 @@ function FotosTab({ alunoId }) {
                   </div>
 
                   {!comparando && (
-                    <button onClick={e => { e.stopPropagation(); excluirSessao(sess.id); }}
+                    <button onClick={e => { e.stopPropagation(); setConfirmSessaoId(sess.id); }}
                       className="p-2 rounded-xl hover:bg-red-500/10 text-white/20 hover:text-red-400 transition-all shrink-0">
                       <Trash2 size={14} />
                     </button>

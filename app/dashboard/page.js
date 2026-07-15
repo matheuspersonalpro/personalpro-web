@@ -5,6 +5,7 @@ import { buscarAlunos, buscarPagamentos, buscarSessoes, buscarConfigApp, salvarC
 import { usePersonal } from '@/lib/AuthContext';
 import { Users, TrendingUp, AlertTriangle, Clock, ArrowUpRight, CheckCircle2, CalendarDays, Cake, MessageCircle, Megaphone, X, Percent, ChevronDown, Umbrella } from 'lucide-react';
 import { useToast } from '@/components/Toast';
+import { useConfirm } from '@/components/Confirm';
 
 function KpiCard({ icon: Icon, label, value, sub, accent }) {
   const theme = {
@@ -42,6 +43,7 @@ function aniversarioInfo(dataNasc) {
 export default function DashboardPage() {
   const personal = usePersonal();
   const toast = useToast();
+  const confirm = useConfirm();
   const [alunos,     setAlunos]     = useState([]);
   const [pagamentos, setPagamentos] = useState([]);
   const [sessoes,    setSessoes]    = useState([]);
@@ -100,6 +102,22 @@ export default function DashboardPage() {
     const diff = (new Date(+y, m-1, +d) - hoje) / 86400000;
     return diff >= 0 && diff <= 7;
   });
+
+  // Prévia de alunos do painel: ordena por vencimento MAIS PRÓXIMO (vencidos
+  // primeiro) — antes era um slice(0, 8) da lista crua, ou seja, 8 alunos em
+  // ordem arbitrária, sem utilidade nenhuma. Assim a tabela mostra logo quem
+  // precisa de atenção. Sem vencimento (aluno grátis/sem plano) vai pro fim,
+  // em ordem alfabética.
+  const msVenc = (a) => {
+    if (!a.vencimento) return Infinity;
+    const [d,m,y] = a.vencimento.split('/');
+    return new Date(+y, m-1, +d).getTime();
+  };
+  const previaAlunos = [...alunos].sort((a, b) => {
+    const va = msVenc(a), vb = msVenc(b);
+    if (va !== vb) return va - vb;
+    return (a.nome || '').localeCompare(b.nome || '', 'pt-BR');
+  }).slice(0, 8);
   // Pagamentos são salvos como DD/MM/YYYY (mesmo formato lido no Financeiro) —
   // filtra por mês+ano parseando a data BR, não por prefixo YYYY-MM (que nunca
   // casava, deixando a receita do mês sempre zerada no painel).
@@ -151,7 +169,12 @@ export default function DashboardPage() {
     if (!aluno.vencimento) { toast(`${aluno.nome} sem vencimento cadastrado.`, 'error'); return; }
     const dias = Number(feria.dias || 0);
     if (!dias)             { toast('Sem quantidade de dias na solicitação.', 'error'); return; }
-    if (!window.confirm(`Aprovar ${dias} dia${dias !== 1 ? 's' : ''} de férias de ${aluno.nome}?\n\nO plano será estendido a partir de ${aluno.vencimento}.`)) return;
+    if (!await confirm({
+      title: `Aprovar ${dias} dia${dias !== 1 ? 's' : ''} de férias de ${aluno.nome}?`,
+      message: `O plano será estendido a partir de ${aluno.vencimento}.`,
+      confirmLabel: 'Aprovar',
+      danger: false,
+    })) return;
     setAprovandoId(feria.id);
     try {
       const novoVenc = await aprovarFeriasEEstenderPlano(feria.id, feria.alunoId, dias, aluno.vencimento);
@@ -180,7 +203,11 @@ export default function DashboardPage() {
   async function aplicarReajuste() {
     const pct = parseFloat(pctReajuste.replace(',','.'));
     if (!pct || pct <= 0) { toast('Informe um percentual válido.', 'error'); return; }
-    if (!window.confirm(`Aplicar reajuste de ${pct}% em TODOS os alunos ativos?`)) return;
+    if (!await confirm({
+      title: `Aplicar reajuste de ${pct}% em TODOS os alunos ativos?`,
+      message: 'O valor mensal de cada aluno ativo com plano será recalculado. Esta ação não pode ser desfeita em massa.',
+      confirmLabel: 'Aplicar reajuste',
+    })) return;
     setAplicandoR(true);
     try {
       const { atualizarAluno } = await import('@/lib/firestore');
@@ -324,7 +351,7 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {alunos.slice(0, 8).map(a => {
+              {previaAlunos.map(a => {
                 const vencido = (() => {
                   if (!a.vencimento) return false;
                   const [d,m,y] = a.vencimento.split('/');

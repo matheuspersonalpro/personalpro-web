@@ -24,6 +24,7 @@ import {
   Target, Zap, Flag, Ruler, Trash2, Plus, X, Check, Save,
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
+import { useConfirm } from '@/components/Confirm';
 
 const DIST_OPCOES_CORRIDA = [
   { valor: '5km',  label: '5 km',      sub: 'VO₂máx',       cor: '#34d399' },
@@ -45,6 +46,7 @@ const NOME_FASE = { base:'Base aeróbica', build:'Específico (build)', pico:'Pi
 
 export default function EndurancePage() {
   const toast = useToast();
+  const confirm = useConfirm();
 
   // ── Estado global ─────────────────────────────────────────────────────────
   const [alunos,     setAlunos]     = useState([]);
@@ -181,7 +183,11 @@ export default function EndurancePage() {
 
   async function removerTeste() {
     if (!alunoId) return;
-    if (!window.confirm('Remover as zonas salvas deste aluno para refazer um novo teste?')) return;
+    if (!await confirm({
+      title: 'Refazer o teste deste aluno?',
+      message: 'As zonas salvas serão removidas para você registrar um teste novo.',
+      confirmLabel: 'Remover zonas',
+    })) return;
     try {
       await removerTesteEndurance(alunoId, modalidade);
       const lista = await buscarAlunos(); setAlunos(lista);
@@ -260,7 +266,11 @@ export default function EndurancePage() {
 
   async function excluirSessao() {
     if (!editor?.id) return;
-    if (!window.confirm('Excluir este treino do calendário?')) return;
+    if (!await confirm({
+      title: 'Excluir este treino do calendário?',
+      message: 'O treino será removido do plano do aluno.',
+      confirmLabel: 'Excluir',
+    })) return;
     try { await deletarSessaoEndurance(editor.id); setEditor(null); await carregar(); toast('Treino removido.'); }
     catch { toast('Erro ao excluir.', 'error'); }
   }
@@ -288,7 +298,12 @@ export default function EndurancePage() {
       return sessoesDoDia(k).length === 0 && !(dataProva && k >= dataProva);
     }).length;
     if (livres === 0) { toast('A semana já está preenchida.', 'error'); return; }
-    if (!window.confirm(`Preencher os ${livres} dia(s) livre(s) desta semana com a sugestão de "${focoInfo.fase}"?`)) return;
+    if (!await confirm({
+      title: `Preencher ${livres} dia(s) livre(s) desta semana?`,
+      message: `Os dias sem treino receberão a sugestão automática de "${focoInfo.fase}".`,
+      confirmLabel: 'Preencher',
+      danger: false,
+    })) return;
     try {
       for (let i = 0; i < 7; i++) {
         const key = chaveData(dias[i]);
@@ -310,7 +325,11 @@ export default function EndurancePage() {
 
   async function limparSemana() {
     if (sessoes.length === 0) { toast('Semana já está vazia.', 'error'); return; }
-    if (!window.confirm(`Excluir os ${sessoes.length} treino(s) desta semana?`)) return;
+    if (!await confirm({
+      title: `Excluir os ${sessoes.length} treino(s) desta semana?`,
+      message: 'Todos os treinos desta semana serão removidos do plano do aluno.',
+      confirmLabel: 'Excluir semana',
+    })) return;
     try {
       for (const s of sessoes) await deletarSessaoEndurance(s.id);
       await carregar(); toast('Semana limpa.');
@@ -318,7 +337,11 @@ export default function EndurancePage() {
   }
 
   async function limparPlano() {
-    if (!window.confirm(`Apagar TODOS os treinos de ${modalidade} deste aluno? Não dá para desfazer.`)) return;
+    if (!await confirm({
+      title: `Apagar TODOS os treinos de ${modalidade} deste aluno?`,
+      message: 'Toda a programação desta modalidade será apagada. Não dá para desfazer.',
+      confirmLabel: 'Apagar tudo',
+    })) return;
     setLimpandoT(true);
     try {
       const n = await limparPlanoEndurance(alunoId, modalidade);
@@ -442,7 +465,11 @@ export default function EndurancePage() {
   }
 
   async function excluirModelo(id) {
-    if (!window.confirm('Remover este modelo da biblioteca?')) return;
+    if (!await confirm({
+      title: 'Remover este modelo da biblioteca?',
+      message: 'O modelo deixará de ficar disponível para reutilizar nos planos.',
+      confirmLabel: 'Remover',
+    })) return;
     try { await deletarModeloEndurance(id); setMeusModelos(await buscarModelosEndurance(modalidade)); }
     catch { toast('Erro ao excluir.', 'error'); }
   }

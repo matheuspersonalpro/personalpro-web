@@ -2,6 +2,7 @@ import './globals.css';
 import { Outfit } from 'next/font/google';
 import { AuthProvider } from '@/lib/AuthContext';
 import { ToastProvider } from '@/components/Toast';
+import { ConfirmProvider } from '@/components/Confirm';
 
 // Outfit — mesma fonte do app mobile, pra identidade visual unificada
 // (antes o site usava Inter, que destoava do app e tinha cara genérica).
@@ -22,7 +23,9 @@ export default function RootLayout({ children }) {
     <html lang="pt-BR" className={`h-full ${outfit.variable}`}>
       <body className="h-full bg-[#080f1d] text-white antialiased">
         <AuthProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            <ConfirmProvider>{children}</ConfirmProvider>
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

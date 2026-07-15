@@ -5,6 +5,7 @@ import { buscarCobrancasAssinatura } from '@/lib/asaas';
 import { gerarPixEMV } from '@/lib/pix';
 import { TrendingUp, Plus, X, ChevronLeft, ChevronRight, Trash2, DollarSign, Users, CreditCard, Target, Zap, QrCode, ExternalLink, Check, AlertTriangle, Copy, RefreshCw } from 'lucide-react';
 import { useToast } from '@/components/Toast';
+import ConfirmModal from '@/components/ConfirmModal';
 
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const TIPOS = ['Mensal','Trimestral','Semestral','Anual','Avulso'];
@@ -214,6 +215,7 @@ export default function FinanceiroPage() {
   const [meta,     setMeta]     = useState('');
   const [editMeta, setEditMeta] = useState(false);
   const [tempMeta, setTempMeta] = useState('');
+  const [confirmPagId, setConfirmPagId] = useState(null);
 
   // Config recebimento
   const [editCfg,   setEditCfg]   = useState(false);
@@ -397,8 +399,16 @@ export default function FinanceiroPage() {
   }
 
   async function deletarPag(id) {
-    if (!window.confirm('Excluir este pagamento?')) return;
-    try { await excluirPagamento(id); carregar(); } catch {}
+    try {
+      await excluirPagamento(id);
+      setConfirmPagId(null);
+      carregar();
+      toast('Pagamento excluído.');
+    } catch {
+      // Antes era catch {} — se falhasse, a linha simplesmente não sumia e o
+      // personal não tinha ideia de que o pagamento continuava lá.
+      toast('Erro ao excluir o pagamento.', 'error');
+    }
   }
 
   function salvarMeta() {
@@ -421,6 +431,14 @@ export default function FinanceiroPage() {
   return (
     <div className="px-4 pt-4 pb-6 md:px-8 md:pt-8 md:pb-8 max-w-[1200px] mx-auto w-full">
       {cobrando && <CobrarModal aluno={cobrando} config={config} toast={toast} onClose={() => setCobrando(null)} onSalvo={() => { setCobrando(null); carregar(); }} />}
+
+      <ConfirmModal
+        open={!!confirmPagId}
+        title="Excluir pagamento?"
+        message="Este registro de pagamento será removido permanentemente do seu histórico financeiro."
+        onConfirm={() => deletarPag(confirmPagId)}
+        onCancel={() => setConfirmPagId(null)}
+      />
 
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
@@ -615,7 +633,7 @@ export default function FinanceiroPage() {
                       <p className="text-[11px] text-white/35">{p.data} · {p.forma || '—'}</p>
                     </div>
                     <span className="text-[14px] font-bold text-blue-400">{fmt(Number(p.valor))}</span>
-                    <button onClick={() => deletarPag(p.id)} className="opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400 transition-all"><Trash2 size={14} /></button>
+                    <button onClick={() => setConfirmPagId(p.id)} className="opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400 transition-all"><Trash2 size={14} /></button>
                   </div>
                 ))}
               </div>
@@ -700,7 +718,7 @@ export default function FinanceiroPage() {
 
       {/* ── ABA RECEBIMENTO ──────────────────────────────────────────────────────── */}
       {!loading && aba === 'recebimento' && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Config PIX */}
           <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
             <div className="flex items-center justify-between mb-4">

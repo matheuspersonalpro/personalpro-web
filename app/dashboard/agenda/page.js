@@ -14,6 +14,7 @@ import {
   Calendar, RefreshCcw,
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
+import { useConfirm } from '@/components/Confirm';
 
 const DIAS_LABEL  = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 const DIAS_CURTO  = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
@@ -136,6 +137,7 @@ function SessaoModal({ sessao, alunos, onSalvo, onFechar }) {
 
 export default function AgendaPage() {
   const toast = useToast();
+  const confirm = useConfirm();
   const [alunos,        setAlunos]        = useState([]);
   const [sessoes,       setSessoes]       = useState([]);
   const [ferias,        setFerias]        = useState([]);
@@ -240,7 +242,12 @@ export default function AgendaPage() {
   async function aprovarFerias(feria) {
     const aluno = alunos.find(a => a.id === feria.alunoId);
     if (!aluno?.vencimento) { toast('Aluno sem vencimento cadastrado.', 'error'); return; }
-    if (!window.confirm(`Aprovar ${feria.dias} dia(s) de férias de ${aluno.nome}?\n\nO plano será estendido a partir de ${aluno.vencimento}.`)) return;
+    if (!await confirm({
+      title: `Aprovar ${feria.dias} dia(s) de férias de ${aluno.nome}?`,
+      message: `O plano será estendido a partir de ${aluno.vencimento}.`,
+      confirmLabel: 'Aprovar',
+      danger: false,
+    })) return;
     try {
       const novoVenc = await aprovarFeriasEEstenderPlano(feria.id, feria.alunoId, feria.dias, aluno.vencimento);
       toast(`Férias aprovadas — novo vencimento: ${novoVenc}`);
@@ -268,7 +275,11 @@ export default function AgendaPage() {
   }
 
   async function removerSlot(slot) {
-    if (!window.confirm(`Remover ${slot.tipo==='especifico' ? slot.data : slot.diaSemana} às ${slot.horario}?`)) return;
+    if (!await confirm({
+      title: `Remover ${slot.tipo === 'especifico' ? slot.data : slot.diaSemana} às ${slot.horario}?`,
+      message: 'Esse horário livre deixará de aparecer para os alunos solicitarem reposição.',
+      confirmLabel: 'Remover',
+    })) return;
     try { await deletarSlotLivre(slot.id); carregar(); } catch { toast('Erro ao remover.', 'error'); }
   }
 
@@ -292,7 +303,11 @@ export default function AgendaPage() {
   }
 
   async function cancelarTroca(troca) {
-    if (!window.confirm(`Cancelar troca entre ${troca.alunoA_nome} ↔ ${troca.alunoB_nome}?`)) return;
+    if (!await confirm({
+      title: `Cancelar troca entre ${troca.alunoA_nome} ↔ ${troca.alunoB_nome}?`,
+      message: 'Os dois alunos voltam para os horários originais desta semana.',
+      confirmLabel: 'Cancelar troca',
+    })) return;
     try { await deletarTrocaHorario(troca.id); carregar(); } catch {}
   }
 
@@ -302,7 +317,12 @@ export default function AgendaPage() {
     const numDias = Math.round((toDate(feriasFim) - toDate(feriasInicio)) / 86400000) + 1;
     if (numDias <= 0) { toast('Período inválido.', 'error'); return; }
     const presenciais = alunos.filter(a => a.ativo !== false && a.tipoServico !== 'online');
-    if (!window.confirm(`Aplicar ${numDias} dia(s) de férias a ${presenciais.length} aluno(s) presencial(is)? Os planos serão estendidos automaticamente.`)) return;
+    if (!await confirm({
+      title: `Aplicar ${numDias} dia(s) de férias a ${presenciais.length} aluno(s) presencial(is)?`,
+      message: 'Os planos serão estendidos automaticamente. Esta ação não pode ser desfeita em massa.',
+      confirmLabel: 'Aplicar férias',
+      danger: false,
+    })) return;
     setAplicandoF(true);
     try {
       const pad = n => String(n).padStart(2,'0');
