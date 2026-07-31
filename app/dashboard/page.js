@@ -7,7 +7,7 @@ import { Users, TrendingUp, AlertTriangle, Clock, ArrowUpRight, CheckCircle2, Ca
 import { useToast } from '@/components/Toast';
 import { useConfirm } from '@/components/Confirm';
 
-function KpiCard({ icon: Icon, label, value, sub, accent }) {
+function KpiCard({ icon: Icon, label, value, sub, accent, href }) {
   const theme = {
     blue:  { wrap: 'ring-blue-500/12',  icon: 'bg-blue-500/12 text-blue-400' },
     green: { wrap: 'ring-green-500/12', icon: 'bg-green-500/12 text-green-400' },
@@ -15,14 +15,29 @@ function KpiCard({ icon: Icon, label, value, sub, accent }) {
     red:   { wrap: 'ring-red-500/12',   icon: 'bg-red-500/12 text-red-400' },
   };
   const t = theme[accent] || theme.blue;
-  return (
-    <div className={`rounded-2xl bg-[#0d1b2e] ring-1 ${t.wrap} p-6`}>
+  const conteudo = (
+    <>
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-5 ${t.icon}`}>
         <Icon size={18} strokeWidth={1.8} />
       </div>
       <p className="text-[32px] font-bold text-white tracking-tight leading-none mb-2">{value}</p>
       <p className="text-[11px] font-semibold text-white/35 uppercase tracking-widest">{label}</p>
       {sub && <p className="text-[11px] text-white/25 mt-1.5 truncate">{sub}</p>}
+    </>
+  );
+  // Cards do topo pareciam clicáveis (hover normal de botão) mas não levavam
+  // a lugar nenhum — achado pelo dono. Agora, quando há `href`, o card inteiro
+  // navega pra tela de alunos já com o filtro certo aplicado.
+  if (href) {
+    return (
+      <Link href={href} className={`block rounded-2xl bg-[#0d1b2e] ring-1 ${t.wrap} p-6 transition-colors hover:bg-[#102238]`}>
+        {conteudo}
+      </Link>
+    );
+  }
+  return (
+    <div className={`rounded-2xl bg-[#0d1b2e] ring-1 ${t.wrap} p-6`}>
+      {conteudo}
     </div>
   );
 }
@@ -96,8 +111,11 @@ export default function DashboardPage() {
     const [d,m,y] = a.vencimento.split('/');
     return new Date(+y, m-1, +d) < hoje;
   });
+  // Aluno com cobrança automática (Asaas) renova sozinho — mostrar ele aqui
+  // é alarme falso (achado pelo dono: Paulo aparecia em "vencendo" mesmo já
+  // ativo/recorrente, sem precisar de nenhuma ação manual do personal).
   const vencendo = alunos.filter(a => {
-    if (!a.vencimento) return false;
+    if (!a.vencimento || a.cobrancaAutomatica) return false;
     const [d,m,y] = a.vencimento.split('/');
     const diff = (new Date(+y, m-1, +d) - hoje) / 86400000;
     return diff >= 0 && diff <= 7;
@@ -324,12 +342,12 @@ export default function DashboardPage() {
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
-        <KpiCard icon={Users}         label="Alunos ativos"    value={ativos.length}       accent="blue" />
+        <KpiCard icon={Users}         label="Alunos ativos"    value={ativos.length}       accent="blue"  href="/dashboard/alunos" />
         <KpiCard icon={TrendingUp}    label="Receita do mês"
-          value={`R$ ${receitaMes.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} accent="green" />
+          value={`R$ ${receitaMes.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} accent="green" href="/dashboard/financeiro" />
         <KpiCard icon={Clock}         label="Vencem em 7 dias" value={vencendo.length}
-          sub={vencendo.map(a => a.nome?.split(' ')[0]).join(', ') || undefined} accent="amber" />
-        <KpiCard icon={AlertTriangle} label="Inadimplentes"    value={inadimplentes.length} accent="red" />
+          sub={vencendo.map(a => a.nome?.split(' ')[0]).join(', ') || undefined} accent="amber" href="/dashboard/alunos?filtro=vencendo" />
+        <KpiCard icon={AlertTriangle} label="Inadimplentes"    value={inadimplentes.length} accent="red"   href="/dashboard/alunos?filtro=inadimplentes" />
       </div>
 
       {/* Corpo */}

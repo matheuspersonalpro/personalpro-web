@@ -136,7 +136,10 @@ export default function AlunosPage() {
 
   const [alunos,   setAlunos]   = useState([]);
   const [busca,    setBusca]    = useState('');
-  const [filtro,   setFiltro]   = useState('todos');
+  // Lê o filtro inicial da URL (?filtro=vencendo|inadimplentes) — os cards do
+  // dashboard linkam pra cá com esse parâmetro; sem isso a página sempre
+  // abria em "todos", ignorando de onde o personal veio.
+  const [filtro,   setFiltro]   = useState(searchParams.get('filtro') || 'todos');
   const [loading,  setLoading]  = useState(true);
   const [novoModal,setNovoModal]= useState(false);
 
@@ -152,7 +155,9 @@ export default function AlunosPage() {
     const [d, m, y] = a.vencimento.split('/');
     const diff = Math.ceil((new Date(+y, m - 1, +d) - hoje) / 86400000);
     if (diff < 0) return 'inadimplente';
-    if (diff <= 7) return 'vencendo';
+    // Cobrança automática renova sozinha — não é "vencendo" de verdade (mesma
+    // regra do card do dashboard, pra não mostrar números diferentes).
+    if (diff <= 7 && !a.cobrancaAutomatica) return 'vencendo';
     return 'ativo';
   }
 
