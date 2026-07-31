@@ -338,16 +338,33 @@ export default function FinanceiroPage() {
   const receitaAno    = Array.from({length:12}, (_,i) => somaMes(i, anoAtual)).reduce((s,v) => s+v, 0);
   const mesAnteriorV  = somaMes(mesAtual > 0 ? mesAtual-1 : 11, mesAtual > 0 ? anoAtual : anoAtual-1);
   const variacaoMes   = mesAnteriorV > 0 ? ((receitaMes - mesAnteriorV) / mesAnteriorV * 100) : 0;
-  const mediaMensal   = receitaAno / 12;
+  // Dividia sempre por 12 meses fixos, mesmo quando só o mês atual tinha
+  // pagamento registrado (achado pelo dono: julho com R$15.766 virava média
+  // de R$1.313, quando na verdade É a média real até aqui). Divide pelos
+  // meses do ano JÁ passados (Jan até o mês atual), não pelos 12 do ano
+  // inteiro — meses futuros óbvio que ainda não têm receita.
+  const mesesDecorridosAno = anoAtual === agora.getFullYear() ? agora.getMonth() + 1 : 12;
+  const mediaMensal   = receitaAno / Math.max(1, mesesDecorridosAno);
   const metaNum       = parseFloat((meta||'0').replace(',','.').replace('R$','').replace(/\./g,'').trim()) || 0;
   const metaPct       = metaNum > 0 ? Math.min(100, (receitaMes / metaNum) * 100) : 0;
 
-  // Projeção próximo mês (média 3 meses)
+  // Projeção próximo mês: média dos últimos 3 meses COM pagamento registrado
+  // (ignora meses sem histórico em vez de contar como R$0 — achado pelo dono:
+  // com só 1 mês de dado, a média de 3 meses saía 0 mesmo já havendo receita
+  // recorrente confirmada no Asaas pra agosto). Sem NENHUM mês anterior com
+  // dado, cai no fallback de baixo (soma dos ativos), nunca fica zerada à toa.
   const prox3 = Array.from({length:3}, (_,i) => {
     const m = mesAtual - i - 1; const a = m < 0 ? anoAtual - 1 : anoAtual;
     return somaMes((m+12)%12, a);
-  });
-  const projecao = prox3.reduce((s,v)=>s+v,0) / 3;
+  }).filter(v => v > 0);
+  const projecaoHistorico = prox3.length ? prox3.reduce((s,v)=>s+v,0) / prox3.length : null;
+  // Fallback: soma do valor mensal de todos os alunos ativos (o que
+  // "deveria" entrar mês que vem, no plano) — usado quando ainda não há
+  // histórico suficiente pra calcular uma média de verdade.
+  const receitaEsperadaAtivos = alunos
+    .filter(a => a.ativo !== false)
+    .reduce((s,a) => s + (Number(a.valor) || 0), 0);
+  const projecao = projecaoHistorico ?? receitaEsperadaAtivos;
 
   // Gráfico 6 meses
   const chart6 = Array.from({length:6}, (_,i) => {
