@@ -96,8 +96,8 @@ const FAQS = [
     a: 'Até 3 alunos ativos sem precisar de assinatura. Para gerenciar mais alunos, escolha um dos planos pagos.',
   },
   {
-    q: 'O app funciona no iPhone e Android?',
-    a: 'Sim. Existe um app nativo para iOS (App Store) e Android (Google Play) tanto para personais quanto para alunos.',
+    q: 'Onde baixo o app?',
+    a: 'Na Google Play (Android) e na App Store (iPhone) — os botões estão no topo e no fim desta página. Existe app tanto para você quanto para seus alunos, e o mesmo cadastro funciona no celular e no computador.',
   },
   {
     q: 'Posso cancelar quando quiser?',
@@ -112,6 +112,41 @@ const FAQS = [
     a: 'Pelo painel você gera cobranças via PIX, cartão ou boleto usando integração com o Asaas. O dinheiro cai direto na sua conta.',
   },
 ];
+
+// O site é a única coisa na bio do Instagram, e quem chega de lá está no
+// CELULAR procurando um app. Antes não havia um único link pras lojas — o
+// visitante concluía que era só um sistema web (achado pelo dono).
+const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.matheuspersonalpro.personalpro';
+const IOS_URL  = 'https://apps.apple.com/br/app/personal-pro/id6782193425';
+
+function BotoesLoja({ className = '' }) {
+  const base = 'flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-white/[0.06] ring-1 ring-white/[0.12] hover:bg-white/[0.10] hover:ring-white/25 transition-all';
+  return (
+    <div className={`flex flex-col sm:flex-row gap-3 ${className}`}>
+      <a href={PLAY_URL} target="_blank" rel="noopener noreferrer" className={base}>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="#34d399" d="M3.6 1.8 13.5 12 3.6 22.2A2 2 0 0 1 3 20.8V3.2c0-.53.23-1.02.6-1.4Z" />
+          <path fill="#60a5fa" d="M16.4 8.9 5.6 2.6 4.9 2.2l10 10Z" />
+          <path fill="#fbbf24" d="M16.4 15.1 14.9 12l5.4-3.1c1 .6 1 2.6 0 3.2Z" />
+          <path fill="#fb7185" d="M4.9 21.8 14.9 12l1.5 3.1-10.8 6.3Z" />
+        </svg>
+        <span className="text-left">
+          <span className="block text-[10px] text-white/40 leading-none">Baixe no</span>
+          <span className="block text-[14px] font-bold text-white leading-tight">Google Play</span>
+        </span>
+      </a>
+      <a href={IOS_URL} target="_blank" rel="noopener noreferrer" className={base}>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" className="text-white" aria-hidden="true">
+          <path d="M16.4 12.8c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.6.9-.7 0-1.9-.8-3.1-.8-1.6 0-3.1.9-3.9 2.4-1.7 2.9-.4 7.1 1.2 9.4.8 1.1 1.7 2.4 3 2.3 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.1.8 1.3 0 2.1-1.1 2.9-2.3.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.6-1-2.6-3.9ZM14.2 5.6c.7-.8 1.1-2 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.4Z" />
+        </svg>
+        <span className="text-left">
+          <span className="block text-[10px] text-white/40 leading-none">Baixe na</span>
+          <span className="block text-[14px] font-bold text-white leading-tight">App Store</span>
+        </span>
+      </a>
+    </div>
+  );
+}
 
 const ACCENT = {
   blue:  { bg: 'bg-blue-500/10',  text: 'text-blue-400',  ring: 'ring-blue-500/20' },
@@ -158,10 +193,13 @@ export default function LandingPage() {
               className="text-[13px] font-medium text-white/50 hover:text-white transition-colors px-3 py-2">
               Entrar
             </Link>
-            <Link href="/login"
+            {/* A barra é fixa e acompanha a rolagem toda — era o botão mais
+                visível da página e mandava pro login web, contradizendo o
+                produto, que é um app de celular. */}
+            <a href="#baixar"
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
-              Começar grátis <ArrowRight size={13} />
-            </Link>
+              Baixar app <ArrowRight size={13} />
+            </a>
           </div>
         </div>
       </nav>
@@ -183,12 +221,18 @@ export default function LandingPage() {
             <p className="text-[16px] text-white/45 leading-relaxed mb-8 max-w-md mx-auto md:mx-0">
               Treinos, agenda, financeiro e avaliações em um único app. Para você focar no que importa — transformar vidas.
             </p>
+            {/* Baixar o app é a ação PRINCIPAL: o produto é um app de celular,
+                e a maior parte de quem chega vem da bio do Instagram, no
+                telefone. O login web fica como caminho secundário — serve pra
+                quem já é cliente e quer usar no computador. */}
+            <BotoesLoja className="justify-center md:justify-start mb-4" />
             <div className="flex flex-col sm:flex-row items-center gap-3 justify-center md:justify-start">
-              <Link href="/login"
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-[15px] font-bold text-white transition-all shadow-xl shadow-blue-900/40">
-                Começar grátis <ArrowRight size={15} />
-              </Link>
               <p className="text-[12px] text-white/30">Grátis até 3 alunos · Sem cartão</p>
+              <span className="hidden sm:block text-white/15">·</span>
+              <Link href="/login"
+                className="text-[12px] font-medium text-blue-400 hover:text-blue-300 transition-colors">
+                ou acesse pelo computador
+              </Link>
             </div>
           </div>
 
@@ -325,7 +369,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA BANNER */}
-      <section className="max-w-6xl mx-auto px-4 md:px-8 py-10">
+      <section id="baixar" className="max-w-6xl mx-auto px-4 md:px-8 py-10 scroll-mt-20">
         <div className="rounded-3xl overflow-hidden relative px-8 py-12 md:px-14 md:py-16 text-center"
           style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #0f1f3d 50%, #1a1040 100%)' }}>
           <div className="absolute inset-0 opacity-30"
@@ -337,9 +381,10 @@ export default function LandingPage() {
             <p className="text-[15px] text-white/45 mb-8 max-w-md mx-auto">
               Junte-se a personais que já usam o PersonalPro para organizar e fazer crescer sua carreira.
             </p>
+            <BotoesLoja className="justify-center" />
             <Link href="/login"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-[15px] font-bold text-white transition-all shadow-xl shadow-blue-900/40">
-              Criar conta grátis <ArrowRight size={15} />
+              className="inline-block mt-5 text-[13px] font-medium text-white/40 hover:text-white/70 transition-colors">
+              ou criar conta pelo computador
             </Link>
           </div>
         </div>
@@ -366,8 +411,9 @@ export default function LandingPage() {
           <Image src="/logo.png" alt="PersonalPro" width={110} height={32} style={{ objectFit: 'contain', height: 28, width: 'auto', opacity: 0.6 }} />
           <p className="text-[12px] text-white/20">© {new Date().getFullYear()} PersonalPro · Todos os direitos reservados</p>
           <div className="flex items-center gap-4">
+            <a href={PLAY_URL} target="_blank" rel="noopener noreferrer" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Google Play</a>
+            <a href={IOS_URL} target="_blank" rel="noopener noreferrer" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">App Store</a>
             <Link href="/login" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Entrar</Link>
-            <Link href="/login" className="text-[12px] text-white/30 hover:text-white/60 transition-colors">Criar conta</Link>
           </div>
         </div>
       </footer>
