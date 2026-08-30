@@ -107,3 +107,19 @@ export const FAQ = [
     r: 'São como eu enxergo a sua evolução à distância — sem elas, o ajuste vira chute. Você manda no primeiro dia e a cada 90. Elas ficam guardadas na sua conta dentro do aplicativo, visíveis só pra você e pra mim.',
   },
 ];
+
+// ── GARANTIA ─────────────────────────────────────────────────────────────────
+// Fica atrelada aos 90 dias de propósito: é a data em que chegam as segundas
+// fotos, ou seja, a única em que existe medida de antes e depois pra comparar.
+// Garantia sem critério de verificação vira discussão; esta tem foto dos dois
+// lados e os registros de carga no aplicativo.
+//
+// É refazer o programa, não devolver dinheiro — decisão do Matheus a confirmar.
+export const GARANTIA = {
+  titulo: 'Doze semanas, e a minha parte se não funcionar',
+  texto:
+    'Se depois de 12 semanas seguindo o programa você não tiver evoluído, eu ' +
+    'refaço o seu planejamento inteiro do zero, sem custo nenhum. É por isso ' +
+    'que as fotos e o registro de carga importam: nos 90 dias a gente tem os ' +
+    'dois lados pra comparar, e não precisa ficar no achismo.',
+};

@@ -26,7 +26,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import {
   WHATSAPP, PRECO, DEPOIMENTOS, TRANSFORMACOES, NUMEROS,
-  PARA_VOCE, RECEBE, PASSOS, FAQ,
+  PARA_VOCE, RECEBE, PASSOS, FAQ, GARANTIA,
 } from './dados';
 
 // O Asaas não cria cliente sem CPF — `criarCheckout` já rejeita o que não tem
@@ -349,6 +349,17 @@ export default function Treine() {
               className="mt-7 inline-flex w-fit items-center bg-[#E5484D] px-8 py-4 text-lg font-bold text-white transition hover:bg-[#d63c41]">
               Quero começar
             </a>
+          </div>
+        </section>
+
+        {/* ── GARANTIA ──────────────────────────────────────
+            Logo depois do preço, que é onde a dúvida aparece. Ela é atrelada
+            aos 90 dias porque é quando chegam as segundas fotos — a única data
+            em que existe medida dos dois lados pra comparar. */}
+        <section className="pt-16">
+          <div className="border-l-2 border-white/25 pl-6">
+            <h2 className="text-2xl font-bold tracking-tight">{GARANTIA.titulo}</h2>
+            <p className="mt-3 text-lg leading-relaxed text-white/70">{GARANTIA.texto}</p>
           </div>
         </section>
 
