@@ -352,8 +352,17 @@ export default function Treine() {
           </div>
         </section>
 
-        {/* ── PREÇO ───────────────────────────────────────────────────────────*/}
+        {/* ── PREÇO ───────────────────────────────────────────────────────────
+            A frase antes do número existe porque a objeção real não é o valor,
+            é o que a pessoa acha que está pagando. Quem lê "aplicativo" compara
+            com mensalidade de aplicativo e acha caro; quem entende que está
+            contratando alguém compara com personal, e aí o número é barato. */}
         <section className="pt-20">
+          <p className="mb-6 max-w-xl text-xl leading-relaxed text-white/80">
+            Você não está assinando um aplicativo. Está contratando alguém que
+            olha o seu treino, vê a sua carga subir e mexe no que precisa mexer.
+            O aplicativo é só por onde isso chega até você.
+          </p>
           <div className="border border-[#E5484D]/40 bg-[#E5484D]/[0.06] p-8">
             <p className="text-sm font-semibold uppercase tracking-widest text-[#E5484D]">
               Plano mensal
