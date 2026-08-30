@@ -22,9 +22,9 @@ export const PRECO = 'R$ 149,90';
 
 /** @type {{texto:string, quem:string, detalhe?:string}[]} */
 export const DEPOIMENTOS = [
-  // Exemplo do formato — apagar quando entrar o primeiro de verdade:
-  // { texto: 'O que a aluna escreveu, com as palavras dela.',
-  //   quem: 'Juliana C., 34 anos', detalhe: '8 meses de consultoria' },
+  // Formato — o carrossel liga sozinho quando o primeiro entrar aqui:
+  // { texto: 'O que a pessoa escreveu, com as palavras dela.',
+  //   quem: 'Primeiro nome, idade', detalhe: '8 meses de consultoria' },
 ];
 
 /** @type {{antes:string, depois:string, quem:string, resultado:string}[]} */
@@ -63,23 +63,71 @@ export const PARA_VOCE = [
   'Está voltando depois de meses parado e não sabe por onde começar.',
 ];
 
+// Etiqueta + título curto + UMA linha. Era parágrafo antes, e o Matheus tinha
+// razão: quem chega de Instagram passa o olho, não lê. Cada item aqui tem que
+// caber num relance.
+//
+// Tudo o que está escrito aqui é recurso que existe no aplicativo hoje. Não
+// entra nada de "em breve" nem nada que dependa de estar presente — avaliação
+// com as 7 dobras, por exemplo, ficou de fora porque exige adipômetro na mão,
+// e consultoria é à distância.
 export const RECEBE = [
   {
-    t: 'Um programa montado pra você',
-    d: 'Não é planilha pronta. Eu monto em cima do que você respondeu: seu objetivo, os dias que você consegue treinar, quanto tempo tem por sessão e a estrutura do lugar onde você treina — academia completa, academia simples ou halteres em casa.',
+    tag: 'Plano',
+    t: 'Programa 100% seu',
+    d: 'Montado no seu objetivo, nos seus dias e no que tem no seu lugar de treino.',
   },
   {
+    tag: 'Plataforma',
     t: 'Treino no aplicativo, com vídeo de cada exercício',
-    d: 'Você abre no celular e executa. Séries, repetições, carga e descanso na tela, e o vídeo de como fazer cada movimento.',
+    d: 'Séries, repetições, carga e descanso na tela. Você abre e executa.',
   },
   {
-    t: 'Corrida ou ciclismo junto, se quiser',
-    d: 'Planilha periodizada semana por semana, no mesmo valor. A maioria das consultorias cobra à parte ou simplesmente não faz.',
+    tag: 'Progressão',
+    t: 'Periodização de 12 meses',
+    d: 'A carga e os métodos sobem mês a mês, sem repetir o mesmo treino.',
   },
   {
-    t: 'Resposta em até 24 horas',
-    d: 'Todos os dias, inclusive fim de semana.',
+    tag: 'Endurance',
+    t: 'Corrida ou ciclismo junto',
+    d: 'Planilha periodizada semana a semana, no mesmo valor.',
   },
+  {
+    tag: 'Suporte',
+    t: 'Falo com você direto no WhatsApp',
+    d: 'Resposta em até 24 horas, todo dia, inclusive fim de semana.',
+  },
+  {
+    tag: 'Evolução',
+    t: 'Reavaliação a cada 90 dias',
+    d: 'Fotos e medidas comparadas lado a lado, e o plano muda com você.',
+  },
+  {
+    tag: 'Registro',
+    t: 'Sua carga guardada, treino a treino',
+    d: 'Você vê a evolução de cada exercício, e eu também.',
+  },
+  {
+    tag: 'PDF',
+    t: 'O treino em PDF, se você preferir no papel',
+    d: 'Pra imprimir e levar na academia, sem depender do celular.',
+  },
+];
+
+// Lista do que está dentro do valor, logo abaixo do preço. É a mesma entrega
+// da seção de cima, mas em forma de conferência: ali a pessoa está conhecendo,
+// aqui ela está decidindo — e na hora de decidir ela quer ver tudo junto.
+export const INCLUSO = [
+  'Programa de musculação montado pra você',
+  'Periodização de 12 meses, sem repetir treino',
+  'Planilha de corrida ou ciclismo, se quiser',
+  'Aplicativo com vídeo de cada exercício',
+  'Registro de carga treino a treino',
+  'Treino em PDF pra imprimir',
+  'Suporte no WhatsApp comigo, resposta em 24h',
+  'Reavaliação a cada 90 dias, com fotos e medidas',
+  'Ajuste do plano sempre que precisar',
+  'Sem fidelidade — cancela quando quiser',
 ];
 
 export const PASSOS = [

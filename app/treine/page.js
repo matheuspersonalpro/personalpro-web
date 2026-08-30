@@ -26,7 +26,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import {
   WHATSAPP, PRECO, DEPOIMENTOS, TRANSFORMACOES, NUMEROS,
-  PARA_VOCE, RECEBE, PASSOS, FAQ, GARANTIA,
+  PARA_VOCE, RECEBE, INCLUSO, PASSOS, FAQ, GARANTIA,
 } from './dados';
 
 // O Asaas não cria cliente sem CPF — `criarCheckout` já rejeita o que não tem
@@ -206,15 +206,22 @@ export default function Treine() {
         </section>
 
         {/* ── O QUE RECEBE ────────────────────────────────────────────────────
-            Sem ícone e sem card: um título forte e um parágrafo de tamanho
-            desigual, que é como texto escrito por gente se parece. */}
+            Era um parágrafo por item, e o Matheus tinha razão em reclamar:
+            quem chega do Instagram passa o olho, não lê. Virou etiqueta,
+            título curto e uma linha só — o item inteiro cabe num relance.
+
+            Duas colunas no computador porque oito itens empilhados viram uma
+            rolagem longa demais antes de chegar no preço. */}
         <section className="pt-20">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">O que você recebe</h2>
-          <div className="mt-10 space-y-10">
-            {RECEBE.map(({ t, d }) => (
-              <div key={t} className="border-l-2 border-[#E5484D] pl-6">
-                <h3 className="text-xl font-bold">{t}</h3>
-                <p className="mt-2 leading-relaxed text-white/65">{d}</p>
+          <div className="mt-10 grid gap-x-10 gap-y-9 sm:grid-cols-2">
+            {RECEBE.map(({ tag, t, d }) => (
+              <div key={t}>
+                <span className="inline-block border border-white/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-white/50">
+                  {tag}
+                </span>
+                <h3 className="mt-3 text-lg font-bold leading-snug">{t}</h3>
+                <p className="mt-1.5 leading-relaxed text-white/60">{d}</p>
               </div>
             ))}
           </div>
@@ -263,22 +270,65 @@ export default function Treine() {
           </section>
         )}
 
-        {/* Depoimentos — mesma regra. */}
+        {/* ── DEPOIMENTOS ─────────────────────────────────────────────────────
+            Carrossel que desliza sozinho da esquerda pra direita, sem
+            biblioteca: a lista é renderizada DUAS vezes lado a lado e o trilho
+            anda exatamente metade da própria largura. Quando a animação
+            reinicia, a segunda cópia está no lugar em que a primeira começou,
+            então o corte é invisível e o giro é infinito.
+
+            `aria-hidden` na segunda cópia pra quem usa leitor de tela não
+            ouvir cada depoimento duas vezes. Pausa ao passar o mouse, senão
+            não dá pra terminar de ler um que interessou.
+
+            A seção só existe quando houver depoimento REAL em DEPOIMENTOS —
+            escrito pela pessoa, com autorização dela. */}
         {DEPOIMENTOS.length > 0 && (
           <section className="pt-20">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
               Quem já treina comigo
             </h2>
-            <div className="mt-8 space-y-8">
-              {DEPOIMENTOS.map((d) => (
-                <blockquote key={d.quem} className="border-l-2 border-white/20 pl-6">
-                  <p className="text-lg leading-relaxed text-white/85">{d.texto}</p>
-                  <footer className="mt-3 text-sm text-white/50">
-                    {d.quem}{d.detalhe ? ` · ${d.detalhe}` : ''}
-                  </footer>
-                </blockquote>
-              ))}
+
+            <div className="carrossel mt-8 overflow-hidden">
+              <div className="carrossel-trilho flex w-max gap-5">
+                {[...DEPOIMENTOS, ...DEPOIMENTOS].map((d, i) => (
+                  <figure
+                    key={i}
+                    aria-hidden={i >= DEPOIMENTOS.length}
+                    className="flex w-[290px] shrink-0 flex-col border border-white/12 bg-white/[0.03] p-6 sm:w-[340px]"
+                  >
+                    <p className="flex-1 leading-relaxed text-white/85">{d.texto}</p>
+                    <figcaption className="mt-5 border-t border-white/10 pt-4">
+                      <p className="font-semibold">{d.quem}</p>
+                      {d.detalhe && (
+                        <p className="text-sm text-white/45">{d.detalhe}</p>
+                      )}
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
             </div>
+
+            <style jsx>{`
+              .carrossel-trilho {
+                /* 26s por volta com 8 depoimentos: rápido o bastante pra não
+                   parecer travado, lento o bastante pra dar tempo de ler. */
+                animation: desliza 26s linear infinite;
+              }
+              .carrossel:hover .carrossel-trilho {
+                animation-play-state: paused;
+              }
+              /* Quem pediu menos movimento no sistema não recebe carrossel
+                 animado — o conteúdo continua ali, só parado. */
+              @media (prefers-reduced-motion: reduce) {
+                .carrossel { overflow-x: auto; }
+                .carrossel-trilho { animation: none; }
+              }
+              @keyframes desliza {
+                from { transform: translateX(calc(-50% - 0.625rem)); }
+                to   { transform: translateX(0); }
+              }
+            `}</style>
           </section>
         )}
 
@@ -376,6 +426,18 @@ export default function Treine() {
               Sem fidelidade. Cancela quando quiser, sem multa e sem justificar.
               Musculação com corrida ou ciclismo inclusos — não é pacote separado.
             </p>
+
+            {/* A conferência do que entra. Na seção de cima a pessoa estava
+                conhecendo; aqui ela está decidindo, e quem decide quer ver
+                tudo junto num lugar só. */}
+            <ul className="mt-7 space-y-2.5 border-t border-white/10 pt-7">
+              {INCLUSO.map((item) => (
+                <li key={item} className="flex gap-3 leading-snug text-white/80">
+                  <span aria-hidden className="font-bold text-[#E5484D]">✓</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
             <a href="#comecar"
               className="mt-7 inline-flex w-fit items-center bg-[#E5484D] px-8 py-4 text-lg font-bold text-white transition hover:bg-[#d63c41]">
               Quero começar
