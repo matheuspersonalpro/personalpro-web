@@ -228,29 +228,32 @@ export default function Treine() {
         </section>
 
         {/* ── TRANSFORMAÇÕES ──────────────────────────────────────────────────
-            Só aparece com foto autorizada em TRANSFORMACOES. Enquanto a lista
-            estiver vazia, a seção inteira não existe.
+            Fileira que corre pro lado, com os pares pequenos — não uma foto
+            gigante por vez. São várias transformações, e ocupando meia tela
+            cada uma a pessoa desiste antes de ver a terceira.
 
-            O recorte é 9:16 porque é o formato em que as fotos chegam (foto de
-            celular, corpo inteiro no espelho). Forçar 3:4 aqui cortaria pé ou
-            cabeça justamente na imagem em que o corpo inteiro é o assunto.
+            Aqui a rolagem é do dedo, e não animação automática como no
+            carrossel de depoimentos: foto se olha parada. Uma imagem que
+            desliza sozinha some justo quando a pessoa parou pra comparar os
+            dois lados, que é a única coisa que ela quer fazer nesta seção.
 
-            As tarjas ANTES e DEPOIS ficam sobre a imagem porque, sem elas,
-            duas fotos lado a lado não dizem qual é qual — e a pessoa que olha
-            de relance pode ler a ordem trocada. */}
+            `snap-x` faz cada par parar alinhado em vez de encalhar cortado no
+            meio. A margem negativa e o padding levam a fileira até a borda da
+            tela, pra ficar claro que tem mais coisa passando do lado. */}
         {TRANSFORMACOES.length > 0 && (
           <section className="pt-20">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
               Corpos transformados
             </h2>
-            <div className="mt-8 space-y-10">
+
+            <div className="-mx-6 mt-8 flex snap-x snap-mandatory gap-5 overflow-x-auto px-6 pb-4">
               {TRANSFORMACOES.map((t) => (
-                <figure key={t.quem}>
-                  <div className="grid grid-cols-2 gap-1">
+                <figure key={t.quem} className="w-[260px] shrink-0 snap-start sm:w-[300px]">
+                  <div className="grid grid-cols-2 gap-0.5">
                     {[['Antes', t.antes], ['Depois', t.depois]].map(([rotulo, src]) => (
                       <div key={rotulo} className="relative aspect-[9/16] overflow-hidden">
-                        <img src={src} alt="" className="h-full w-full object-cover" />
-                        <span className={`absolute left-0 top-0 px-3 py-1.5 text-xs font-bold uppercase tracking-widest ${
+                        <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
+                        <span className={`absolute left-0 top-0 px-2 py-1 text-[10px] font-bold uppercase tracking-widest ${
                           rotulo === 'Depois' ? 'bg-[#E5484D] text-white' : 'bg-black/70 text-white/80'
                         }`}>
                           {rotulo}
@@ -258,15 +261,19 @@ export default function Treine() {
                       </div>
                     ))}
                   </div>
-                  <figcaption className="mt-4">
+                  <figcaption className="mt-3">
                     <p className="font-semibold">{t.quem}</p>
                     {t.resultado && (
-                      <p className="mt-0.5 text-lg font-bold text-[#E5484D]">{t.resultado}</p>
+                      <p className="text-sm font-semibold text-[#E5484D]">{t.resultado}</p>
                     )}
                   </figcaption>
                 </figure>
               ))}
             </div>
+
+            {TRANSFORMACOES.length > 1 && (
+              <p className="text-sm text-white/35">Arraste pro lado para ver mais →</p>
+            )}
           </section>
         )}
 
