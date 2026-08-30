@@ -22,7 +22,7 @@
 // A venda acontece na WEB de propósito: cobrança dentro do aplicativo pode ser
 // enquadrada pela Apple como compra digital, com comissão e risco de recusa.
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
   WHATSAPP, PRECO, DEPOIMENTOS, TRANSFORMACOES, NUMEROS,
@@ -57,6 +57,26 @@ export default function Treine() {
     nome: '', email: '', cpf: '', whatsapp: '', nascimento: '', sexo: '', modalidade: 'musculacao',
   });
   const [erro, setErro] = useState('');
+
+  // Qual foto do topo está aparecendo. Era animação de CSS puro, sem estado
+  // nenhum, e virou React quando o Matheus pediu a seta: pra seta clicar de
+  // verdade, alguém precisa saber em qual foto estamos.
+  const [foto, setFoto] = useState(0);
+
+  useEffect(() => {
+    // Quem liga "reduzir movimento" no sistema não recebe troca automática —
+    // é gente que passa mal com animação. As setas continuam funcionando.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    // O `foto` na lista de dependências é de propósito: cada troca reinicia a
+    // contagem. Sem isso, clicar na seta faltando meio segundo pro tempo
+    // acabar mostraria a foto escolhida por um piscar só.
+    const t = setTimeout(() => setFoto((i) => (i + 1) % FOTOS_TOPO.length), 5000);
+    return () => clearTimeout(t);
+  }, [foto]);
+
+  const trocarFoto = (passo) =>
+    setFoto((i) => (i + passo + FOTOS_TOPO.length) % FOTOS_TOPO.length);
 
   const campo = (k, transforma) => (e) => {
     const v = transforma ? transforma(e.target.value) : e.target.value;
@@ -138,11 +158,13 @@ export default function Treine() {
           {FOTOS_TOPO.map((f, i) => (
             <div
               key={f.src}
-              className="troca absolute inset-0"
-              style={{ animationDelay: `${-i * 5}s` }}
+              aria-hidden={i !== foto}
+              className={`absolute inset-0 transition-opacity duration-700 ${
+                i === foto ? 'opacity-100' : 'opacity-0'
+              }`}
             >
               <Image
-                src={f.src} alt={i === 0 ? f.alt : ''}
+                src={f.src} alt={i === foto ? f.alt : ''}
                 fill priority={i === 0} sizes="100vw"
                 className="object-cover"
                 style={{ objectPosition: f.pos }}
@@ -174,6 +196,38 @@ export default function Treine() {
               className="mt-8 inline-flex w-fit items-center bg-[#E5484D] px-8 py-4 text-lg font-bold text-white transition hover:bg-[#d63c41]">
               Quero começar
             </a>
+
+            {/* Setas e bolinhas. Sem isso ninguém descobre que existem outras
+                duas fotos: quem lê o topo em três segundos e desce nunca vê a
+                troca acontecer, e a prova de que ele corre e pedala se perde.
+
+                As bolinhas dizem QUANTAS são, que é a informação que a seta
+                sozinha não passa. E as duas coisas clicam de verdade — seta de
+                enfeite, que só sinaliza, irrita mais do que ajuda. */}
+            <div className="mt-8 flex items-center gap-3">
+              <button type="button" onClick={() => trocarFoto(-1)}
+                aria-label="Foto anterior"
+                className="flex h-10 w-10 items-center justify-center border border-white/25 pb-0.5 text-xl leading-none text-white/70 transition hover:border-white/60 hover:text-white">
+                ‹
+              </button>
+              <button type="button" onClick={() => trocarFoto(1)}
+                aria-label="Próxima foto"
+                className="flex h-10 w-10 items-center justify-center border border-white/25 pb-0.5 text-xl leading-none text-white/70 transition hover:border-white/60 hover:text-white">
+                ›
+              </button>
+
+              <div className="ml-2 flex items-center gap-2">
+                {FOTOS_TOPO.map((f, i) => (
+                  <button key={f.src} type="button" onClick={() => setFoto(i)}
+                    aria-label={f.alt}
+                    aria-current={i === foto}
+                    className={`h-1.5 rounded-full transition-all ${
+                      i === foto ? 'w-7 bg-[#E5484D]' : 'w-1.5 bg-white/30 hover:bg-white/60'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Computador: as fotos inteiras, sem recorte que corte o rosto. */}
@@ -181,11 +235,13 @@ export default function Treine() {
             {FOTOS_TOPO.map((f, i) => (
               <div
                 key={f.src}
-                className="troca absolute inset-0"
-                style={{ animationDelay: `${-i * 5}s` }}
+                aria-hidden={i !== foto}
+                className={`absolute inset-0 transition-opacity duration-700 ${
+                  i === foto ? 'opacity-100' : 'opacity-0'
+                }`}
               >
                 <Image
-                  src={f.src} alt={i === 0 ? f.alt : ''}
+                  src={f.src} alt={i === foto ? f.alt : ''}
                   fill priority={i === 0} sizes="45vw"
                   className="object-cover"
                   style={{ objectPosition: f.posLg }}
@@ -195,28 +251,6 @@ export default function Treine() {
           </div>
         </div>
 
-        <style jsx>{`
-          /* Cada foto fica visível no seu terço do ciclo de 15s e some com um
-             esmaecer curto. O atraso NEGATIVO (-5s, -10s) é o truque: adianta a
-             animação em vez de esperar, senão a segunda e a terceira ficariam
-             invisíveis nos primeiros segundos e o topo abriria vazio. */
-          .troca {
-            opacity: 0;
-            animation: troca-foto 15s linear infinite;
-          }
-          @keyframes troca-foto {
-            0%   { opacity: 1; }
-            29%  { opacity: 1; }
-            34%  { opacity: 0; }
-            95%  { opacity: 0; }
-            100% { opacity: 1; }
-          }
-          /* Quem pediu menos movimento no sistema vê só a primeira, parada. */
-          @media (prefers-reduced-motion: reduce) {
-            .troca { animation: none; }
-            .troca:first-child { opacity: 1; }
-          }
-        `}</style>
       </section>
 
       <div className="mx-auto max-w-3xl px-6">
