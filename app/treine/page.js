@@ -220,18 +220,38 @@ export default function Treine() {
           </div>
         </section>
 
-        {/* Transformações — ligam sozinhas quando houver autorização. */}
+        {/* ── TRANSFORMAÇÕES ──────────────────────────────────────────────────
+            Só aparece com foto autorizada em TRANSFORMACOES. Enquanto a lista
+            estiver vazia, a seção inteira não existe.
+
+            O recorte é 9:16 porque é o formato em que as fotos chegam (foto de
+            celular, corpo inteiro no espelho). Forçar 3:4 aqui cortaria pé ou
+            cabeça justamente na imagem em que o corpo inteiro é o assunto.
+
+            As tarjas ANTES e DEPOIS ficam sobre a imagem porque, sem elas,
+            duas fotos lado a lado não dizem qual é qual — e a pessoa que olha
+            de relance pode ler a ordem trocada. */}
         {TRANSFORMACOES.length > 0 && (
           <section className="pt-20">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Resultados</h2>
-            <div className="mt-8 grid gap-6 sm:grid-cols-2">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Corpos transformados
+            </h2>
+            <div className="mt-8 space-y-10">
               {TRANSFORMACOES.map((t) => (
                 <figure key={t.quem}>
                   <div className="grid grid-cols-2 gap-1">
-                    <img src={t.antes} alt="" className="aspect-[3/4] w-full object-cover" />
-                    <img src={t.depois} alt="" className="aspect-[3/4] w-full object-cover" />
+                    {[['Antes', t.antes], ['Depois', t.depois]].map(([rotulo, src]) => (
+                      <div key={rotulo} className="relative aspect-[9/16] overflow-hidden">
+                        <img src={src} alt="" className="h-full w-full object-cover" />
+                        <span className={`absolute left-0 top-0 px-3 py-1.5 text-xs font-bold uppercase tracking-widest ${
+                          rotulo === 'Depois' ? 'bg-[#E5484D] text-white' : 'bg-black/70 text-white/80'
+                        }`}>
+                          {rotulo}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                  <figcaption className="mt-3">
+                  <figcaption className="mt-4">
                     <p className="font-semibold">{t.quem}</p>
                     <p className="text-sm text-white/55">{t.resultado}</p>
                   </figcaption>
