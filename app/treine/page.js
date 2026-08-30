@@ -26,7 +26,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import {
   WHATSAPP, PRECO, DEPOIMENTOS, TRANSFORMACOES, NUMEROS,
-  PARA_VOCE, RECEBE, INCLUSO, PASSOS, FAQ, GARANTIA,
+  PARA_VOCE, RECEBE, INCLUSO, PASSOS, FAQ, GARANTIA, FOTOS_TOPO,
 } from './dados';
 
 // O Asaas não cria cliente sem CPF — `criarCheckout` já rejeita o que não tem
@@ -119,21 +119,36 @@ export default function Treine() {
           A foto dele abre a página. É o que nenhum gerador de página tem, e é o
           que mais rápido separa isto de um site montado por template.
 
-          Ela aparece de dois jeitos porque a foto é vertical: no celular ocupa
-          a tela inteira com o texto por cima, e no computador fica ao lado do
-          texto. Sem essa separação, a tela larga recorta uma faixa do meio da
-          foto e deixa o rosto dele de fora — que é justamente o que a seção
+          São três, alternando: academia, corrida e ciclismo. Isso não é enfeite
+          — a página promete corrida e ciclismo junto da musculação, e essa é a
+          promessa mais fácil de duvidar. As fotos respondem sem precisar
+          escrever nada: ele corre prova com número de peito e pedala.
+
+          Ela aparece de dois jeitos porque as fotos são verticais: no celular
+          ocupam a tela inteira com o texto por cima, e no computador ficam ao
+          lado do texto. Sem essa separação, a tela larga recorta uma faixa do
+          meio e deixa o rosto dele de fora — que é justamente o que a seção
           existe pra mostrar. */}
       <section className="relative overflow-hidden">
         {/* Celular: foto ao fundo, escurecida de baixo pra cima pro texto ficar
-            legível sem apagar a imagem. */}
+            legível sem apagar a imagem. O gradiente é quase opaco embaixo de
+            propósito: a foto do ciclismo tem chão claro justo onde o texto
+            fica, e sem isso o título sumiria nessa troca. */}
         <div className="absolute inset-0 lg:hidden">
-          <Image
-            src="/matheus.jpg"
-            alt="Matheus Barbosa, personal trainer"
-            fill priority sizes="100vw"
-            className="object-cover object-[center_12%]"
-          />
+          {FOTOS_TOPO.map((f, i) => (
+            <div
+              key={f.src}
+              className="troca absolute inset-0"
+              style={{ animationDelay: `${-i * 5}s` }}
+            >
+              <Image
+                src={f.src} alt={i === 0 ? f.alt : ''}
+                fill priority={i === 0} sizes="100vw"
+                className="object-cover"
+                style={{ objectPosition: f.pos }}
+              />
+            </div>
+          ))}
           <div className="absolute inset-0 bg-gradient-to-t from-[#080f1d] via-[#080f1d]/85 to-[#080f1d]/20" />
         </div>
 
@@ -161,16 +176,47 @@ export default function Treine() {
             </a>
           </div>
 
-          {/* Computador: a foto inteira, sem recorte que corte o rosto. */}
+          {/* Computador: as fotos inteiras, sem recorte que corte o rosto. */}
           <div className="relative hidden aspect-[3/4] w-full lg:block">
-            <Image
-              src="/matheus.jpg"
-              alt="Matheus Barbosa, personal trainer"
-              fill priority sizes="45vw"
-              className="object-cover object-top"
-            />
+            {FOTOS_TOPO.map((f, i) => (
+              <div
+                key={f.src}
+                className="troca absolute inset-0"
+                style={{ animationDelay: `${-i * 5}s` }}
+              >
+                <Image
+                  src={f.src} alt={i === 0 ? f.alt : ''}
+                  fill priority={i === 0} sizes="45vw"
+                  className="object-cover"
+                  style={{ objectPosition: f.posLg }}
+                />
+              </div>
+            ))}
           </div>
         </div>
+
+        <style jsx>{`
+          /* Cada foto fica visível no seu terço do ciclo de 15s e some com um
+             esmaecer curto. O atraso NEGATIVO (-5s, -10s) é o truque: adianta a
+             animação em vez de esperar, senão a segunda e a terceira ficariam
+             invisíveis nos primeiros segundos e o topo abriria vazio. */
+          .troca {
+            opacity: 0;
+            animation: troca-foto 15s linear infinite;
+          }
+          @keyframes troca-foto {
+            0%   { opacity: 1; }
+            29%  { opacity: 1; }
+            34%  { opacity: 0; }
+            95%  { opacity: 0; }
+            100% { opacity: 1; }
+          }
+          /* Quem pediu menos movimento no sistema vê só a primeira, parada. */
+          @media (prefers-reduced-motion: reduce) {
+            .troca { animation: none; }
+            .troca:first-child { opacity: 1; }
+          }
+        `}</style>
       </section>
 
       <div className="mx-auto max-w-3xl px-6">

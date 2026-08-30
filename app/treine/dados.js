@@ -13,6 +13,22 @@
 // WhatsApp: (19) 99798-4847. Só dígitos, com o 55 na frente — formato do wa.me.
 export const WHATSAPP = '5519997984847';
 
+// As três fotos que se alternam no topo. A ordem importa: a de personal vem
+// primeiro porque é o rosto dele em contexto de trabalho, e é com ela que a
+// pessoa precisa se deparar ao chegar. As outras duas provam, sem precisar
+// escrever, que a corrida e o ciclismo que ele vende ele também faz — a de
+// corrida tem número de peito com o nome dele.
+//
+// `pos` é o enquadramento no celular, onde a foto ocupa a tela inteira e o
+// texto fica por cima; `posLg` é no computador, onde ela fica na coluna do
+// lado. As três têm proporção diferente (9:16, 2:3 e 3:4), então cada uma
+// precisa do seu recorte pra não cortar cabeça nem pé.
+export const FOTOS_TOPO = [
+  { src: '/matheus.jpg',           alt: 'Matheus Barbosa na academia',        pos: 'center 12%', posLg: 'top' },
+  { src: '/matheus-corrida.jpg',   alt: 'Matheus Barbosa correndo uma prova', pos: 'center 25%', posLg: 'center 20%' },
+  { src: '/matheus-ciclismo.jpg',  alt: 'Matheus Barbosa com a bicicleta',    pos: 'center 30%', posLg: 'center 25%' },
+];
+
 export const PRECO = 'R$ 149,90';
 
 // ── PROVA ────────────────────────────────────────────────────────────────────
