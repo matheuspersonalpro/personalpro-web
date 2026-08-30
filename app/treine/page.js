@@ -1,43 +1,41 @@
 'use client';
 
-// Página de consultoria online do Matheus — o destino do link da bio do
-// Instagram (@matheusseupersonal).
+// Página de consultoria online do Matheus — destino do link da bio do Instagram
+// (@matheusseupersonal).
 //
-// Por que ela existe: hoje o link da bio cai num Linktree que só leva ao
-// WhatsApp. Cada interessado vira uma conversa, e isso limita quantos alunos
-// ele consegue atender. Aqui a pessoa lê como funciona, vê o preço e se
-// cadastra sozinha.
+// POR QUE ELA EXISTE. O link da bio caía num Linktree que só levava ao WhatsApp.
+// Cada interessado virava uma conversa, sem preço, sem explicação e sem como se
+// cadastrar sozinho — o que limita quantos alunos ele consegue atender.
 //
-// ESTÁGIO 1 (este arquivo): o formulário entrega o lead pronto no WhatsApp dele,
-// com todos os dados já preenchidos. Ele manda o link de pagamento e cria a
-// ficha. Já vende, e vale publicar hoje.
+// POR QUE ELA NÃO PARECE UM SITE DE SOFTWARE. A primeira versão foi refeita: o
+// Matheus olhou e disse, com razão, que dava pra perceber que era feita por IA.
+// O que entregava era o esqueleto genérico — herói centralizado, grade de cards
+// com ícone e uma frase cada, passos 01/02/03, sanfona de perguntas — e o fato
+// de ele não estar em lugar nenhum dela. Aqui a foto dele abre a página, o
+// vermelho é o da marca dele e não o azul do aplicativo, e as seções têm pesos
+// diferentes em vez de serem todas do mesmo tamanho.
 //
-// ESTÁGIO 2 (próximo): o botão passa a criar a assinatura no Asaas e devolver o
-// link de pagamento na hora. O webhook `asaasWebhook`, que já é avisado no
-// PAYMENT_CONFIRMED, cria o aluno sozinho. Aí ele sai do meio.
+// ESTÁGIO 1: o formulário leva ao WhatsApp dele com tudo preenchido. Já vende.
+// ESTÁGIO 2: o botão cria a assinatura no Asaas e o `asaasWebhook` — que já é
+// avisado no PAYMENT_CONFIRMED — cria o aluno sozinho.
 //
-// A venda acontece na WEB e não dentro do aplicativo de propósito: cobrança
-// feita dentro do app pode ser enquadrada pela Apple como compra digital, com
-// comissão e risco de recusa na revisão.
+// A venda acontece na WEB de propósito: cobrança dentro do aplicativo pode ser
+// enquadrada pela Apple como compra digital, com comissão e risco de recusa.
 
 import { useState } from 'react';
+import Image from 'next/image';
 import {
-  Dumbbell, Bike, Footprints, Smartphone, MessageCircle,
-  Camera, Check, ArrowRight, Clock, FileText,
-} from 'lucide-react';
+  WHATSAPP, PRECO, DEPOIMENTOS, TRANSFORMACOES, NUMEROS,
+  PARA_VOCE, RECEBE, PASSOS, FAQ,
+} from './dados';
 
-// WhatsApp do Matheus: (19) 99798-4847. Só dígitos, com o 55 do Brasil na frente
-// — é o formato que o wa.me exige.
-const WHATSAPP = '5519997984847';
-
-// O Asaas não cria cliente sem CPF — `criarCheckout` já rejeita o que não tiver
-// 11 dígitos. Validar os dígitos verificadores AQUI evita o pior caso: a pessoa
-// digita errado, segue confiante, e só descobre quando a cobrança falha do
-// outro lado, depois de já ter se comprometido.
+// O Asaas não cria cliente sem CPF — `criarCheckout` já rejeita o que não tem
+// 11 dígitos. Conferir os dígitos verificadores AQUI evita o pior caso: digitar
+// errado, seguir confiante, e descobrir quando a cobrança falha do outro lado.
 function cpfValido(bruto) {
   const c = String(bruto || '').replace(/\D/g, '');
   if (c.length !== 11) return false;
-  if (/^(\d)\1{10}$/.test(c)) return false;   // 111.111.111-11 e afins passam na conta
+  if (/^(\d)\1{10}$/.test(c)) return false;   // 111.111.111-11 passaria na conta
 
   const digito = (ate) => {
     let soma = 0;
@@ -48,56 +46,11 @@ function cpfValido(bruto) {
   return digito(9) === Number(c[9]) && digito(10) === Number(c[10]);
 }
 
-// Máscara conforme digita: 000.000.000-00
-function mascaraCpf(v) {
-  const c = String(v || '').replace(/\D/g, '').slice(0, 11);
-  return c
+const mascaraCpf = (v) =>
+  String(v || '').replace(/\D/g, '').slice(0, 11)
     .replace(/^(\d{3})(\d)/, '$1.$2')
     .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
     .replace(/\.(\d{3})(\d{1,2})$/, '.$1-$2');
-}
-
-const INCLUSO = [
-  { icon: Dumbbell, t: 'Programa de musculação', d: 'Montado para o seu objetivo, os dias que você tem e a estrutura onde você treina.' },
-  { icon: Smartphone, t: 'Treino no aplicativo', d: 'Com vídeo de cada exercício, séries, carga e descanso. Você abre e executa.' },
-  { icon: Footprints, t: 'Corrida ou ciclismo', d: 'Planilha periodizada, semana por semana, sem custo a mais. Se você quiser.' },
-  { icon: Clock, t: 'Resposta em 24 horas', d: 'Todos os dias, inclusive fim de semana.' },
-  { icon: FileText, t: 'PDF do treino', d: 'Se preferir levar impresso para a academia.' },
-];
-
-const PASSOS = [
-  { n: '01', t: 'Você preenche seus dados', d: 'Leva um minuto. Nome, contato e algumas perguntas sobre você.' },
-  { n: '02', t: 'Recebe o acesso ao aplicativo', d: 'E responde a avaliação inicial: objetivo, rotina, histórico e saúde.' },
-  { n: '03', t: 'Eu monto o seu programa', d: 'Em cima do que você respondeu. Não é treino pronto de prateleira.' },
-  { n: '04', t: 'Você treina e eu acompanho', d: 'Você registra a carga, eu vejo a evolução e ajusto ao longo do caminho.' },
-];
-
-const FAQ = [
-  {
-    q: 'Preciso de academia?',
-    r: 'Não necessariamente. O programa é montado com o que você tem — academia completa, academia simples, ou halteres em casa. Você me diz na avaliação inicial.',
-  },
-  {
-    q: 'Tem fidelidade?',
-    r: 'Não. É mensal, você cancela quando quiser, sem multa e sem precisar justificar. O acesso vale até o fim do mês já pago e a cobrança do mês seguinte não acontece.',
-  },
-  {
-    q: 'A corrida e o ciclismo custam à parte?',
-    r: 'Não. Se você quiser, a planilha entra junto, periodizada, pelo mesmo valor.',
-  },
-  {
-    q: 'Em quanto tempo você responde?',
-    r: 'Em até 24 horas, todos os dias da semana.',
-  },
-  {
-    q: 'Sou iniciante. Serve pra mim?',
-    r: 'Serve. O ponto de partida é o seu, não o de outra pessoa — quem nunca treinou começa diferente de quem treina há cinco anos.',
-  },
-  {
-    q: 'E as fotos, são obrigatórias?',
-    r: 'São como eu acompanho a sua evolução à distância. Sem elas, o ajuste vira chute. Você manda no primeiro dia e a cada 90 dias, e elas ficam guardadas na sua conta dentro do aplicativo — visíveis só para você e para mim.',
-  },
-];
 
 export default function Treine() {
   const [form, setForm] = useState({
@@ -105,15 +58,16 @@ export default function Treine() {
   });
   const [erro, setErro] = useState('');
 
-  const campo = (k) => (e) => {
-    setForm((f) => ({ ...f, [k]: e.target.value }));
+  const campo = (k, transforma) => (e) => {
+    const v = transforma ? transforma(e.target.value) : e.target.value;
+    setForm((f) => ({ ...f, [k]: v }));
     if (erro) setErro('');
   };
 
   function enviar(e) {
     e.preventDefault();
 
-    // Validação antes de sair da página: mandar o interessado pro WhatsApp com
+    // Validar antes de sair da página: mandar o interessado pro WhatsApp com
     // dado faltando desperdiça o contato e obriga a perguntar de novo.
     const faltando = [];
     if (!form.nome.trim()) faltando.push('nome');
@@ -121,18 +75,13 @@ export default function Treine() {
     if (!form.whatsapp.trim()) faltando.push('WhatsApp');
     if (!form.cpf.trim()) faltando.push('CPF');
     if (!form.sexo) faltando.push('sexo');
-    if (faltando.length) {
-      setErro(`Falta preencher: ${faltando.join(', ')}.`);
-      return;
-    }
+    if (faltando.length) return setErro(`Falta preencher: ${faltando.join(', ')}.`);
+
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-      setErro('Confira o e-mail — ele é o seu acesso ao aplicativo.');
-      return;
+      return setErro('Confira o e-mail — ele vai ser o seu acesso ao aplicativo.');
     }
-    // O CPF é exigência do Asaas para emitir a cobrança, não curiosidade.
     if (!cpfValido(form.cpf)) {
-      setErro('Confira o CPF — ele é necessário para emitir a cobrança.');
-      return;
+      return setErro('Confira o CPF — ele é necessário para emitir a cobrança.');
     }
 
     const modalidade = {
@@ -148,11 +97,9 @@ export default function Treine() {
       `E-mail: ${form.email.trim()}`,
       `CPF: ${form.cpf.trim()}`,
       `WhatsApp: ${form.whatsapp.trim()}`,
-      // O <input type="date"> entrega ISO (1990-05-12). Vira 12/05/1990 porque
-      // quem lê isso é gente, no WhatsApp, não um sistema.
-      form.nascimento
-        ? `Nascimento: ${form.nascimento.split('-').reverse().join('/')}`
-        : null,
+      // O <input type="date"> entrega ISO. Vira 12/05/1990 porque quem lê é
+      // gente, no WhatsApp.
+      form.nascimento ? `Nascimento: ${form.nascimento.split('-').reverse().join('/')}` : null,
       `Sexo: ${form.sexo}`,
       `Quero: ${modalidade}`,
     ].filter(Boolean).join('\n');
@@ -160,239 +107,355 @@ export default function Treine() {
     window.location.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
   }
 
-  const inputCls =
-    'w-full rounded-xl border border-white/12 bg-white/5 px-4 py-3 text-white placeholder-white/35 ' +
-    'outline-none transition focus:border-blue-500 focus:bg-white/8';
-  const labelCls = 'mb-1.5 block text-sm font-medium text-white/70';
+  const input =
+    'w-full border-b border-white/15 bg-transparent px-0 py-3 text-lg text-white ' +
+    'placeholder-white/25 outline-none transition focus:border-[#E5484D]';
+  const label = 'mb-1 block text-[13px] font-medium uppercase tracking-wider text-white/45';
 
   return (
-    <main className="mx-auto max-w-3xl px-5 pb-24">
+    <main className="pb-24">
 
-      {/* Abertura: quem é, o que é, e pra quem serve — nessa ordem. */}
-      <header className="pt-16 pb-4 sm:pt-24">
-        <p className="text-sm font-medium tracking-wide text-blue-400">
-          Consultoria online
-        </p>
-        <h1 className="mt-3 text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">
-          Treine comigo, de onde você estiver
-        </h1>
-        <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/70">
-          Musculação, corrida e ciclismo. Um programa montado para o seu objetivo, os
-          dias que você tem e o lugar onde você treina — não um treino pronto que
-          serve para qualquer um.
-        </p>
+      {/* ── ABERTURA ──────────────────────────────────────────────────────────
+          A foto dele abre a página. É o que nenhum gerador de página tem, e é o
+          que mais rápido separa isto de um site montado por template.
 
-        <a
-          href="#comecar"
-          className="mt-8 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 font-semibold text-white transition hover:bg-blue-500"
-        >
-          Quero começar <ArrowRight size={18} />
-        </a>
-      </header>
-
-      {/* O que está incluso */}
-      <section className="mt-20">
-        <h2 className="text-2xl font-semibold tracking-tight">O que você recebe</h2>
-        <div className="mt-6 grid gap-3">
-          {INCLUSO.map(({ icon: Icon, t, d }) => (
-            <div key={t} className="flex gap-4 rounded-2xl border border-white/8 bg-white/[0.03] p-5">
-              <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/12">
-                <Icon size={19} className="text-blue-400" />
-              </div>
-              <div>
-                <p className="font-semibold">{t}</p>
-                <p className="mt-1 text-sm leading-relaxed text-white/60">{d}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Como funciona */}
-      <section className="mt-20">
-        <h2 className="text-2xl font-semibold tracking-tight">Como funciona</h2>
-        <div className="mt-6 grid gap-px overflow-hidden rounded-2xl border border-white/8 bg-white/8">
-          {PASSOS.map(({ n, t, d }) => (
-            <div key={n} className="flex gap-4 bg-[#0b1424] p-5">
-              <span className="mt-0.5 font-mono text-sm text-white/30">{n}</span>
-              <div>
-                <p className="font-semibold">{t}</p>
-                <p className="mt-1 text-sm leading-relaxed text-white/60">{d}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* O compromisso das fotos — dito ANTES do pagamento, de propósito.
-          Se a pessoa descobre isso depois de pagar, ela trava e não manda. */}
-      <section className="mt-20">
-        <h2 className="text-2xl font-semibold tracking-tight">O que eu preciso de você</h2>
-        <div className="mt-6 rounded-2xl border border-white/8 bg-white/[0.03] p-6">
-          <div className="flex items-center gap-3">
-            <Camera size={20} className="text-blue-400" />
-            <p className="font-semibold">Fotos no primeiro dia e a cada 90 dias</p>
-          </div>
-          <p className="mt-3 text-sm leading-relaxed text-white/70">
-            É assim que eu acompanho a sua evolução à distância. São três ângulos:
-          </p>
-          <ul className="mt-4 grid gap-2 text-sm text-white/70">
-            <li className="flex gap-2.5"><Check size={16} className="mt-0.5 shrink-0 text-blue-400" /><span><b className="text-white">Frontal</b> — de frente, corpo relaxado.</span></li>
-            <li className="flex gap-2.5"><Check size={16} className="mt-0.5 shrink-0 text-blue-400" /><span><b className="text-white">Lateral</b> — mulheres com os braços erguidos à frente; homens com os braços estendidos ao lado do corpo.</span></li>
-            <li className="flex gap-2.5"><Check size={16} className="mt-0.5 shrink-0 text-blue-400" /><span><b className="text-white">Posterior</b> — de costas, mesma posição para todos.</span></li>
-          </ul>
-          <p className="mt-4 text-sm leading-relaxed text-white/55">
-            De preferência com roupa de piscina, que é o que mostra melhor a
-            composição corporal. Se você não se sentir à vontade, top e shorts para
-            mulheres e shorts para homens resolvem.
-          </p>
-          <p className="mt-3 text-sm leading-relaxed text-white/55">
-            As fotos ficam guardadas na sua conta dentro do aplicativo, visíveis
-            apenas para você e para mim, e servem só para comparar a sua evolução.
-          </p>
+          Ela aparece de dois jeitos porque a foto é vertical: no celular ocupa
+          a tela inteira com o texto por cima, e no computador fica ao lado do
+          texto. Sem essa separação, a tela larga recorta uma faixa do meio da
+          foto e deixa o rosto dele de fora — que é justamente o que a seção
+          existe pra mostrar. */}
+      <section className="relative overflow-hidden">
+        {/* Celular: foto ao fundo, escurecida de baixo pra cima pro texto ficar
+            legível sem apagar a imagem. */}
+        <div className="absolute inset-0 lg:hidden">
+          <Image
+            src="/matheus.jpg"
+            alt="Matheus Barbosa, personal trainer"
+            fill priority sizes="100vw"
+            className="object-cover object-[center_12%]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#080f1d] via-[#080f1d]/85 to-[#080f1d]/20" />
         </div>
 
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5">
-            <p className="font-semibold">Registrar a carga</p>
-            <p className="mt-1 text-sm leading-relaxed text-white/60">
-              É o que me mostra se o estímulo está certo. Leva dois segundos por
-              exercício, dentro do aplicativo.
+        <div className="relative mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+          <div className="flex min-h-[92svh] flex-col justify-end pb-14 lg:min-h-0 lg:py-24">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#E5484D]">
+              Consultoria online
             </p>
-          </div>
-          <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5">
-            <p className="font-semibold">Avisar quando doer</p>
-            <p className="mt-1 text-sm leading-relaxed text-white/60">
-              No dia em que doer, não na semana seguinte. Ajustar cedo evita parar
-              depois.
+            {/* O tamanho só sobe de novo no xl: entre lg e xl a coluna do texto
+                é estreita, e a 6xl a última linha quebra no meio. */}
+            <h1 className="mt-4 text-[2.7rem] font-bold leading-[1.02] tracking-tight sm:text-[3.4rem] xl:text-6xl">
+              Treino montado
+              <br />
+              pro seu caso.
+              <br />
+              <span className="text-white/40">Não pra qualquer um.</span>
+            </h1>
+            <p className="mt-6 max-w-md text-lg leading-relaxed text-white/70">
+              Musculação, corrida e ciclismo, com acompanhamento de verdade —
+              não uma planilha que você baixa e vira as costas.
             </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Preço */}
-      <section className="mt-20">
-        <div className="rounded-2xl border border-blue-500/25 bg-blue-500/[0.07] p-7">
-          <p className="text-sm font-medium text-blue-300">Plano mensal</p>
-          <p className="mt-2 text-4xl font-semibold tracking-tight">
-            R$ 149,90<span className="text-xl font-normal text-white/50">/mês</span>
-          </p>
-          <p className="mt-4 text-white/70">
-            Sem fidelidade. Cancele quando quiser, sem multa e sem justificativa.
-            Musculação com corrida ou ciclismo inclusos, se você quiser.
-          </p>
-        </div>
-      </section>
-
-      {/* Formulário */}
-      <section id="comecar" className="mt-20 scroll-mt-8">
-        <h2 className="text-2xl font-semibold tracking-tight">Começar</h2>
-        <p className="mt-2 text-white/60">
-          Preencha abaixo e eu te mando o passo a passo. Leva um minuto.
-        </p>
-
-        <form onSubmit={enviar} className="mt-6 grid gap-4" noValidate>
-          <div>
-            <label className={labelCls} htmlFor="nome">Nome completo</label>
-            <input id="nome" className={inputCls} value={form.nome} onChange={campo('nome')} autoComplete="name" />
+            <a href="#comecar"
+              className="mt-8 inline-flex w-fit items-center bg-[#E5484D] px-8 py-4 text-lg font-bold text-white transition hover:bg-[#d63c41]">
+              Quero começar
+            </a>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className={labelCls} htmlFor="email">E-mail</label>
-              <input id="email" type="email" inputMode="email" className={inputCls}
-                value={form.email} onChange={campo('email')} autoComplete="email"
-                placeholder="seu@email.com" />
-            </div>
-            <div>
-              <label className={labelCls} htmlFor="whatsapp">WhatsApp</label>
-              <input id="whatsapp" type="tel" inputMode="tel" className={inputCls}
-                value={form.whatsapp} onChange={campo('whatsapp')} autoComplete="tel"
-                placeholder="(00) 00000-0000" />
-            </div>
-          </div>
-
-          <div>
-            <label className={labelCls} htmlFor="cpf">CPF</label>
-            <input
-              id="cpf" inputMode="numeric" className={inputCls}
-              value={form.cpf}
-              onChange={(e) => {
-                setForm((f) => ({ ...f, cpf: mascaraCpf(e.target.value) }));
-                if (erro) setErro('');
-              }}
-              placeholder="000.000.000-00"
+          {/* Computador: a foto inteira, sem recorte que corte o rosto. */}
+          <div className="relative hidden aspect-[3/4] w-full lg:block">
+            <Image
+              src="/matheus.jpg"
+              alt="Matheus Barbosa, personal trainer"
+              fill priority sizes="45vw"
+              className="object-cover object-top"
             />
-            <p className="mt-1.5 text-xs text-white/40">
-              Necessário para emitir a cobrança.
-            </p>
           </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className={labelCls} htmlFor="nascimento">Data de nascimento</label>
-              <input id="nascimento" type="date" className={inputCls}
-                value={form.nascimento} onChange={campo('nascimento')} />
-            </div>
-            <div>
-              <label className={labelCls} htmlFor="sexo">Sexo</label>
-              <select id="sexo" className={inputCls} value={form.sexo} onChange={campo('sexo')}>
-                <option value="">Selecione</option>
-                <option value="Feminino">Feminino</option>
-                <option value="Masculino">Masculino</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className={labelCls} htmlFor="modalidade">O que você quer treinar</label>
-            <select id="modalidade" className={inputCls} value={form.modalidade} onChange={campo('modalidade')}>
-              <option value="musculacao">Só musculação</option>
-              <option value="corrida">Musculação + corrida</option>
-              <option value="ciclismo">Musculação + ciclismo</option>
-            </select>
-          </div>
-
-          {erro && (
-            <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-              {erro}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 text-lg font-semibold text-white transition hover:bg-blue-500"
-          >
-            <MessageCircle size={20} /> Continuar
-          </button>
-          <p className="text-center text-xs text-white/40">
-            Você vai ser levado ao WhatsApp com os seus dados já preenchidos.
-          </p>
-        </form>
-      </section>
-
-      {/* Dúvidas */}
-      <section className="mt-20">
-        <h2 className="text-2xl font-semibold tracking-tight">Dúvidas</h2>
-        <div className="mt-6 grid gap-3">
-          {FAQ.map(({ q, r }) => (
-            <details key={q} className="group rounded-2xl border border-white/8 bg-white/[0.03] p-5">
-              <summary className="cursor-pointer list-none font-semibold marker:hidden">
-                {q}
-              </summary>
-              <p className="mt-3 text-sm leading-relaxed text-white/65">{r}</p>
-            </details>
-          ))}
         </div>
       </section>
 
-      <footer className="mt-20 border-t border-white/8 pt-8 text-sm text-white/40">
-        <p>Matheus Wruck Barbosa · Personal Trainer</p>
-        <p className="mt-1">
-          O treino é entregue pelo aplicativo PersonalPro, disponível para Android e iPhone.
-        </p>
-      </footer>
+      <div className="mx-auto max-w-3xl px-6">
 
+        {/* Números — só aparecem quando ele confirmar. Enquanto vazios, a faixa
+            não existe: número inventado em página de venda se descobre. */}
+        {NUMEROS.length > 0 && (
+          <section className="flex flex-wrap gap-x-14 gap-y-6 border-b border-white/10 py-10">
+            {NUMEROS.map(({ n, oq }) => (
+              <div key={oq}>
+                <p className="text-4xl font-bold tracking-tight">{n}</p>
+                <p className="mt-1 text-sm text-white/50">{oq}</p>
+              </div>
+            ))}
+          </section>
+        )}
+
+        {/* ── PRA QUEM É ──────────────────────────────────────────────────────
+            A pessoa para numa das linhas e, dali em diante, está lendo sobre
+            ela mesma. É a seção que mais trabalha na página inteira. */}
+        <section className="pt-20">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Isso aqui é pra você que…
+          </h2>
+          <ul className="mt-8 divide-y divide-white/10 border-y border-white/10">
+            {PARA_VOCE.map((linha) => (
+              <li key={linha} className="flex gap-4 py-5 text-lg leading-snug text-white/80">
+                <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#E5484D]" />
+                {linha}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* ── O QUE RECEBE ────────────────────────────────────────────────────
+            Sem ícone e sem card: um título forte e um parágrafo de tamanho
+            desigual, que é como texto escrito por gente se parece. */}
+        <section className="pt-20">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">O que você recebe</h2>
+          <div className="mt-10 space-y-10">
+            {RECEBE.map(({ t, d }) => (
+              <div key={t} className="border-l-2 border-[#E5484D] pl-6">
+                <h3 className="text-xl font-bold">{t}</h3>
+                <p className="mt-2 leading-relaxed text-white/65">{d}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Transformações — ligam sozinhas quando houver autorização. */}
+        {TRANSFORMACOES.length > 0 && (
+          <section className="pt-20">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Resultados</h2>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2">
+              {TRANSFORMACOES.map((t) => (
+                <figure key={t.quem}>
+                  <div className="grid grid-cols-2 gap-1">
+                    <img src={t.antes} alt="" className="aspect-[3/4] w-full object-cover" />
+                    <img src={t.depois} alt="" className="aspect-[3/4] w-full object-cover" />
+                  </div>
+                  <figcaption className="mt-3">
+                    <p className="font-semibold">{t.quem}</p>
+                    <p className="text-sm text-white/55">{t.resultado}</p>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Depoimentos — mesma regra. */}
+        {DEPOIMENTOS.length > 0 && (
+          <section className="pt-20">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Quem já treina comigo
+            </h2>
+            <div className="mt-8 space-y-8">
+              {DEPOIMENTOS.map((d) => (
+                <blockquote key={d.quem} className="border-l-2 border-white/20 pl-6">
+                  <p className="text-lg leading-relaxed text-white/85">{d.texto}</p>
+                  <footer className="mt-3 text-sm text-white/50">
+                    {d.quem}{d.detalhe ? ` · ${d.detalhe}` : ''}
+                  </footer>
+                </blockquote>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── COMO FUNCIONA ───────────────────────────────────────────────────
+            Sem 01/02/03. A ordem já está clara pela sequência; numerar é
+            enfeite quando o texto sozinho resolve. */}
+        <section className="pt-20">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Como funciona</h2>
+          <ol className="mt-8 space-y-6">
+            {PASSOS.map(({ t, d }, i) => (
+              <li key={t} className="flex gap-5">
+                <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/20 text-sm font-semibold text-white/60">
+                  {i + 1}
+                </span>
+                <div>
+                  <p className="text-lg font-semibold">{t}</p>
+                  <p className="mt-1 leading-relaxed text-white/60">{d}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        {/* ── O COMPROMISSO ───────────────────────────────────────────────────
+            Vem ANTES do preço de propósito. Quem descobre a exigência das fotos
+            depois de pagar trava e não manda — e aí o acompanhamento morre. */}
+        <section className="pt-20">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            O que eu preciso de você
+          </h2>
+          <p className="mt-4 text-lg leading-relaxed text-white/70">
+            Consultoria à distância funciona quando os dois lados fazem a parte
+            deles. A minha é montar e ajustar. A sua é esta:
+          </p>
+
+          <div className="mt-8 border-y border-white/10 py-8">
+            <h3 className="text-xl font-bold">Fotos no primeiro dia e a cada 90</h3>
+            <p className="mt-2 leading-relaxed text-white/65">
+              É como eu enxergo a sua evolução de longe. Sem elas, o ajuste vira
+              chute. São três ângulos:
+            </p>
+            <dl className="mt-5 space-y-3 text-white/70">
+              <div><dt className="inline font-semibold text-white">Frontal · </dt>
+                <dd className="inline">de frente, corpo relaxado.</dd></div>
+              <div><dt className="inline font-semibold text-white">Lateral · </dt>
+                <dd className="inline">mulheres com os braços erguidos à frente; homens com os braços estendidos ao lado do corpo.</dd></div>
+              <div><dt className="inline font-semibold text-white">Posterior · </dt>
+                <dd className="inline">de costas, mesma posição para todos.</dd></div>
+            </dl>
+            <p className="mt-5 leading-relaxed text-white/55">
+              De preferência com roupa de piscina, que é o que mostra melhor a
+              composição corporal. Se você não se sentir à vontade, top e shorts
+              para mulheres e shorts para homens resolvem. As fotos ficam
+              guardadas na sua conta dentro do aplicativo, visíveis só pra você
+              e pra mim.
+            </p>
+          </div>
+
+          <div className="mt-8 space-y-5">
+            <div>
+              <p className="text-lg font-semibold">Registrar a carga que você usou</p>
+              <p className="mt-1 leading-relaxed text-white/60">
+                Leva dois segundos por exercício e é o que me diz se o estímulo
+                está certo ou se está na hora de subir.
+              </p>
+            </div>
+            <div>
+              <p className="text-lg font-semibold">Avisar no dia em que doer</p>
+              <p className="mt-1 leading-relaxed text-white/60">
+                Não na semana seguinte. Ajustar cedo evita parar depois.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── PREÇO ───────────────────────────────────────────────────────────*/}
+        <section className="pt-20">
+          <div className="border border-[#E5484D]/40 bg-[#E5484D]/[0.06] p-8">
+            <p className="text-sm font-semibold uppercase tracking-widest text-[#E5484D]">
+              Plano mensal
+            </p>
+            <p className="mt-3 text-5xl font-bold tracking-tight">
+              {PRECO}<span className="text-2xl font-normal text-white/40">/mês</span>
+            </p>
+            <p className="mt-5 text-lg leading-relaxed text-white/75">
+              Sem fidelidade. Cancela quando quiser, sem multa e sem justificar.
+              Musculação com corrida ou ciclismo inclusos — não é pacote separado.
+            </p>
+            <a href="#comecar"
+              className="mt-7 inline-flex w-fit items-center bg-[#E5484D] px-8 py-4 text-lg font-bold text-white transition hover:bg-[#d63c41]">
+              Quero começar
+            </a>
+          </div>
+        </section>
+
+        {/* ── FORMULÁRIO ──────────────────────────────────────────────────────*/}
+        <section id="comecar" className="scroll-mt-6 pt-20">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Começar</h2>
+          <p className="mt-3 text-lg text-white/60">
+            Preenche aqui que eu te mando o passo a passo. Leva um minuto.
+          </p>
+
+          <form onSubmit={enviar} className="mt-10 space-y-7" noValidate>
+            <div>
+              <label className={label} htmlFor="nome">Nome completo</label>
+              <input id="nome" className={input} value={form.nome}
+                onChange={campo('nome')} autoComplete="name" />
+            </div>
+
+            <div className="grid gap-7 sm:grid-cols-2">
+              <div>
+                <label className={label} htmlFor="email">E-mail</label>
+                <input id="email" type="email" inputMode="email" className={input}
+                  value={form.email} onChange={campo('email')} autoComplete="email"
+                  placeholder="seu@email.com" />
+              </div>
+              <div>
+                <label className={label} htmlFor="whatsapp">WhatsApp</label>
+                <input id="whatsapp" type="tel" inputMode="tel" className={input}
+                  value={form.whatsapp} onChange={campo('whatsapp')} autoComplete="tel"
+                  placeholder="(00) 00000-0000" />
+              </div>
+            </div>
+
+            <div className="grid gap-7 sm:grid-cols-2">
+              <div>
+                <label className={label} htmlFor="cpf">CPF</label>
+                <input id="cpf" inputMode="numeric" className={input}
+                  value={form.cpf} onChange={campo('cpf', mascaraCpf)}
+                  placeholder="000.000.000-00" />
+                <p className="mt-2 text-xs text-white/35">Para emitir a cobrança.</p>
+              </div>
+              <div>
+                <label className={label} htmlFor="nascimento">Nascimento</label>
+                <input id="nascimento" type="date" className={input}
+                  value={form.nascimento} onChange={campo('nascimento')} />
+              </div>
+            </div>
+
+            <div className="grid gap-7 sm:grid-cols-2">
+              <div>
+                <label className={label} htmlFor="sexo">Sexo</label>
+                <select id="sexo" className={input} value={form.sexo} onChange={campo('sexo')}>
+                  <option value="">Selecione</option>
+                  <option value="Feminino">Feminino</option>
+                  <option value="Masculino">Masculino</option>
+                </select>
+              </div>
+              <div>
+                <label className={label} htmlFor="modalidade">Quero treinar</label>
+                <select id="modalidade" className={input} value={form.modalidade}
+                  onChange={campo('modalidade')}>
+                  <option value="musculacao">Só musculação</option>
+                  <option value="corrida">Musculação + corrida</option>
+                  <option value="ciclismo">Musculação + ciclismo</option>
+                </select>
+              </div>
+            </div>
+
+            {erro && (
+              <p role="alert" className="border-l-2 border-[#E5484D] bg-[#E5484D]/10 px-4 py-3 text-sm text-white">
+                {erro}
+              </p>
+            )}
+
+            <button type="submit"
+              className="w-full bg-[#E5484D] px-8 py-5 text-lg font-bold text-white transition hover:bg-[#d63c41]">
+              Continuar
+            </button>
+            <p className="text-center text-xs text-white/35">
+              Você vai pro meu WhatsApp com os seus dados já preenchidos.
+            </p>
+          </form>
+        </section>
+
+        {/* ── DÚVIDAS ─────────────────────────────────────────────────────────*/}
+        <section className="pt-20">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Dúvidas</h2>
+          <div className="mt-8 divide-y divide-white/10 border-y border-white/10">
+            {FAQ.map(({ q, r }) => (
+              <details key={q} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold marker:hidden">
+                  {q}
+                  <span aria-hidden className="shrink-0 text-white/30 transition group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 leading-relaxed text-white/65">{r}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        <footer className="mt-20 border-t border-white/10 pt-8 text-sm text-white/35">
+          <p className="font-medium text-white/55">Matheus Wruck Barbosa · Personal Trainer</p>
+          <p className="mt-1">
+            O treino é entregue pelo aplicativo PersonalPro, para Android e iPhone.
+          </p>
+        </footer>
+
+      </div>
     </main>
   );
 }
