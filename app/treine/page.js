@@ -253,7 +253,9 @@ export default function Treine() {
                   </div>
                   <figcaption className="mt-4">
                     <p className="font-semibold">{t.quem}</p>
-                    <p className="text-sm text-white/55">{t.resultado}</p>
+                    {t.resultado && (
+                      <p className="text-sm text-white/55">{t.resultado}</p>
+                    )}
                   </figcaption>
                 </figure>
               ))}

@@ -29,8 +29,16 @@ export const DEPOIMENTOS = [
 
 /** @type {{antes:string, depois:string, quem:string, resultado:string}[]} */
 export const TRANSFORMACOES = [
-  // { antes: '/prova/juliana-antes.jpg', depois: '/prova/juliana-depois.jpg',
-  //   quem: 'Juliana C., 34 anos', resultado: '12 semanas · −7,2 kg de gordura' },
+  // Autorizada por ela em 30/08/2026, pelo WhatsApp, sabendo que vai pro site.
+  // Pediu pra aparecer só como "Juliana" — sem sobrenome. Respeitar isso: o
+  // nome completo dela não pode entrar aqui nem no nome do arquivo.
+  // Falta o `resultado` (período e número medido) — sem ele a legenda mostra
+  // só o nome, que é melhor do que um número inventado.
+  {
+    antes: '/prova/juliana-antes.jpg',
+    depois: '/prova/juliana-depois.jpg',
+    quem: 'Juliana, 40 anos',
+  },
 ];
 
 // Números que ele confirmar. Enquanto estiverem vazios, a faixa não aparece —
