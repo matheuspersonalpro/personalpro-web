@@ -261,7 +261,7 @@ export default function Treine() {
                   <figcaption className="mt-4">
                     <p className="font-semibold">{t.quem}</p>
                     {t.resultado && (
-                      <p className="text-sm text-white/55">{t.resultado}</p>
+                      <p className="mt-0.5 text-lg font-bold text-[#E5484D]">{t.resultado}</p>
                     )}
                   </figcaption>
                 </figure>

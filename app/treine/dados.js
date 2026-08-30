@@ -32,12 +32,13 @@ export const TRANSFORMACOES = [
   // Autorizada por ela em 30/08/2026, pelo WhatsApp, sabendo que vai pro site.
   // Pediu pra aparecer só como "Juliana" — sem sobrenome. Respeitar isso: o
   // nome completo dela não pode entrar aqui nem no nome do arquivo.
-  // Falta o `resultado` (período e número medido) — sem ele a legenda mostra
-  // só o nome, que é melhor do que um número inventado.
+  // Peso informado pelo Matheus em 30/08. Falta o PERÍODO entre as duas
+  // fotos — quando ele disser, entra na frente do número.
   {
     antes: '/prova/juliana-antes.jpg',
     depois: '/prova/juliana-depois.jpg',
     quem: 'Juliana, 40 anos',
+    resultado: 'De 79 kg para 60 kg',
   },
 ];
 
