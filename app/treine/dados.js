@@ -32,8 +32,8 @@ export const TRANSFORMACOES = [
   // Autorizada por ela em 30/08/2026, pelo WhatsApp, sabendo que vai pro site.
   // Pediu pra aparecer só como "Juliana" — sem sobrenome. Respeitar isso: o
   // nome completo dela não pode entrar aqui nem no nome do arquivo.
-  // Peso informado pelo Matheus em 30/08. Falta o PERÍODO entre as duas
-  // fotos — quando ele disser, entra na frente do número.
+  // Peso informado pelo Matheus em 30/08. Sem período entre as duas fotos,
+  // por decisão dele — perguntei e ele disse que quer só o peso.
   {
     antes: '/prova/juliana-antes.jpg',
     depois: '/prova/juliana-depois.jpg',
