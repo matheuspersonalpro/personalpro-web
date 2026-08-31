@@ -30,32 +30,25 @@ import {
   MINHA_PARTE, SUA_PARTE, ABERTURA_ACORDO, PROTOCOLO_FOTOS,
 } from './dados';
 
-// O Asaas não cria cliente sem CPF — `criarCheckout` já rejeita o que não tem
-// 11 dígitos. Conferir os dígitos verificadores AQUI evita o pior caso: digitar
-// errado, seguir confiante, e descobrir quando a cobrança falha do outro lado.
-function cpfValido(bruto) {
-  const c = String(bruto || '').replace(/\D/g, '');
-  if (c.length !== 11) return false;
-  if (/^(\d)\1{10}$/.test(c)) return false;   // 111.111.111-11 passaria na conta
-
-  const digito = (ate) => {
-    let soma = 0;
-    for (let i = 0; i < ate; i++) soma += Number(c[i]) * (ate + 1 - i);
-    const r = (soma * 10) % 11;
-    return r === 10 ? 0 : r;
-  };
-  return digito(9) === Number(c[9]) && digito(10) === Number(c[10]);
-}
-
-const mascaraCpf = (v) =>
-  String(v || '').replace(/\D/g, '').slice(0, 11)
-    .replace(/^(\d{3})(\d)/, '$1.$2')
-    .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
-    .replace(/\.(\d{3})(\d{1,2})$/, '.$1-$2');
+// O CPF SAIU DAQUI, e é a única coisa que a página deixou de perguntar sem
+// ter deixado de precisar.
+//
+// O Asaas não emite cobrança sem CPF, isso continua valendo. O que mudou é
+// QUANDO ele é pedido: neste primeiro contato o dado não é usado pra nada — a
+// pessoa cai no WhatsApp e o Matheus é quem abre a cobrança depois. Pedir
+// documento a alguém que chegou do Instagram trinta segundos atrás só afasta.
+//
+// Quando o estágio 2 entrar (o botão criando a assinatura no Asaas direto), o
+// CPF volta — mas na tela de pagamento, onde a pessoa já decidiu e já entende
+// por que ele está sendo pedido. O validador de dígito verificador que existia
+// aqui está no histórico do git, em `cpfValido`.
 
 export default function Treine() {
+  // Quatro campos, e nenhum deles assusta. Eram sete: saíram CPF, nascimento e
+  // sexo. Nada disso é necessário pra começar uma conversa, e cada campo a mais
+  // num formulário é gente que desiste no meio.
   const [form, setForm] = useState({
-    nome: '', email: '', cpf: '', whatsapp: '', nascimento: '', sexo: '', modalidade: 'musculacao',
+    nome: '', whatsapp: '', email: '', modalidade: 'musculacao',
   });
   const [erro, setErro] = useState('');
 
@@ -92,17 +85,12 @@ export default function Treine() {
     // dado faltando desperdiça o contato e obriga a perguntar de novo.
     const faltando = [];
     if (!form.nome.trim()) faltando.push('nome');
-    if (!form.email.trim()) faltando.push('e-mail');
     if (!form.whatsapp.trim()) faltando.push('WhatsApp');
-    if (!form.cpf.trim()) faltando.push('CPF');
-    if (!form.sexo) faltando.push('sexo');
     if (faltando.length) return setErro(`Falta preencher: ${faltando.join(', ')}.`);
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-      return setErro('Confira o e-mail — ele vai ser o seu acesso ao aplicativo.');
-    }
-    if (!cpfValido(form.cpf)) {
-      return setErro('Confira o CPF — ele é necessário para emitir a cobrança.');
+    // O e-mail é opcional aqui — só é conferido se a pessoa escreveu algo.
+    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      return setErro('Confira o e-mail — parece que faltou alguma coisa.');
     }
 
     const modalidade = {
@@ -115,13 +103,8 @@ export default function Treine() {
       'Olá Matheus! Quero começar a consultoria online.',
       '',
       `Nome: ${form.nome.trim()}`,
-      `E-mail: ${form.email.trim()}`,
-      `CPF: ${form.cpf.trim()}`,
       `WhatsApp: ${form.whatsapp.trim()}`,
-      // O <input type="date"> entrega ISO. Vira 12/05/1990 porque quem lê é
-      // gente, no WhatsApp.
-      form.nascimento ? `Nascimento: ${form.nascimento.split('-').reverse().join('/')}` : null,
-      `Sexo: ${form.sexo}`,
+      form.email.trim() ? `E-mail: ${form.email.trim()}` : null,
       `Quero: ${modalidade}`,
     ].filter(Boolean).join('\n');
 
@@ -656,54 +639,30 @@ export default function Treine() {
                 onChange={campo('nome')} autoComplete="name" />
             </div>
 
-            <div className="grid gap-7 sm:grid-cols-2">
-              <div>
-                <label className={label} htmlFor="email">E-mail</label>
-                <input id="email" type="email" inputMode="email" className={input}
-                  value={form.email} onChange={campo('email')} autoComplete="email"
-                  placeholder="seu@email.com" />
-              </div>
-              <div>
-                <label className={label} htmlFor="whatsapp">WhatsApp</label>
-                <input id="whatsapp" type="tel" inputMode="tel" className={input}
-                  value={form.whatsapp} onChange={campo('whatsapp')} autoComplete="tel"
-                  placeholder="(00) 00000-0000" />
-              </div>
+            <div>
+              <label className={label} htmlFor="whatsapp">WhatsApp</label>
+              <input id="whatsapp" type="tel" inputMode="tel" className={input}
+                value={form.whatsapp} onChange={campo('whatsapp')} autoComplete="tel"
+                placeholder="(00) 00000-0000" />
             </div>
 
-            <div className="grid gap-7 sm:grid-cols-2">
-              <div>
-                <label className={label} htmlFor="cpf">CPF</label>
-                <input id="cpf" inputMode="numeric" className={input}
-                  value={form.cpf} onChange={campo('cpf', mascaraCpf)}
-                  placeholder="000.000.000-00" />
-                <p className="mt-2 text-xs text-white/35">Para emitir a cobrança.</p>
-              </div>
-              <div>
-                <label className={label} htmlFor="nascimento">Nascimento</label>
-                <input id="nascimento" type="date" className={input}
-                  value={form.nascimento} onChange={campo('nascimento')} />
-              </div>
+            <div>
+              <label className={label} htmlFor="email">
+                E-mail <span className="normal-case tracking-normal text-white/30">(opcional)</span>
+              </label>
+              <input id="email" type="email" inputMode="email" className={input}
+                value={form.email} onChange={campo('email')} autoComplete="email"
+                placeholder="seu@email.com" />
             </div>
 
-            <div className="grid gap-7 sm:grid-cols-2">
-              <div>
-                <label className={label} htmlFor="sexo">Sexo</label>
-                <select id="sexo" className={input} value={form.sexo} onChange={campo('sexo')}>
-                  <option value="">Selecione</option>
-                  <option value="Feminino">Feminino</option>
-                  <option value="Masculino">Masculino</option>
-                </select>
-              </div>
-              <div>
-                <label className={label} htmlFor="modalidade">Quero treinar</label>
-                <select id="modalidade" className={input} value={form.modalidade}
-                  onChange={campo('modalidade')}>
-                  <option value="musculacao">Só musculação</option>
-                  <option value="corrida">Musculação + corrida</option>
-                  <option value="ciclismo">Musculação + ciclismo</option>
-                </select>
-              </div>
+            <div>
+              <label className={label} htmlFor="modalidade">Quero treinar</label>
+              <select id="modalidade" className={input} value={form.modalidade}
+                onChange={campo('modalidade')}>
+                <option value="musculacao">Só musculação</option>
+                <option value="corrida">Musculação + corrida</option>
+                <option value="ciclismo">Musculação + ciclismo</option>
+              </select>
             </div>
 
             {erro && (
