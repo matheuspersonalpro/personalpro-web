@@ -225,7 +225,7 @@ export const MINHA_PARTE = [
   },
   {
     t: 'Refazer tudo do zero se não funcionar',
-    d: 'Oito semanas seguindo o plano e sem evolução, eu remonto o seu planejamento inteiro sem cobrar nada.',
+    d: 'Doze semanas seguindo o plano e sem evolução, eu remonto o seu planejamento inteiro sem cobrar nada.',
   },
 ];
 
@@ -342,22 +342,20 @@ export const FAQ = [
 ];
 
 // ── GARANTIA ─────────────────────────────────────────────────────────────────
-// Oito semanas, decidido pelo Matheus em 31/08 (era 12).
+// Doze semanas, e o prazo está preso às FOTOS de propósito: 12 semanas dão 84
+// dias, então a reavaliação dos 90 cai logo em seguida e existem duas séries
+// de foto pra comparar.
 //
-// Isso mudou a BASE de verificação junto, e não só o número. Aos 90 dias a
-// garantia se apoiava nas fotos novas, porque nessa data existem duas séries
-// pra comparar. Em 8 semanas não existe foto nova nenhuma — as próximas só
-// chegam aos 90 — então a frase antiga ("nos 90 dias a gente tem os dois lados
-// pra comparar") virou mentira no momento em que o prazo encurtou.
-//
-// A base agora é o registro de carga, que existe toda semana. É até melhor:
-// carga parada por oito semanas é um fato verificável dos dois lados, não uma
-// impressão sobre a foto.
+// Chegou a virar 8 semanas em 31/08 e voltou no mesmo dia, quando o Matheus
+// lembrou disso. Vale registrar por quê, pra ninguém encurtar de novo sem
+// perceber o efeito colateral: em 8 semanas não existe foto nova nenhuma, e a
+// garantia perde o árbitro. Mexer no número aqui obriga a mexer também no que
+// serve de prova.
 export const GARANTIA = {
-  titulo: 'Oito semanas, e a minha parte se não funcionar',
+  titulo: 'Doze semanas, e a minha parte se não funcionar',
   texto:
-    'Se depois de 8 semanas seguindo o programa você não tiver evoluído, eu ' +
-    'refaço o seu planejamento inteiro do zero, sem custo nenhum. E dá pra ' +
-    'saber sem discussão: o registro de carga mostra, semana a semana, se você ' +
-    'está subindo ou parado no mesmo lugar.',
+    'Se depois de 12 semanas seguindo o programa você não tiver evoluído, eu ' +
+    'refaço o seu planejamento inteiro do zero, sem custo nenhum. É por isso ' +
+    'que as fotos e o registro de carga importam: nos 90 dias a gente tem os ' +
+    'dois lados pra comparar, e não precisa ficar no achismo.',
 };
