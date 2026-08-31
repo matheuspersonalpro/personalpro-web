@@ -27,7 +27,7 @@ import Image from 'next/image';
 import {
   WHATSAPP, PRECO, DEPOIMENTOS, TRANSFORMACOES, NUMEROS,
   PARA_VOCE, RECEBE, INCLUSO, PASSOS, FAQ, GARANTIA, FOTOS_TOPO,
-  COMPROMISSOS, PROTOCOLO_FOTOS,
+  COMPROMISSOS, ABERTURA_COMPROMISSO, PROTOCOLO_FOTOS,
 } from './dados';
 
 // O Asaas não cria cliente sem CPF — `criarCheckout` já rejeita o que não tem
@@ -481,8 +481,7 @@ export default function Treine() {
             O que eu preciso de você
           </h2>
           <p className="mt-4 max-w-xl text-lg leading-relaxed text-white/70">
-            Consultoria à distância só funciona quando os dois lados fazem a
-            parte deles. A minha é montar e ajustar. A sua é esta:
+            {ABERTURA_COMPROMISSO}
           </p>
 
           {/* Sem número, de propósito. Numerados, eles viravam a SEGUNDA lista

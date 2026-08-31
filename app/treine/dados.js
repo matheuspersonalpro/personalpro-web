@@ -163,29 +163,43 @@ export const INCLUSO = [
   'Sem fidelidade — cancela quando quiser',
 ];
 
-// A contrapartida do aluno. Três compromissos de MESMO peso — antes o das
-// fotos ocupava dez vezes mais espaço que os outros dois, porque levava junto
-// o protocolo inteiro (ângulos, posição de braço, tipo de roupa).
+// A contrapartida do aluno.
 //
-// Esse protocolo saiu daqui. Posição de braço é informação de quem JÁ
-// contratou; quem está decidindo lê aquilo e pensa "que trabalheira", e a
-// exigência assusta antes da pessoa entender por que ela existe. Agora fica
-// atrás de um clique, em PROTOCOLO_FOTOS, pra quem quiser conferir.
+// Segunda escrita. A primeira era "mande foto, anote a carga, avise se doer",
+// e o Matheus cortou: senso comum. Ele estava certo — qualquer personal diria
+// as mesmas três frases, então elas não diziam nada sobre ELE.
+//
+// O que faltava era o porquê específico: o que ele faz com cada informação, e
+// o que dá errado de concreto quando ela não chega. Isso não é senso comum,
+// é o trabalho dele — e só quem realmente lê os dados do aluno consegue
+// escrever. Genérico é o que qualquer um copia; específico não dá pra copiar.
+//
+// A frase de abertura também mudou pelo mesmo motivo: "os dois lados fazem a
+// parte deles" era lugar-comum. Agora ela diz a verdade desconfortável — ele
+// não está lá, e só sabe o que o aluno conta.
+export const ABERTURA_COMPROMISSO =
+  'Eu não estou do seu lado na academia. Tudo o que eu sei sobre o seu treino ' +
+  'vem do que você me manda — então isto aqui não é burocracia, são os meus olhos.';
+
 export const COMPROMISSOS = [
   {
     t: 'Fotos a cada 90 dias',
-    d: 'A primeira no seu primeiro dia. É como eu enxergo a sua evolução de longe — sem elas, o ajuste vira chute.',
+    d: 'A balança mente. Peso parado com o corpo diferente é a coisa mais comum que eu vejo, e é a foto que mostra isso — não o número.',
     // Fica visível, não escondido no protocolo: é a dúvida que trava a pessoa,
     // e responder antes de ela perguntar vale mais que qualquer instrução.
     extra: 'Ficam guardadas na sua conta dentro do aplicativo, visíveis só pra você e pra mim.',
   },
   {
-    t: 'Registrar a carga que você usou',
-    d: 'Leva dois segundos por exercício, e é o que me diz se o estímulo está certo ou se está na hora de subir.',
+    t: 'A carga que você usou de verdade',
+    d: 'Se você fez 12 repetições onde eu pedi 8, o peso está leve e eu preciso saber. Sem esse registro, eu monto o bloco seguinte no escuro e você fica meses no mesmo lugar.',
   },
   {
-    t: 'Avisar no dia em que doer',
-    d: 'Não na semana seguinte. Ajustar cedo evita parar depois.',
+    t: 'Me avisar no dia em que doer',
+    d: 'Dor que aparece na terça e me chega no domingo já virou uma semana inteira de treino errado. Quase sempre a solução era trocar um exercício.',
+  },
+  {
+    t: 'Falar quando a semana foi ruim',
+    d: 'Aluno que diz que treinou pra não me decepcionar é o que mais atrapalha o meu trabalho. Se você sumiu, me fala que sumiu — eu remonto a semana e a gente segue. Não vou te dar sermão.',
   },
 ];
 
