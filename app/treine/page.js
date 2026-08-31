@@ -176,26 +176,49 @@ export default function Treine() {
 
         <div className="relative mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div className="flex min-h-[92svh] flex-col justify-end pb-14 lg:min-h-0 lg:py-24">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#E5484D]">
+            <p className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.18em] text-[#E5484D]">
+              <span aria-hidden className="h-px w-8 bg-[#E5484D]" />
               Consultoria online
             </p>
-            {/* O tamanho só sobe de novo no xl: entre lg e xl a coluna do texto
-                é estreita, e a 6xl a última linha quebra no meio. */}
-            <h1 className="mt-4 text-[2.7rem] font-bold leading-[1.02] tracking-tight sm:text-[3.4rem] xl:text-6xl">
-              Treino montado
+
+            {/* O título era "Treino montado pro seu caso. / Não pra qualquer
+                um.", com a última linha desbotada em cinza. O Matheus olhou e
+                disse que tinha cara de IA, e tinha mesmo: desbotar a última
+                linha é o truque mais copiado que existe, e a frase dizia uma
+                coisa que qualquer consultoria diria igual.
+
+                Agora são três frases curtas que descrevem o trabalho de
+                verdade, na ordem em que ele acontece — e a terceira é a que
+                separa isto de comprar uma planilha, então é ela que fica em
+                vermelho. Personalização todo mundo promete; continuar mexendo
+                depois é o que quase ninguém faz.
+
+                O tamanho só sobe de novo no xl porque entre lg e xl a coluna
+                do texto é estreita e as frases quebrariam no meio. */}
+            <h1 className="mt-5 text-[2.9rem] font-bold leading-[1.05] tracking-[-0.02em] sm:text-[3.6rem] xl:text-[4.25rem]">
+              Eu monto.
               <br />
-              pro seu caso.
+              Você treina.
               <br />
-              <span className="text-white/40">Não pra qualquer um.</span>
+              <span className="text-[#E5484D]">A gente ajusta.</span>
             </h1>
-            <p className="mt-6 max-w-md text-lg leading-relaxed text-white/70">
-              Musculação, corrida e ciclismo, com acompanhamento de verdade —
-              não uma planilha que você baixa e vira as costas.
+
+            <p className="mt-7 max-w-md text-lg leading-relaxed text-white/70">
+              Musculação, corrida e ciclismo, com alguém do outro lado olhando
+              o que você faz — não um arquivo que você baixa e nunca mais abre.
             </p>
+
             <a href="#comecar"
               className="mt-8 inline-flex w-fit items-center bg-[#E5484D] px-8 py-4 text-lg font-bold text-white transition hover:bg-[#d63c41]">
               Quero começar
             </a>
+
+            {/* As três objeções que aparecem primeiro, respondidas antes de
+                serem feitas. Custa uma linha e tira o ar de slogan solto: a
+                abertura passa a ter informação, não só frase de efeito. */}
+            <p className="mt-5 text-sm text-white/45">
+              R$ 149,90/mês · Sem fidelidade · Resposta em 24h
+            </p>
 
             {/* Setas e bolinhas. Sem isso ninguém descobre que existem outras
                 duas fotos: quem lê o topo em três segundos e desce nunca vê a

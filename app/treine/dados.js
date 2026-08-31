@@ -26,7 +26,11 @@ export const WHATSAPP = '5519997984847';
 export const FOTOS_TOPO = [
   { src: '/matheus.jpg',           alt: 'Matheus Barbosa na academia',        pos: 'center 12%', posLg: 'top' },
   { src: '/matheus-corrida.jpg',   alt: 'Matheus Barbosa correndo uma prova', pos: 'center 25%', posLg: 'center 20%' },
-  { src: '/matheus-ciclismo.jpg',  alt: 'Matheus Barbosa com a bicicleta',    pos: 'center 30%', posLg: 'center 25%' },
+  // Trocada em 30/08 por uma na estrada, em movimento. Ela e 3:4 exata, que e
+  // a proporcao da coluna do computador -- entra inteira, sem recorte nenhum.
+  // No celular sobra largura e falta altura, entao corta so pelos lados, e o
+  // rosto esta no meio: 'center' resolve as duas.
+  { src: '/matheus-ciclismo.jpg',  alt: 'Matheus Barbosa pedalando na estrada', pos: 'center',     posLg: 'center' },
 ];
 
 export const PRECO = 'R$ 149,90';
