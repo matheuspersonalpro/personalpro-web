@@ -162,7 +162,7 @@ export const RECEBE = [
     // ele ganha deles — tirar o número seria abrir mão da vantagem.
     tag: 'Suporte',
     t: 'WhatsApp direto comigo, sem limite',
-    d: 'Pergunte quantas vezes quiser. Eu respondo em até 24 horas, todo dia, inclusive fim de semana — e é eu mesmo, não atendente.',
+    d: 'Pergunte quantas vezes quiser. Eu respondo em até 24 horas, todo dia, inclusive fim de semana.',
   },
   {
     tag: 'Evolução',
