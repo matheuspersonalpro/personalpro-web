@@ -332,52 +332,80 @@ export default function Treine() {
         </section>
 
         {/* ── TRANSFORMAÇÕES ──────────────────────────────────────────────────
-            Fileira que corre pro lado, com os pares pequenos — não uma foto
-            gigante por vez. São várias transformações, e ocupando meia tela
-            cada uma a pessoa desiste antes de ver a terceira.
+            Passa sozinha, da esquerda pra direita.
 
-            Aqui a rolagem é do dedo, e não animação automática como no
-            carrossel de depoimentos: foto se olha parada. Uma imagem que
-            desliza sozinha some justo quando a pessoa parou pra comparar os
-            dois lados, que é a única coisa que ela quer fazer nesta seção.
+            Era pra arrastar com o dedo, e no computador simplesmente não
+            arrastava: rolagem horizontal de navegador não responde a arrastar
+            com o mouse, só a trackpad ou Shift+roda. Quem entrava pelo
+            computador via três fotos paradas com um convite pra arrastar que
+            não funcionava.
 
-            `snap-x` faz cada par parar alinhado em vez de encalhar cortado no
-            meio. A margem negativa e o padding levam a fileira até a borda da
-            tela, pra ficar claro que tem mais coisa passando do lado. */}
+            Mesma mecânica do carrossel de depoimentos: a lista é renderizada
+            DUAS vezes e o trilho anda exatamente metade da própria largura
+            mais um vão, então a emenda é invisível e o giro é infinito.
+
+            Pausa ao passar o mouse, e aqui isso não é conforto — é o que
+            devolve a função da seção. A pessoa para justamente pra comparar os
+            dois lados, e uma foto que desliza sozinha some no meio disso. */}
         {TRANSFORMACOES.length > 0 && (
           <section className="pt-20">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
               Corpos transformados
             </h2>
 
-            <div className="-mx-6 mt-8 flex snap-x snap-mandatory gap-5 overflow-x-auto px-6 pb-4">
-              {TRANSFORMACOES.map((t) => (
-                <figure key={t.quem} className="w-[260px] shrink-0 snap-start sm:w-[300px]">
-                  <div className="grid grid-cols-2 gap-0.5">
-                    {[['Antes', t.antes], ['Depois', t.depois]].map(([rotulo, src]) => (
-                      <div key={rotulo} className="relative aspect-[9/16] overflow-hidden">
-                        <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
-                        <span className={`absolute left-0 top-0 px-2 py-1 text-[10px] font-bold uppercase tracking-widest ${
-                          rotulo === 'Depois' ? 'bg-[#E5484D] text-white' : 'bg-black/70 text-white/80'
-                        }`}>
-                          {rotulo}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  <figcaption className="mt-3">
-                    <p className="font-semibold">{t.quem}</p>
-                    {t.resultado && (
-                      <p className="text-sm font-semibold text-[#E5484D]">{t.resultado}</p>
-                    )}
-                  </figcaption>
-                </figure>
-              ))}
+            <div className="fila mt-8 overflow-hidden">
+              <div className="fila-trilho flex w-max gap-5">
+                {[...TRANSFORMACOES, ...TRANSFORMACOES].map((t, n) => (
+                  <figure
+                    key={n}
+                    aria-hidden={n >= TRANSFORMACOES.length}
+                    className="w-[260px] shrink-0 sm:w-[300px]"
+                  >
+                    <div className="grid grid-cols-2 gap-0.5">
+                      {[['Antes', t.antes], ['Depois', t.depois]].map(([rotulo, src]) => (
+                        <div key={rotulo} className="relative aspect-[9/16] overflow-hidden">
+                          <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
+                          <span className={`absolute left-0 top-0 px-2 py-1 text-[10px] font-bold uppercase tracking-widest ${
+                            rotulo === 'Depois' ? 'bg-[#E5484D] text-white' : 'bg-black/70 text-white/80'
+                          }`}>
+                            {rotulo}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <figcaption className="mt-3">
+                      <p className="font-semibold">{t.quem}</p>
+                      {t.resultado && (
+                        <p className="text-sm font-semibold text-[#E5484D]">{t.resultado}</p>
+                      )}
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
             </div>
 
-            {TRANSFORMACOES.length > 1 && (
-              <p className="text-sm text-white/35">Arraste pro lado para ver mais →</p>
-            )}
+            <style jsx>{`
+              .fila-trilho {
+                /* Mais devagar que o dos depoimentos: aqui a pessoa está
+                   comparando duas imagens, não lendo uma frase. */
+                animation: corre 34s linear infinite;
+              }
+              .fila:hover .fila-trilho {
+                animation-play-state: paused;
+              }
+              /* Quem pediu menos movimento no sistema recebe a versão que
+                 rola, em vez de ficar preso na primeira transformação. */
+              @media (prefers-reduced-motion: reduce) {
+                .fila { overflow-x: auto; }
+                .fila-trilho { animation: none; }
+              }
+              @keyframes corre {
+                /* Metade do trilho mais um vão: é onde a segunda cópia cai
+                   exatamente sobre o ponto de partida da primeira. */
+                from { transform: translateX(calc(-50% - 0.625rem)); }
+                to   { transform: translateX(0); }
+              }
+            `}</style>
           </section>
         )}
 
