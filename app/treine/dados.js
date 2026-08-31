@@ -152,6 +152,46 @@ export const INCLUSO = [
   'Sem fidelidade — cancela quando quiser',
 ];
 
+// A contrapartida do aluno. Três compromissos de MESMO peso — antes o das
+// fotos ocupava dez vezes mais espaço que os outros dois, porque levava junto
+// o protocolo inteiro (ângulos, posição de braço, tipo de roupa).
+//
+// Esse protocolo saiu daqui. Posição de braço é informação de quem JÁ
+// contratou; quem está decidindo lê aquilo e pensa "que trabalheira", e a
+// exigência assusta antes da pessoa entender por que ela existe. Agora fica
+// atrás de um clique, em PROTOCOLO_FOTOS, pra quem quiser conferir.
+export const COMPROMISSOS = [
+  {
+    t: 'Fotos a cada 90 dias',
+    d: 'A primeira no seu primeiro dia. É como eu enxergo a sua evolução de longe — sem elas, o ajuste vira chute.',
+    // Fica visível, não escondido no protocolo: é a dúvida que trava a pessoa,
+    // e responder antes de ela perguntar vale mais que qualquer instrução.
+    extra: 'Ficam guardadas na sua conta dentro do aplicativo, visíveis só pra você e pra mim.',
+  },
+  {
+    t: 'Registrar a carga que você usou',
+    d: 'Leva dois segundos por exercício, e é o que me diz se o estímulo está certo ou se está na hora de subir.',
+  },
+  {
+    t: 'Avisar no dia em que doer',
+    d: 'Não na semana seguinte. Ajustar cedo evita parar depois.',
+  },
+];
+
+// O passo a passo das fotos, atrás de um clique. Quem está decidindo não
+// precisa; quem já decidiu quer saber exatamente o que fazer.
+export const PROTOCOLO_FOTOS = {
+  angulos: [
+    ['Frontal', 'de frente, corpo relaxado.'],
+    ['Lateral', 'mulheres com os braços erguidos à frente; homens com os braços estendidos ao lado do corpo.'],
+    ['Posterior', 'de costas, mesma posição para todos.'],
+  ],
+  roupa:
+    'De preferência roupa de piscina, que é o que mostra melhor a composição ' +
+    'corporal. Se você não se sentir à vontade, top e shorts para mulheres e ' +
+    'shorts para homens resolvem.',
+};
+
 export const PASSOS = [
   { t: 'Você preenche seus dados aqui', d: 'Leva um minuto.' },
   { t: 'Recebe o acesso e responde a avaliação', d: 'Objetivo, rotina, histórico de treino e saúde. É o que eu uso pra montar.' },

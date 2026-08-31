@@ -27,6 +27,7 @@ import Image from 'next/image';
 import {
   WHATSAPP, PRECO, DEPOIMENTOS, TRANSFORMACOES, NUMEROS,
   PARA_VOCE, RECEBE, INCLUSO, PASSOS, FAQ, GARANTIA, FOTOS_TOPO,
+  COMPROMISSOS, PROTOCOLO_FOTOS,
 } from './dados';
 
 // O Asaas não cria cliente sem CPF — `criarCheckout` já rejeita o que não tem
@@ -463,55 +464,71 @@ export default function Treine() {
         </section>
 
         {/* ── O COMPROMISSO ───────────────────────────────────────────────────
-            Vem ANTES do preço de propósito. Quem descobre a exigência das fotos
-            depois de pagar trava e não manda — e aí o acompanhamento morre. */}
+            Vem ANTES do preço de propósito. Quem descobre a exigência das
+            fotos depois de pagar trava e não manda — e aí o acompanhamento
+            morre, que é justamente o que ele está vendendo.
+
+            Os três pesam igual. Antes o das fotos ocupava dez vezes mais
+            espaço que os outros dois, porque carregava junto o protocolo
+            inteiro: ângulo, posição de braço, tipo de roupa. Isso virou uma
+            página de manual no meio de uma página de venda, e a exigência
+            assustava antes da pessoa entender por que ela existe.
+
+            O protocolo continua na página, atrás de um clique. Quem está
+            decidindo não precisa dele; quem já decidiu quer exatamente ele. */}
         <section className="pt-20">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             O que eu preciso de você
           </h2>
-          <p className="mt-4 text-lg leading-relaxed text-white/70">
-            Consultoria à distância funciona quando os dois lados fazem a parte
-            deles. A minha é montar e ajustar. A sua é esta:
+          <p className="mt-4 max-w-xl text-lg leading-relaxed text-white/70">
+            Consultoria à distância só funciona quando os dois lados fazem a
+            parte deles. A minha é montar e ajustar. A sua é esta:
           </p>
 
-          <div className="mt-8 border-y border-white/10 py-8">
-            <h3 className="text-xl font-bold">Fotos no primeiro dia e a cada 90</h3>
-            <p className="mt-2 leading-relaxed text-white/65">
-              É como eu enxergo a sua evolução de longe. Sem elas, o ajuste vira
-              chute. São três ângulos:
-            </p>
-            <dl className="mt-5 space-y-3 text-white/70">
-              <div><dt className="inline font-semibold text-white">Frontal · </dt>
-                <dd className="inline">de frente, corpo relaxado.</dd></div>
-              <div><dt className="inline font-semibold text-white">Lateral · </dt>
-                <dd className="inline">mulheres com os braços erguidos à frente; homens com os braços estendidos ao lado do corpo.</dd></div>
-              <div><dt className="inline font-semibold text-white">Posterior · </dt>
-                <dd className="inline">de costas, mesma posição para todos.</dd></div>
-            </dl>
-            <p className="mt-5 leading-relaxed text-white/55">
-              De preferência com roupa de piscina, que é o que mostra melhor a
-              composição corporal. Se você não se sentir à vontade, top e shorts
-              para mulheres e shorts para homens resolvem. As fotos ficam
-              guardadas na sua conta dentro do aplicativo, visíveis só pra você
-              e pra mim.
-            </p>
-          </div>
+          {/* Sem número, de propósito. Numerados, eles viravam a SEGUNDA lista
+              numerada seguida — logo depois dos passos do "Como funciona" — e
+              as duas passavam a parecer a mesma coisa. Além disso não são
+              etapas em sequência: valem os três ao mesmo tempo, o tempo todo.
 
-          <div className="mt-8 space-y-5">
-            <div>
-              <p className="text-lg font-semibold">Registrar a carga que você usou</p>
-              <p className="mt-1 leading-relaxed text-white/60">
-                Leva dois segundos por exercício e é o que me diz se o estímulo
-                está certo ou se está na hora de subir.
-              </p>
-            </div>
-            <div>
-              <p className="text-lg font-semibold">Avisar no dia em que doer</p>
-              <p className="mt-1 leading-relaxed text-white/60">
-                Não na semana seguinte. Ajustar cedo evita parar depois.
-              </p>
-            </div>
-          </div>
+              Separados por linha em vez de numerados, e o traço vermelho marca
+              onde cada um começa sem sugerir ordem. */}
+          <ul className="mt-10 divide-y divide-white/10 border-y border-white/10">
+            {COMPROMISSOS.map(({ t, d, extra }, i) => (
+              <li key={t} className="flex gap-5 py-7">
+                <span aria-hidden className="mt-3 h-0.5 w-6 shrink-0 bg-[#E5484D]" />
+                <div>
+                  <h3 className="text-xl font-bold leading-snug">{t}</h3>
+                  <p className="mt-1.5 leading-relaxed text-white/70">{d}</p>
+                  {extra && (
+                    <p className="mt-1.5 leading-relaxed text-white/45">{extra}</p>
+                  )}
+
+                  {/* O protocolo mora dentro do compromisso a que ele pertence,
+                      e não numa seção própria: quem clica aqui é quem acabou de
+                      ler que vai precisar mandar foto. */}
+                  {i === 0 && (
+                    <details className="group mt-4 border-l-2 border-white/15 pl-5">
+                      <summary className="cursor-pointer list-none text-sm font-semibold text-white/70 transition marker:hidden hover:text-white">
+                        <span aria-hidden className="mr-2 inline-block text-[#E5484D] transition group-open:rotate-90">›</span>
+                        Como tirar as fotos
+                      </summary>
+                      <dl className="mt-4 space-y-2.5">
+                        {PROTOCOLO_FOTOS.angulos.map(([nome, como]) => (
+                          <div key={nome} className="leading-relaxed text-white/60">
+                            <dt className="inline font-semibold text-white/85">{nome} · </dt>
+                            <dd className="inline">{como}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                      <p className="mt-4 leading-relaxed text-white/60">
+                        {PROTOCOLO_FOTOS.roupa}
+                      </p>
+                    </details>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* ── PREÇO ───────────────────────────────────────────────────────────
