@@ -153,9 +153,16 @@ export const RECEBE = [
     d: 'Planilha periodizada semana a semana, no mesmo valor.',
   },
   {
+    // "Ilimitado" e "24h" respondem medos diferentes e por isso ficam os
+    // dois. Ilimitado responde "posso incomodar?"; as 24 horas respondem "vou
+    // ficar no vácuo?". Quem já foi abandonado por consultoria tem os dois.
+    //
+    // O concorrente da cidade só diz "ilimitado" porque não pode prometer
+    // tempo: são duas pessoas para 500 alunos. Aqui o prazo é justamente onde
+    // ele ganha deles — tirar o número seria abrir mão da vantagem.
     tag: 'Suporte',
-    t: 'Falo com você direto no WhatsApp',
-    d: 'Resposta em até 24 horas, todo dia, inclusive fim de semana.',
+    t: 'WhatsApp direto comigo, sem limite',
+    d: 'Pergunte quantas vezes quiser. Eu respondo em até 24 horas, todo dia, inclusive fim de semana — e é eu mesmo, não atendente.',
   },
   {
     tag: 'Evolução',
@@ -184,7 +191,7 @@ export const INCLUSO = [
   'Aplicativo com vídeo de cada exercício',
   'Registro de carga treino a treino',
   'Treino em PDF pra imprimir',
-  'Suporte no WhatsApp comigo, resposta em 24h',
+  'WhatsApp direto comigo, sem limite de mensagens',
   'Reavaliação a cada 90 dias, com fotos e medidas',
   'Ajuste do plano sempre que precisar',
   'Sem fidelidade — cancela quando quiser',
@@ -212,8 +219,8 @@ export const ABERTURA_ACORDO =
 
 export const MINHA_PARTE = [
   {
-    t: 'Te responder em até 24 horas',
-    d: 'Todo dia, inclusive fim de semana. Não é robô e não é atendente: sou eu.',
+    t: 'Te responder em até 24 horas, sempre',
+    d: 'Todo dia, inclusive fim de semana, quantas vezes você precisar. Não é robô e não é atendente: sou eu.',
   },
   {
     t: 'Mexer no seu treino sempre que precisar',

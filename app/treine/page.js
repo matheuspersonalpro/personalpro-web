@@ -218,7 +218,7 @@ export default function Treine() {
                 serem feitas. Custa uma linha e tira o ar de slogan solto: a
                 abertura passa a ter informação, não só frase de efeito. */}
             <p className="mt-5 text-sm text-white/45">
-              R$ 149,90/mês · Sem fidelidade · Resposta em 24h
+              R$ 149,90/mês · Sem fidelidade · WhatsApp direto comigo
             </p>
 
             {/* Setas e bolinhas. Sem isso ninguém descobre que existem outras
