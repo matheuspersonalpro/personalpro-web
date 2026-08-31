@@ -61,6 +61,25 @@ export const TRANSFORMACOES = [
     depois: '/prova/juliana-depois.jpg',
     quem: 'Juliana, 40 anos',
   },
+  // Autorizada pelo Matheus em 31/08. Duas coisas foram feitas nas fotos dela
+  // antes de subir:
+  //
+  // 1. Uma MULHER DESCONHECIDA aparecia ao fundo, mexendo no armário do
+  //    vestiário. Ela não autorizou nada e o rosto dela iria pra um site
+  //    público. Foi pixelizada e, depois, cortada de vez do enquadramento --
+  //    a pixelização continua por baixo do corte, como rede de segurança.
+  // 2. A "antes" era um plano aberto de vestiário e a "depois" era mais
+  //    fechada. Nesse par, a Talita apareceria bem menor de um lado que do
+  //    outro, e a diferença viria do enquadramento e não do corpo. As duas
+  //    foram recortadas pro mesmo tamanho de corpo no quadro.
+  //
+  // A ordem antes/depois não foi chute: o cartaz atrás dela na primeira diz
+  // "SÁBADO | 29.03", o que data a foto em março.
+  {
+    antes: '/prova/talita-antes.jpg',
+    depois: '/prova/talita-depois.jpg',
+    quem: 'Talita, 42 anos',
+  },
 ];
 
 // Números que ele confirmar. Enquanto estiverem vazios, a faixa não aparece —
