@@ -80,6 +80,14 @@ export const TRANSFORMACOES = [
     depois: '/prova/talita-depois.jpg',
     quem: 'Talita, 42 anos',
   },
+  // Autorizada pelo Matheus em 31/08. Sem ninguém ao fundo em nenhuma das
+  // duas, então não precisou pixelizar nada — só o recorte pro corpo ocupar a
+  // mesma fatia do quadro nas duas, que é o cuidado que todas levam aqui.
+  {
+    antes: '/prova/renata-antes.jpg',
+    depois: '/prova/renata-depois.jpg',
+    quem: 'Renata, 41 anos',
+  },
 ];
 
 // Números que ele confirmar. Enquanto estiverem vazios, a faixa não aparece —
