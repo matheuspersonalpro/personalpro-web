@@ -27,7 +27,7 @@ import Image from 'next/image';
 import {
   WHATSAPP, PRECO, DEPOIMENTOS, TRANSFORMACOES, NUMEROS,
   PARA_VOCE, RECEBE, INCLUSO, PASSOS, FAQ, GARANTIA, FOTOS_TOPO,
-  COMPROMISSOS, ABERTURA_COMPROMISSO, PROTOCOLO_FOTOS,
+  MINHA_PARTE, SUA_PARTE, ABERTURA_ACORDO, PROTOCOLO_FOTOS,
 } from './dados';
 
 // O Asaas não cria cliente sem CPF — `criarCheckout` já rejeita o que não tem
@@ -472,90 +472,122 @@ export default function Treine() {
         )}
 
         {/* ── COMO FUNCIONA ───────────────────────────────────────────────────
-            Sem 01/02/03. A ordem já está clara pela sequência; numerar é
-            enfeite quando o texto sozinho resolve. */}
+            Linha do tempo, e não uma lista numerada.
+
+            A diferença não é enfeite: a pergunta que quem está decidindo tem e
+            não faz em voz alta é "quando eu começo a treinar". Uma lista 1-2-3
+            mostra a ordem mas esconde o tempo; aqui o "quando" vem na frente de
+            cada etapa, e o traço vertical mostra que uma leva à outra.
+
+            A última etapa é a dos 90 dias, de propósito: ela liga esta seção à
+            garantia, que aparece logo depois do preço. */}
         <section className="pt-20">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Como funciona</h2>
-          <ol className="mt-8 space-y-6">
-            {PASSOS.map(({ t, d }, i) => (
-              <li key={t} className="flex gap-5">
-                <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/20 text-sm font-semibold text-white/60">
-                  {i + 1}
-                </span>
-                <div>
-                  <p className="text-lg font-semibold">{t}</p>
-                  <p className="mt-1 leading-relaxed text-white/60">{d}</p>
+
+          <ol className="mt-10">
+            {PASSOS.map(({ quando, t, d }, i) => (
+              <li key={t} className="relative flex gap-6 pb-9 last:pb-0">
+                {/* O traço que liga uma etapa na outra. Não desce da última,
+                    senão a linha do tempo parece continuar pra fora da seção. */}
+                {i < PASSOS.length - 1 && (
+                  <span aria-hidden className="absolute left-[5px] top-4 h-full w-px bg-white/15" />
+                )}
+                <span aria-hidden className="relative mt-[7px] h-2.5 w-2.5 shrink-0 rounded-full bg-[#E5484D]" />
+
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#E5484D]">
+                    {quando}
+                  </p>
+                  <h3 className="mt-1.5 text-xl font-bold leading-snug">{t}</h3>
+                  <p className="mt-1.5 leading-relaxed text-white/65">{d}</p>
                 </div>
               </li>
             ))}
           </ol>
         </section>
 
-        {/* ── O COMPROMISSO ───────────────────────────────────────────────────
-            Vem ANTES do preço de propósito. Quem descobre a exigência das
-            fotos depois de pagar trava e não manda — e aí o acompanhamento
-            morre, que é justamente o que ele está vendendo.
+        {/* ── O ACORDO ────────────────────────────────────────────────────────
+            Duas colunas, e a DELE vem primeiro.
 
-            Os três pesam igual. Antes o das fotos ocupava dez vezes mais
-            espaço que os outros dois, porque carregava junto o protocolo
-            inteiro: ângulo, posição de braço, tipo de roupa. Isso virou uma
-            página de manual no meio de uma página de venda, e a exigência
-            assustava antes da pessoa entender por que ela existe.
+            Esta seção era "O que eu preciso de você": quatro exigências ao
+            aluno, nenhuma obrigação dele, tudo antes da pessoa pagar. O texto
+            já tinha sido reescrito duas vezes e continuava incomodando, porque
+            o problema não era o texto — era a estrutura, que é de contrato de
+            academia.
 
-            O protocolo continua na página, atrás de um clique. Quem está
-            decidindo não precisa dele; quem já decidiu quer exatamente ele. */}
+            Publicar as próprias obrigações ANTES de listar as do outro é o que
+            separa quem está seguro do que entrega de quem só cobra. E não custa
+            nada de novo aqui: tudo na coluna dele já estava prometido em algum
+            canto da página, só nunca tinha aparecido junto.
+
+            Vem antes do preço de propósito. Quem descobre a exigência das fotos
+            depois de pagar trava e não manda, e aí o acompanhamento morre — que
+            é justamente o que ele está vendendo. */}
         <section className="pt-20">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            O que eu preciso de você
-          </h2>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">O nosso acordo</h2>
           <p className="mt-4 max-w-xl text-lg leading-relaxed text-white/70">
-            {ABERTURA_COMPROMISSO}
+            {ABERTURA_ACORDO}
           </p>
 
-          {/* Sem número, de propósito. Numerados, eles viravam a SEGUNDA lista
-              numerada seguida — logo depois dos passos do "Como funciona" — e
-              as duas passavam a parecer a mesma coisa. Além disso não são
-              etapas em sequência: valem os três ao mesmo tempo, o tempo todo.
+          <div className="mt-10 grid gap-6 lg:grid-cols-2">
+            {[
+              { titulo: 'O que eu me comprometo', itens: MINHA_PARTE, minha: true },
+              { titulo: 'O que eu preciso de você', itens: SUA_PARTE, minha: false },
+            ].map(({ titulo, itens, minha }) => (
+              <div
+                key={titulo}
+                className={`border p-7 ${
+                  minha
+                    ? 'border-[#E5484D]/40 bg-[#E5484D]/[0.05]'
+                    : 'border-white/15 bg-white/[0.02]'
+                }`}
+              >
+                <h3 className={`text-sm font-semibold uppercase tracking-[0.14em] ${
+                  minha ? 'text-[#E5484D]' : 'text-white/45'
+                }`}>
+                  {titulo}
+                </h3>
 
-              Separados por linha em vez de numerados, e o traço vermelho marca
-              onde cada um começa sem sugerir ordem. */}
-          <ul className="mt-10 divide-y divide-white/10 border-y border-white/10">
-            {COMPROMISSOS.map(({ t, d, extra }, i) => (
-              <li key={t} className="flex gap-5 py-7">
-                <span aria-hidden className="mt-3 h-0.5 w-6 shrink-0 bg-[#E5484D]" />
-                <div>
-                  <h3 className="text-xl font-bold leading-snug">{t}</h3>
-                  <p className="mt-1.5 leading-relaxed text-white/70">{d}</p>
-                  {extra && (
-                    <p className="mt-1.5 leading-relaxed text-white/45">{extra}</p>
-                  )}
+                <ul className="mt-7 space-y-7">
+                  {itens.map(({ t, d, extra }, i) => (
+                    <li key={t}>
+                      <h4 className="text-lg font-bold leading-snug">{t}</h4>
+                      <p className="mt-1.5 leading-relaxed text-white/65">{d}</p>
+                      {extra && (
+                        <p className="mt-1.5 leading-relaxed text-white/40">{extra}</p>
+                      )}
 
-                  {/* O protocolo mora dentro do compromisso a que ele pertence,
-                      e não numa seção própria: quem clica aqui é quem acabou de
-                      ler que vai precisar mandar foto. */}
-                  {i === 0 && (
-                    <details className="group mt-4 border-l-2 border-white/15 pl-5">
-                      <summary className="cursor-pointer list-none text-sm font-semibold text-white/70 transition marker:hidden hover:text-white">
-                        <span aria-hidden className="mr-2 inline-block text-[#E5484D] transition group-open:rotate-90">›</span>
-                        Como tirar as fotos
-                      </summary>
-                      <dl className="mt-4 space-y-2.5">
-                        {PROTOCOLO_FOTOS.angulos.map(([nome, como]) => (
-                          <div key={nome} className="leading-relaxed text-white/60">
-                            <dt className="inline font-semibold text-white/85">{nome} · </dt>
-                            <dd className="inline">{como}</dd>
-                          </div>
-                        ))}
-                      </dl>
-                      <p className="mt-4 leading-relaxed text-white/60">
-                        {PROTOCOLO_FOTOS.roupa}
-                      </p>
-                    </details>
-                  )}
-                </div>
-              </li>
+                      {/* O protocolo mora dentro do compromisso a que pertence:
+                          quem clica aqui é quem acabou de ler que vai precisar
+                          mandar foto. Fica atrás do clique porque posição de
+                          braço e tipo de roupa é informação de quem JÁ
+                          contratou — quem está decidindo lê aquilo e pensa
+                          "que trabalheira". */}
+                      {!minha && i === 0 && (
+                        <details className="group mt-4 border-l-2 border-white/15 pl-5">
+                          <summary className="cursor-pointer list-none text-sm font-semibold text-white/70 transition marker:hidden hover:text-white">
+                            <span aria-hidden className="mr-2 inline-block text-[#E5484D] transition group-open:rotate-90">›</span>
+                            Como tirar as fotos
+                          </summary>
+                          <dl className="mt-4 space-y-2.5 text-sm">
+                            {PROTOCOLO_FOTOS.angulos.map(([nome, como]) => (
+                              <div key={nome} className="leading-relaxed text-white/60">
+                                <dt className="inline font-semibold text-white/85">{nome} · </dt>
+                                <dd className="inline">{como}</dd>
+                              </div>
+                            ))}
+                          </dl>
+                          <p className="mt-4 text-sm leading-relaxed text-white/60">
+                            {PROTOCOLO_FOTOS.roupa}
+                          </p>
+                        </details>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         </section>
 
         {/* ── PREÇO ───────────────────────────────────────────────────────────

@@ -190,25 +190,55 @@ export const INCLUSO = [
   'Sem fidelidade — cancela quando quiser',
 ];
 
+// O ACORDO, nas duas direções.
+//
+// Terceira escrita desta seção, e a mudança agora é estrutural, não de texto.
+// Ela era "O que eu preciso de você": quatro coisas que o ALUNO tem que fazer,
+// nenhuma que o Matheus se compromete a fazer, tudo isso antes da pessoa
+// pagar. Por melhor que estivesse escrita, a estrutura era de contrato de
+// academia — e foi isso que continuou incomodando ele mesmo depois de eu
+// reescrever o texto duas vezes.
+//
+// Agora são as duas colunas do mesmo acordo, e a DELE vem primeiro. Isso é o
+// que separa quem está seguro do que entrega de quem só cobra: publicar as
+// próprias obrigações antes de listar as do outro.
+//
+// Nada na coluna dele é promessa nova. Tudo já estava dito em algum canto da
+// página (24h, ajuste quando precisar, garantia dos 90 dias, sem fidelidade) —
+// só nunca tinha aparecido junto, como compromisso assumido.
+export const ABERTURA_ACORDO =
+  'Eu não estou do seu lado na academia. O que a gente combina aqui é o que faz ' +
+  'isso funcionar mesmo assim — e a minha parte vem primeiro.';
+
+export const MINHA_PARTE = [
+  {
+    t: 'Te responder em até 24 horas',
+    d: 'Todo dia, inclusive fim de semana. Não é robô e não é atendente: sou eu.',
+  },
+  {
+    t: 'Mexer no seu treino sempre que precisar',
+    d: 'Machucou, mudou de academia, mudou o horário, viajou. Não tem limite de ajuste e não custa a mais.',
+  },
+  {
+    t: 'Olhar os seus números antes de mudar qualquer coisa',
+    d: 'Toda alteração sai do que você registrou, não de um calendário que virou a página sozinho.',
+  },
+  {
+    t: 'Refazer tudo do zero se não funcionar',
+    d: 'Doze semanas seguindo o plano e sem evolução, eu remonto o seu planejamento inteiro sem cobrar nada.',
+  },
+];
+
 // A contrapartida do aluno.
 //
-// Segunda escrita. A primeira era "mande foto, anote a carga, avise se doer",
-// e o Matheus cortou: senso comum. Ele estava certo — qualquer personal diria
-// as mesmas três frases, então elas não diziam nada sobre ELE.
+// Segunda escrita destes itens. A primeira era "mande foto, anote a carga,
+// avise se doer", e o Matheus cortou: senso comum. Ele estava certo — qualquer
+// personal diria as mesmas frases, então elas não diziam nada sobre ELE.
 //
 // O que faltava era o porquê específico: o que ele faz com cada informação, e
-// o que dá errado de concreto quando ela não chega. Isso não é senso comum,
-// é o trabalho dele — e só quem realmente lê os dados do aluno consegue
-// escrever. Genérico é o que qualquer um copia; específico não dá pra copiar.
-//
-// A frase de abertura também mudou pelo mesmo motivo: "os dois lados fazem a
-// parte deles" era lugar-comum. Agora ela diz a verdade desconfortável — ele
-// não está lá, e só sabe o que o aluno conta.
-export const ABERTURA_COMPROMISSO =
-  'Eu não estou do seu lado na academia. Tudo o que eu sei sobre o seu treino ' +
-  'vem do que você me manda — então isto aqui não é burocracia, são os meus olhos.';
-
-export const COMPROMISSOS = [
+// o que dá errado de concreto quando ela não chega. Genérico é o que qualquer
+// um copia; específico não dá pra copiar.
+export const SUA_PARTE = [
   {
     t: 'Fotos a cada 90 dias',
     d: 'A balança mente. Peso parado com o corpo diferente é a coisa mais comum que eu vejo, e é a foto que mostra isso — não o número.',
@@ -244,11 +274,44 @@ export const PROTOCOLO_FOTOS = {
     'shorts para homens resolvem.',
 };
 
+// Segunda escrita, pelo mesmo motivo da seção dos compromissos: a primeira era
+// genérica. "Eu monto o seu programa — em cima do que você respondeu" não diz
+// nada que a pessoa já não tenha suposto.
+//
+// O que faltava era responder as duas perguntas que quem está decidindo tem de
+// verdade e não pergunta em voz alta: QUANDO eu começo a treinar, e O QUE ele
+// vai me perguntar. Por isso cada etapa agora carrega um "quando" na frente e
+// diz, em concreto, o que acontece nela.
+//
+// O `quando` do passo em que ele monta o programa está deliberadamente sem
+// prazo em dias — falta o Matheus dizer quanto tempo ele leva de verdade.
+// Inventar "em até 48h" aqui seria criar uma promessa que ele não combinou.
 export const PASSOS = [
-  { t: 'Você preenche seus dados aqui', d: 'Leva um minuto.' },
-  { t: 'Recebe o acesso e responde a avaliação', d: 'Objetivo, rotina, histórico de treino e saúde. É o que eu uso pra montar.' },
-  { t: 'Eu monto o seu programa', d: 'Em cima do que você respondeu.' },
-  { t: 'Você treina e eu acompanho', d: 'Você registra a carga, eu vejo a evolução e ajusto ao longo do caminho.' },
+  {
+    quando: 'Agora',
+    t: 'Você preenche os seus dados aqui',
+    d: 'Nome, e-mail, CPF e se quer corrida ou ciclismo junto. Um minuto.',
+  },
+  {
+    quando: 'Assim que o pagamento confirmar',
+    t: 'Chega o acesso ao aplicativo e a avaliação',
+    d: 'Objetivo, quantos dias por semana você consegue treinar, quanto tempo tem por sessão, onde treina e o que tem lá, há quanto tempo treina, lesão ou dor que eu precise respeitar, e remédio ou condição de saúde que mude alguma coisa.',
+  },
+  {
+    quando: 'Depois das suas respostas',
+    t: 'Eu monto o seu programa',
+    d: 'Escolho a divisão pelos dias que você tem, monto os treinos em cima da estrutura do seu lugar, e faço a planilha de corrida ou ciclismo se você pediu. Você recebe pelo aplicativo e já treina no mesmo dia.',
+  },
+  {
+    quando: 'Nas primeiras semanas',
+    t: 'A gente acerta a carga',
+    d: 'É o ajuste mais importante e quase ninguém fala dele. O primeiro programa é um chute educado — só quando eu vejo os pesos que você conseguiu de verdade é que ele vira o seu.',
+  },
+  {
+    quando: 'A cada 90 dias',
+    t: 'Reavaliação com foto e medida',
+    d: 'Comparo com as anteriores e refaço o planejamento a partir dali. É também quando vale a garantia.',
+  },
 ];
 
 export const FAQ = [
