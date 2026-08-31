@@ -105,9 +105,20 @@ export const RECEBE = [
     d: 'Séries, repetições, carga e descanso na tela. Você abre e executa.',
   },
   {
+    // Era "Periodização de 12 meses — a carga e os métodos sobem mês a mês".
+    // Três problemas num card só:
+    //
+    // 1. Contradizia o card logo acima. "Programa 100% seu" e um plano de 12
+    //    meses pronto não podem ser a mesma coisa, e quem lê os dois seguidos
+    //    fica com a sensação de treino de esteira, que é o oposto do que ele
+    //    vende.
+    // 2. Ao lado de "sem fidelidade", "12 meses" lê como prazo de contrato.
+    // 3. Não era verdade: o ritmo de troca de bloco virou configurável
+    //    (30/45/60 dias ou manual), então não é "mês a mês"; e nem todo bloco
+    //    sobe carga — tem semana de descarga.
     tag: 'Progressão',
-    t: 'Periodização de 12 meses',
-    d: 'A carga e os métodos sobem mês a mês, sem repetir o mesmo treino.',
+    t: 'O treino muda quando precisa mudar',
+    d: 'Não é a mesma planilha todo mês. Eu troco o estímulo conforme você responde.',
   },
   {
     tag: 'Endurance',
@@ -141,7 +152,7 @@ export const RECEBE = [
 // aqui ela está decidindo — e na hora de decidir ela quer ver tudo junto.
 export const INCLUSO = [
   'Programa de musculação montado pra você',
-  'Periodização de 12 meses, sem repetir treino',
+  'Treino que muda de estímulo conforme você evolui',
   'Planilha de corrida ou ciclismo, se quiser',
   'Aplicativo com vídeo de cada exercício',
   'Registro de carga treino a treino',
