@@ -92,13 +92,22 @@ export default function Treine() {
   // provam mais nada.
   const [tela, setTela] = useState(0);
 
+  // Segurar pausa a troca das telas. Sem isso, o texto ao lado some no meio
+  // da leitura: são 6 segundos, e a descrição embaixo do celular só faz
+  // sentido junto com a tela que está aparecendo.
+  //
+  // Aqui a troca é um temporizador do React, e não animação de CSS, então
+  // a pausa é só não reagendar -- não precisa da media query de hover que a
+  // fila de transformações precisou.
+  const [telaParada, setTelaParada] = useState(false);
+
   useEffect(() => {
-    if (TELAS_APP.length < 2) return;
+    if (TELAS_APP.length < 2 || telaParada) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     // 6 segundos: é o tempo de correr o olho por uma tela de celular inteira.
     const t = setTimeout(() => setTela((i) => (i + 1) % TELAS_APP.length), 6000);
     return () => clearTimeout(t);
-  }, [tela]);
+  }, [tela, telaParada]);
 
   // Qual depoimento está na tela. Era uma esteira rolando sem parar, e o
   // Matheus comparou com as duas páginas de referência: elas TROCAM de cartão,
@@ -397,7 +406,14 @@ export default function Treine() {
               ele que o seu treino chega.
             </p>
 
-            <div className="mt-10 overflow-hidden">
+            <div
+              className="mt-10 overflow-hidden"
+              onMouseEnter={() => setTelaParada(true)}
+              onMouseLeave={() => setTelaParada(false)}
+              onTouchStart={() => setTelaParada(true)}
+              onTouchEnd={() => setTelaParada(false)}
+              onTouchCancel={() => setTelaParada(false)}
+            >
               <div
                 className="flex transition-transform duration-500 ease-out"
                 style={{ transform: `translateX(-${tela * 100}%)` }}
@@ -756,15 +772,15 @@ export default function Treine() {
                               loading="lazy"
                               className="w-full rounded border border-white/10"
                             />
-                            <figcaption className="mt-1.5">
-                              <span className="block text-xs font-semibold text-white/85">{m.rotulo}</span>
-                              <span className="block text-[11px] leading-snug text-white/45">{m.nota}</span>
-                            </figcaption>
+                            <figcaption className="mt-1.5 text-xs font-semibold text-white/85">{m.rotulo}</figcaption>
                           </figure>
                         ))}
                       </div>
 
-                      <p className="mt-4 text-sm leading-relaxed text-white/60">
+                      <p className="mt-4 text-sm leading-relaxed text-white/70">
+                        {PROTOCOLO_FOTOS.mulheres}
+                      </p>
+                      <p className="mt-2 text-sm leading-relaxed text-white/60">
                         {PROTOCOLO_FOTOS.roupa}                      </p>
                         </details>
                       )}

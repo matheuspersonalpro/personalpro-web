@@ -551,14 +551,17 @@ export const SUA_PARTE = [
 // A tarja cobre a cabeça inteira, não só o rosto -- mais segura, e fica com
 // cara de escolha em vez de remendo.
 export const PROTOCOLO_FOTOS = {
+  // Só o rótulo. A orientação escrita de cada ângulo saiu a pedido do Matheus
+  // -- a foto já mostra, e legenda repetindo o que a imagem diz é ruído.
   modelo: [
-    { src: '/como-tirar/frontal.jpg', rotulo: 'Frontal', nota: 'De frente, corpo relaxado, braços ao lado.' },
-    // A observação das mulheres CONTINUA em texto porque o modelo é homem: a
-    // foto mostra os braços ao lado do corpo, e sem a linha a aluna copiaria
-    // a posição errada.
-    { src: '/como-tirar/lateral.jpg', rotulo: 'Lateral', nota: 'De lado. Mulheres: braços erguidos à frente.' },
-    { src: '/como-tirar/posterior.jpg', rotulo: 'Posterior', nota: 'De costas, mesma posição para todos.' },
+    { src: '/como-tirar/frontal.jpg', rotulo: 'Frontal' },
+    { src: '/como-tirar/lateral.jpg', rotulo: 'Lateral' },
+    { src: '/como-tirar/posterior.jpg', rotulo: 'Posterior' },
   ],
+  // Esta linha sobrevive ao corte porque a foto NÃO mostra: o modelo é homem,
+  // e na lateral ele aparece com os braços ao lado do corpo. Sem o aviso, a
+  // aluna copiaria a posição errada olhando a imagem.
+  mulheres: 'Na lateral, mulheres erguem os braços à frente.',
   roupa:
     'De preferência roupa de piscina, que é o que mostra melhor a composição ' +
     'corporal. Se você não se sentir à vontade, top e shorts para mulheres e ' +
