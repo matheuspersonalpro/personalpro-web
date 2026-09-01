@@ -103,7 +103,7 @@ export const NUMEROS = [
 // mandou de referência: quem lê para numa das linhas e a partir dali está
 // lendo sobre ela mesma.
 export const PARA_VOCE = [
-  'Treina há um tempo e não vê mais resultado.',
+  'Treina há anos e o corpo parou de responder.',
   'Já tentou seguir treino de internet e travou na primeira semana.',
   'Tem pouco tempo e precisa que cada sessão valha a pena.',
   'Mora longe, viaja a trabalho, ou não tem horário fixo.',
@@ -217,7 +217,9 @@ export const PLANOS = [
   {
     nome: 'Essencial',
     preco: 'R$ 149,90',
-    resumo: 'O programa completo, com acompanhamento por WhatsApp.',
+    // Nao usar a palavra "completo" aqui: e o nome do plano do meio, e dizer
+    // que o Essencial ja e o completo esvazia o de cima antes de a pessoa ler.
+    resumo: 'Todo o treino, com acompanhamento por WhatsApp.',
     itens: [
       'Programa de musculação montado pra você',
       'Corrida ou ciclismo junto, se quiser',
@@ -338,8 +340,20 @@ export const SUA_PARTE = [
     d: 'Dor que aparece na terça e me chega no domingo já virou uma semana inteira de treino errado. E quase sempre o ajuste é pequeno: trocar um exercício.',
   },
   {
-    t: 'Falar quando a semana foi ruim',
-    d: 'Aluno que diz que treinou pra não me decepcionar é o que mais atrapalha o meu trabalho. Se você sumiu, me fala que sumiu — eu remonto a semana e a gente segue. Não vou te dar sermão.',
+    // Terceira escrita deste item, e a correção veio do Matheus: "cara de
+    // personal frouxo".
+    //
+    // Ele estava certo e o erro era de fundo. A versão anterior terminava em
+    // "não vou te dar sermão", escrita pra tirar a vergonha de quem sumiu — mas
+    // o efeito é o contrário do que ele vende: soa como o personal que deixa
+    // passar. Quem paga por acompanhamento não está comprando tolerância.
+    //
+    // O pedido real nunca foi "não se cobre". Era EXIGIR A VERDADE, e exigir é
+    // forte. A consequência também mudou de lado: antes falava do sentimento
+    // dele ("atrapalha o meu trabalho"), agora fala do estrago no treino do
+    // aluno, que é o que interessa a quem lê.
+    t: 'A verdade sobre a sua semana',
+    d: 'Se você não treinou, me diz que não treinou. Eu trabalho com o que aconteceu, não com o que você gostaria de ter feito. Semana ruim eu remonto em dez minutos; semana inventada me faz montar o mês inteiro em cima de um dado falso.',
   },
 ];
 
@@ -432,7 +446,7 @@ export const FAQ = [
   },
   {
     q: 'E se eu não conseguir seguir alguma semana?',
-    r: 'Acontece. Me avisa que a gente ajusta. O que atrapalha de verdade é sumir sem falar nada.',
+    r: 'Você me avisa e eu remonto. O que quebra o acompanhamento não é a semana que você perdeu — é a semana perdida que eu só descubro um mês depois, com o treino seguinte já montado em cima de um dado que não era verdade.',
   },
   {
     q: 'As fotos são obrigatórias?',
