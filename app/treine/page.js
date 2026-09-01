@@ -186,10 +186,13 @@ export default function Treine() {
     if (!form.nome.trim()) faltando.push('nome');
     if (!form.nascimento) faltando.push('data de nascimento');
     if (!form.whatsapp.trim()) faltando.push('WhatsApp');
+    if (!form.email.trim()) faltando.push('e-mail');
+    if (!form.plano) faltando.push('plano');
     if (faltando.length) return setErro(`Falta preencher: ${faltando.join(', ')}.`);
 
-    // O e-mail é opcional aqui — só é conferido se a pessoa escreveu algo.
-    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+    // Nada opcional aqui: o Matheus prefere um contato completo a um
+    // contato a mais pela metade.
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
       return setErro('Confira o e-mail — parece que faltou alguma coisa.');
     }
 
@@ -210,15 +213,13 @@ export default function Treine() {
       `Nome: ${form.nome.trim()}`,
       `Nascimento: ${nascimentoBR}`,
       `WhatsApp: ${form.whatsapp.trim()}`,
-      form.email.trim() ? `E-mail: ${form.email.trim()}` : null,
+      `E-mail: ${form.email.trim()}`,
       `Quero: ${modalidade}`,
       // Sem esta linha o Matheus recebia o contato sem saber qual plano a
       // pessoa escolheu, e tinha que perguntar de novo -- justamente o que
       // o botao "Quero o X" la em cima ja tinha respondido.
-      form.plano ? `Plano: ${form.plano}` : null,
-      // filter(Boolean) descartava tambem a linha em branco de cima, porque
-      // string vazia e falsa. So as opcionais podem sair -- e elas sao null.
-    ].filter((l) => l !== null).join('\n');
+      `Plano: ${form.plano}`,
+    ].join('\n');
 
     window.location.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
   }
@@ -987,9 +988,7 @@ export default function Treine() {
             </div>
 
             <div>
-              <label className={label} htmlFor="email">
-                E-mail <span className="normal-case tracking-normal text-white/30">(opcional)</span>
-              </label>
+              <label className={label} htmlFor="email">E-mail</label>
               <input id="email" type="email" inputMode="email" className={input}
                 value={form.email} onChange={campo('email')} autoComplete="email"
                 placeholder="seu@email.com" />
@@ -1001,7 +1000,7 @@ export default function Treine() {
               <label className={label} htmlFor="plano">Plano</label>
               <select id="plano" className={input} value={form.plano}
                 onChange={campo('plano')}>
-                <option value="">Ainda não sei — me ajuda a escolher</option>
+                <option value="">Selecione o plano</option>
                 {PLANOS.map((pl) => (
                   <option key={pl.nome} value={pl.nome}>{pl.nome} — {pl.preco}/mês</option>
                 ))}
