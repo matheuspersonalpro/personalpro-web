@@ -44,11 +44,15 @@ import {
 // aqui está no histórico do git, em `cpfValido`.
 
 export default function Treine() {
-  // Quatro campos, e nenhum deles assusta. Eram sete: saíram CPF, nascimento e
-  // sexo. Nada disso é necessário pra começar uma conversa, e cada campo a mais
-  // num formulário é gente que desiste no meio.
+  // Poucos campos, e nenhum deles assusta. Eram sete: saíram CPF e sexo, que
+  // não são necessários pra começar uma conversa -- cada campo a mais num
+  // formulário é gente que desiste no meio.
+  //
+  // O nascimento voltou a pedido do Matheus: a idade muda a prescrição, e ele
+  // ia ter que perguntar em todo primeiro contato. Perguntar uma vez aqui sai
+  // mais barato que perguntar sempre depois.
   const [form, setForm] = useState({
-    nome: '', whatsapp: '', email: '', modalidade: 'musculacao', plano: '',
+    nome: '', nascimento: '', whatsapp: '', email: '', modalidade: 'musculacao', plano: '',
   });
   const [erro, setErro] = useState('');
 
@@ -180,6 +184,7 @@ export default function Treine() {
     // dado faltando desperdiça o contato e obriga a perguntar de novo.
     const faltando = [];
     if (!form.nome.trim()) faltando.push('nome');
+    if (!form.nascimento) faltando.push('data de nascimento');
     if (!form.whatsapp.trim()) faltando.push('WhatsApp');
     if (faltando.length) return setErro(`Falta preencher: ${faltando.join(', ')}.`);
 
@@ -187,6 +192,11 @@ export default function Treine() {
     if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
       return setErro('Confira o e-mail — parece que faltou alguma coisa.');
     }
+
+    // O <input type="date"> guarda AAAA-MM-DD. Mandar assim pro WhatsApp
+    // obrigaria o Matheus a ler data de tras pra frente todo dia.
+    const [ano, mes, diaN] = form.nascimento.split('-');
+    const nascimentoBR = `${diaN}/${mes}/${ano}`;
 
     const modalidade = {
       musculacao: 'Só musculação',
@@ -198,6 +208,7 @@ export default function Treine() {
       'Olá Matheus! Quero começar a consultoria online.',
       '',
       `Nome: ${form.nome.trim()}`,
+      `Nascimento: ${nascimentoBR}`,
       `WhatsApp: ${form.whatsapp.trim()}`,
       form.email.trim() ? `E-mail: ${form.email.trim()}` : null,
       `Quero: ${modalidade}`,
@@ -957,6 +968,13 @@ export default function Treine() {
               <label className={label} htmlFor="nome">Nome completo</label>
               <input id="nome" className={input} value={form.nome}
                 onChange={campo('nome')} autoComplete="name" />
+            </div>
+
+            <div>
+              <label className={label} htmlFor="nascimento">Data de nascimento</label>
+              <input id="nascimento" type="date" className={input}
+                value={form.nascimento} onChange={campo('nascimento')}
+                max={new Date().toISOString().slice(0, 10)} autoComplete="bday" />
             </div>
 
             <div>
