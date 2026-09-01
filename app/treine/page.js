@@ -216,7 +216,9 @@ export default function Treine() {
       // pessoa escolheu, e tinha que perguntar de novo -- justamente o que
       // o botao "Quero o X" la em cima ja tinha respondido.
       form.plano ? `Plano: ${form.plano}` : null,
-    ].filter(Boolean).join('\n');
+      // filter(Boolean) descartava tambem a linha em branco de cima, porque
+      // string vazia e falsa. So as opcionais podem sair -- e elas sao null.
+    ].filter((l) => l !== null).join('\n');
 
     window.location.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
   }
