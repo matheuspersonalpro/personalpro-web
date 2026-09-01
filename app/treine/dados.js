@@ -231,7 +231,7 @@ export const TELAS_APP = [
   {
     src: '/app/corrida.jpg',
     titulo: 'A corrida e o ciclismo',
-    d: 'Cada treino com o pace alvo, a zona e a frequência cardíaca. A semana inteira, e o PDF pra levar.',
+    d: 'Cada treino com o pace alvo, a zona e a frequência cardíaca. A semana inteira, baixada — na estrada não tem sinal.',
   },
   {
     src: '/app/painel.jpg',
@@ -343,9 +343,16 @@ export const RECEBE = [
     d: 'Você vê a evolução de cada exercício, e eu também.',
   },
   {
-    tag: 'PDF',
-    t: 'O treino em PDF, se você preferir no papel',
-    d: 'Pra imprimir e levar na academia, sem depender do celular.',
+    // "Pra imprimir e levar na academia" saiu: ninguem imprime treino, e o
+    // item soava velho ao lado de tudo que vem antes dele.
+    //
+    // O valor real do PDF nao e papel, e AUSENCIA DE REDE. Academia com sinal
+    // ruim no subsolo, viagem, plano de dados no fim do mes -- o treino ja
+    // esta baixado e abre do mesmo jeito. E o mesmo motivo pra estrada e pra
+    // trilha, onde nao existe sinal nenhum.
+    tag: 'Offline',
+    t: 'Sem sinal na academia? O treino abre igual',
+    d: 'Baixe antes e ele fica no seu celular. Subsolo, viagem, estrada, trilha — o treino não depende de internet pra aparecer.',
   },
 ];
 
@@ -390,7 +397,7 @@ export const PLANOS = [
       'Rotina de ciclismo e corrida junto, se quiser',
       'Vídeo de execução no aplicativo',
       'Registro de carga treino a treino',
-      'Treino em PDF pra imprimir',
+      'Treino baixado no celular, funciona sem internet',
       'WhatsApp direto comigo, sem limite',
       'Avaliação a cada 12 semanas',
       'Ajuste do treino uma vez por mês',
