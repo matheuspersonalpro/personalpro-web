@@ -502,8 +502,17 @@ export default function Treine() {
                    comparando duas imagens, não lendo uma frase. */
                 animation: corre 34s linear infinite;
               }
-              .fila:hover .fila-trilho {
-                animation-play-state: paused;
+              /* A PAUSA SÓ VALE ONDE EXISTE MOUSE.
+                 No celular não existe "tirar o dedo de cima": o navegador
+                 aplica :hover no toque e o estado GRUDA. O carrossel pausava
+                 no primeiro toque e nunca mais voltava a andar -- foi o que o
+                 Matheus viu no telefone dele.
+                 (hover: hover) é verdadeiro só em aparelho com ponteiro de
+                 verdade, então no toque a animação simplesmente não pausa. */
+              @media (hover: hover) and (pointer: fine) {
+                .fila:hover .fila-trilho {
+                  animation-play-state: paused;
+                }
               }
               /* Quem pediu menos movimento no sistema recebe a versão que
                  rola, em vez de ficar preso na primeira transformação. */
