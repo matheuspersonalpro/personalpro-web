@@ -123,43 +123,45 @@ export default function Treine() {
           A foto dele abre a página. É o que nenhum gerador de página tem, e é o
           que mais rápido separa isto de um site montado por template.
 
-          São três, alternando: academia, corrida e ciclismo. Isso não é enfeite
+          São três, alternando: academia, ciclismo e corrida. Isso não é enfeite
           — a página promete corrida e ciclismo junto da musculação, e essa é a
           promessa mais fácil de duvidar. As fotos respondem sem precisar
           escrever nada: ele corre prova com número de peito e pedala.
 
-          Ela aparece de dois jeitos porque as fotos são verticais: no celular
-          ocupam a tela inteira com o texto por cima, e no computador ficam ao
-          lado do texto. Sem essa separação, a tela larga recorta uma faixa do
-          meio e deixa o rosto dele de fora — que é justamente o que a seção
-          existe pra mostrar. */}
-      <section className="relative overflow-hidden">
-        {/* Celular: foto ao fundo, escurecida de baixo pra cima pro texto ficar
-            legível sem apagar a imagem. O gradiente é quase opaco embaixo de
-            propósito: a foto do ciclismo tem chão claro justo onde o texto
-            fica, e sem isso o título sumiria nessa troca. */}
-        <div className="absolute inset-0 lg:hidden">
-          {FOTOS_TOPO.map((f, i) => (
-            <div
-              key={f.src}
-              aria-hidden={i !== foto}
-              className={`absolute inset-0 transition-opacity duration-700 ${
-                i === foto ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
-              <Image
-                src={f.src} alt={i === foto ? f.alt : ''}
-                fill priority={i === 0} sizes="100vw"
-                className="object-cover"
-                style={{ objectPosition: f.pos }}
-              />
-            </div>
-          ))}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#080f1d] via-[#080f1d]/85 to-[#080f1d]/20" />
-        </div>
+          NO CELULAR A FOTO FICAVA ATRÁS DO TEXTO, e o Matheus reclamou com
+          razão. Pra o título ficar legível por cima dela, o escurecido embaixo
+          precisava ser quase opaco — e aí a foto que justifica a seção inteira
+          virava um fundo escuro que ninguém enxerga. Duas coisas disputando o
+          mesmo espaço, as duas saindo perdendo.
 
-        <div className="relative mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-          <div className="flex min-h-[92svh] flex-col justify-end pb-14 lg:min-h-0 lg:py-24">
+          Agora empilha: foto inteira em cima, texto embaixo em fundo limpo. O
+          telefone tem altura de sobra pros dois, e não precisa mais de
+          escurecido nenhum. No computador continuam lado a lado — lá existe
+          largura, que é o que o celular não tem. Uma pilha de fotos só, e a
+          ordem das colunas troca no lg. */}
+      <section className="relative overflow-hidden">
+        <div className="mx-auto grid max-w-6xl items-center gap-8 px-6 pb-14 pt-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:py-20">
+
+          <div className="relative aspect-[3/4] w-full lg:order-2">
+            {FOTOS_TOPO.map((f, i) => (
+              <div
+                key={f.src}
+                aria-hidden={i !== foto}
+                className={`absolute inset-0 transition-opacity duration-700 ${
+                  i === foto ? 'opacity-100' : 'opacity-0'
+                }`}
+              >
+                <Image
+                  src={f.src} alt={i === foto ? f.alt : ''}
+                  fill priority={i === 0} sizes="(min-width: 1024px) 45vw, 100vw"
+                  className="object-cover"
+                  style={{ objectPosition: f.posLg }}
+                />
+              </div>
+            ))}
+          </div>
+
+          <div className="lg:order-1">
             <p className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.18em] text-[#E5484D]">
               <span aria-hidden className="h-px w-8 bg-[#E5484D]" />
               Consultoria online
@@ -175,10 +177,7 @@ export default function Treine() {
                 verdade, na ordem em que ele acontece — e a terceira é a que
                 separa isto de comprar uma planilha, então é ela que fica em
                 vermelho. Personalização todo mundo promete; continuar mexendo
-                depois é o que quase ninguém faz.
-
-                O tamanho só sobe de novo no xl porque entre lg e xl a coluna
-                do texto é estreita e as frases quebrariam no meio. */}
+                depois é o que quase ninguém faz. */}
             <h1 className="mt-5 text-[2.9rem] font-bold leading-[1.05] tracking-[-0.02em] sm:text-[3.6rem] xl:text-[4.25rem]">
               Eu monto.
               <br />
@@ -187,7 +186,7 @@ export default function Treine() {
               <span className="text-[#E5484D]">A gente ajusta.</span>
             </h1>
 
-            <p className="mt-7 max-w-md text-lg leading-relaxed text-white/70">
+            <p className="mt-6 max-w-md text-lg leading-relaxed text-white/70">
               Musculação, corrida e ciclismo, com alguém do outro lado olhando
               o que você faz — não um arquivo que você baixa e nunca mais abre.
             </p>
@@ -197,11 +196,15 @@ export default function Treine() {
               Quero começar
             </a>
 
-            {/* As três objeções que aparecem primeiro, respondidas antes de
-                serem feitas. Custa uma linha e tira o ar de slogan solto: a
-                abertura passa a ter informação, não só frase de efeito. */}
+            {/* As objeções que aparecem primeiro, respondidas antes de serem
+                feitas. Custa uma linha e tira o ar de slogan solto.
+
+                O preço saiu daqui: com um plano só ele fazia sentido, mas com a
+                escada de planos que vem aí um número solto no topo não diz de
+                qual plano está falando. A caixa de preço, mais abaixo, é o
+                lugar onde ele tem contexto. */}
             <p className="mt-5 text-sm text-white/45">
-              R$ 149,90/mês · Sem fidelidade · WhatsApp direto comigo
+              Sem fidelidade · Cancela quando quiser · WhatsApp direto comigo
             </p>
 
             {/* Setas e bolinhas. Sem isso ninguém descobre que existem outras
@@ -236,28 +239,7 @@ export default function Treine() {
               </div>
             </div>
           </div>
-
-          {/* Computador: as fotos inteiras, sem recorte que corte o rosto. */}
-          <div className="relative hidden aspect-[3/4] w-full lg:block">
-            {FOTOS_TOPO.map((f, i) => (
-              <div
-                key={f.src}
-                aria-hidden={i !== foto}
-                className={`absolute inset-0 transition-opacity duration-700 ${
-                  i === foto ? 'opacity-100' : 'opacity-0'
-                }`}
-              >
-                <Image
-                  src={f.src} alt={i === foto ? f.alt : ''}
-                  fill priority={i === 0} sizes="45vw"
-                  className="object-cover"
-                  style={{ objectPosition: f.posLg }}
-                />
-              </div>
-            ))}
-          </div>
         </div>
-
       </section>
 
       <div className="mx-auto max-w-3xl px-6">
