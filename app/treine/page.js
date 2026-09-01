@@ -1065,9 +1065,6 @@ export default function Treine() {
               className="w-full bg-[#E5484D] px-8 py-5 text-lg font-bold text-white transition hover:bg-[#d63c41]">
               Continuar
             </button>
-            <p className="text-center text-xs text-white/35">
-              Você vai pro meu WhatsApp com os seus dados já preenchidos.
-            </p>
           </form>
         </section>
 
