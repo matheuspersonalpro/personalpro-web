@@ -491,18 +491,35 @@ export default function Treine() {
                   >
                     <span aria-hidden className="text-3xl leading-none text-[#E5484D]">&ldquo;</span>
 
-                    {/* A primeira frase sai maior que o resto. É o que a página
-                        do concorrente faz e funciona: quem passa o olho lê só
-                        ela, e ela sozinha já tem que valer a leitura. O corte
-                        é no primeiro ponto final. */}
-                    <p className="mt-3 text-lg font-semibold leading-snug text-white">
-                      {d.texto.split(/(?<=\.)\s/)[0]}
-                    </p>
-                    {d.texto.split(/(?<=\.)\s/).slice(1).join(" ").trim() && (
-                      <p className="mt-3 flex-1 leading-relaxed text-white/60">
-                        {d.texto.split(/(?<=\.)\s/).slice(1).join(" ").trim()}
-                      </p>
-                    )}
+                    {/* A primeira frase sai maior que o resto: quem passa o olho
+                        lê só ela, então ela sozinha tem que valer a leitura.
+
+                        Mas só quando ela é CURTA. O depoimento da Renata é uma
+                        frase única e longa ("achei que a consultoria online
+                        seria fria, que seria apenas mais um treino, mas...") e,
+                        sem o limite, o cartão inteiro saía em corpo grande --
+                        o destaque deixa de destacar quando é tudo. Acima de 95
+                        caracteres, o depoimento fica todo no mesmo tamanho. */}
+                    {(() => {
+                      const partes = d.texto.split(/(?<=\.)\s/);
+                      const resto = partes.slice(1).join(" ").trim();
+                      const destacar = partes[0].length <= 95 && !!resto;
+                      if (!destacar) {
+                        return (
+                          <p className="mt-3 flex-1 text-lg font-semibold leading-snug text-white">
+                            {d.texto}
+                          </p>
+                        );
+                      }
+                      return (
+                        <>
+                          <p className="mt-3 text-lg font-semibold leading-snug text-white">
+                            {partes[0]}
+                          </p>
+                          <p className="mt-3 flex-1 leading-relaxed text-white/60">{resto}</p>
+                        </>
+                      );
+                    })()}
 
                     <figcaption className="mt-6 flex items-center gap-3 border-t border-white/10 pt-5">
                       {d.foto && (

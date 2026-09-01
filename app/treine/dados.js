@@ -66,6 +66,54 @@ export const DEPOIMENTOS = [
       'Nunca me senti tão bem.',
     quem: 'Juliana, 40 anos',
   },
+  // Os quatro abaixo chegaram em 31/08, escritos por eles. A ÚNICA coisa
+  // mexida foi acento e pontuação -- gente escreve no WhatsApp sem acento, e
+  // "sao impecaveis" num site parece desleixo do dono da página, não de quem
+  // escreveu. Palavra nenhuma foi trocada, nem a ordem delas.
+  {
+    texto:
+      'O treino encaixa perfeitamente na minha rotina corrida. Pela primeira ' +
+      'vez consigo ser constante.',
+    quem: 'Célia',
+  },
+  {
+    // Ela trocou o depoimento em 31/08. Chegou como três frases soltas, na
+    // ordem: pernas e glúteos, massa magra, e "evoluí mais em 3 meses do que
+    // em 1 ano sozinha".
+    //
+    // A ÚNICA edição foi de ORDEM, não de palavra: a comparação com o ano
+    // sozinha veio por último e é de longe a frase mais forte -- e no cartão só
+    // a primeira frase sai em destaque. Enterrada no fim, ela seria lida por
+    // quem já tinha decidido ler tudo; na frente, é ela que segura quem passa
+    // o olho. Se o Matheus preferir a ordem original, é só remontar.
+    texto:
+      'Evoluí mais em 3 meses do que em 1 ano sozinha. Minhas pernas e ' +
+      'glúteos mudaram muito, e consegui ganhar massa magra sem ficar com ' +
+      'aspecto pesado. Treinos muito intensos!',
+    quem: 'Talita, 42 anos',
+  },
+  {
+    texto:
+      'Cada treino é pensado exclusivamente para as minhas dores e objetivos. ' +
+      'Me sinto acompanhado o tempo todo.',
+    quem: 'Mario',
+  },
+  {
+    // Este menciona correção de vídeo pelo WhatsApp -- que é coisa que ele faz
+    // hoje e a página NÃO conta em lugar nenhum. Fica registrado como pergunta
+    // aberta pro Matheus: se vale pra todo mundo, é argumento de venda perdido
+    // e devia estar no plano Essencial; se é só pra alguns, o depoimento
+    // promete o que nem todo aluno recebe.
+    texto:
+      'Achei que a consultoria online seria fria, que seria apenas mais um ' +
+      'treino, mas o suporte diário e a correção de vídeos pelo WhatsApp e o ' +
+      'bate-papo com o Matheus são impecáveis.',
+    quem: 'Renata, 41 anos',
+  },
+  {
+    texto: 'Minhas roupas voltaram a servir. O suporte é maravilhoso.',
+    quem: 'Fernanda',
+  },
 ];
 
 /** @type {{antes:string, depois:string, quem:string, resultado:string}[]} */
