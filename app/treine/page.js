@@ -48,7 +48,7 @@ export default function Treine() {
   // sexo. Nada disso é necessário pra começar uma conversa, e cada campo a mais
   // num formulário é gente que desiste no meio.
   const [form, setForm] = useState({
-    nome: '', whatsapp: '', email: '', modalidade: 'musculacao',
+    nome: '', whatsapp: '', email: '', modalidade: 'musculacao', plano: '',
   });
   const [erro, setErro] = useState('');
 
@@ -201,6 +201,10 @@ export default function Treine() {
       `WhatsApp: ${form.whatsapp.trim()}`,
       form.email.trim() ? `E-mail: ${form.email.trim()}` : null,
       `Quero: ${modalidade}`,
+      // Sem esta linha o Matheus recebia o contato sem saber qual plano a
+      // pessoa escolheu, e tinha que perguntar de novo -- justamente o que
+      // o botao "Quero o X" la em cima ja tinha respondido.
+      form.plano ? `Plano: ${form.plano}` : null,
     ].filter(Boolean).join('\n');
 
     window.location.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
@@ -874,14 +878,22 @@ export default function Treine() {
                   ))}
                 </ul>
 
-                <a href="#comecar"
-                  className={`mt-7 block px-6 py-3.5 text-center font-bold transition ${
+                {/* Era um <a> que so rolava pro formulario, e a escolha do
+                    plano se perdia no caminho: o Matheus recebia o contato
+                    sem saber qual era e tinha que perguntar. Agora o clique
+                    GRAVA o plano, e ele viaja junto na mensagem. */}
+                <button type="button"
+                  onClick={() => {
+                    setForm((f) => ({ ...f, plano: nome }));
+                    document.getElementById('comecar')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className={`mt-7 block w-full px-6 py-3.5 text-center font-bold transition ${
                     destaque
                       ? 'bg-[#E5484D] text-white hover:bg-[#d63c41]'
                       : 'border border-white/25 text-white hover:border-white/60'
                   }`}>
                   Quero o {nome}
-                </a>
+                </button>
               </div>
             ))}
           </div>
@@ -961,6 +973,19 @@ export default function Treine() {
               <input id="email" type="email" inputMode="email" className={input}
                 value={form.email} onChange={campo('email')} autoComplete="email"
                 placeholder="seu@email.com" />
+            </div>
+
+            {/* Ja vem preenchido pra quem clicou num card la em cima, e
+                selecionavel pra quem chegou aqui rolando a pagina. */}
+            <div>
+              <label className={label} htmlFor="plano">Plano</label>
+              <select id="plano" className={input} value={form.plano}
+                onChange={campo('plano')}>
+                <option value="">Ainda não sei — me ajuda a escolher</option>
+                {PLANOS.map((pl) => (
+                  <option key={pl.nome} value={pl.nome}>{pl.nome} — {pl.preco}/mês</option>
+                ))}
+              </select>
             </div>
 
             <div>
