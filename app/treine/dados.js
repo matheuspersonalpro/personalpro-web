@@ -298,8 +298,8 @@ export const RECEBE = [
   },
   {
     tag: 'Endurance',
-    t: 'Corrida ou ciclismo junto',
-    d: 'Planilha periodizada semana a semana, no mesmo valor.',
+    t: 'Ciclismo e corrida junto',
+    d: 'Rotina periodizada semana a semana, no mesmo valor. Com prova marcada, o plano é montado pra ela.',
   },
   {
     // "Ilimitado" e "24h" respondem medos diferentes e por isso ficam os
@@ -379,13 +379,13 @@ export const PLANOS = [
     resumo: 'O treino inteiro, com acompanhamento por WhatsApp.',
     itens: [
       'Programa de musculação montado pra você',
-      'Corrida ou ciclismo junto, se quiser',
-      'Vídeo de execução dentro do treino',
+      'Rotina de ciclismo e corrida junto, se quiser',
+      'Vídeo de execução no aplicativo',
       'Registro de carga treino a treino',
       'Treino em PDF pra imprimir',
       'WhatsApp direto comigo, sem limite',
       'Avaliação a cada 12 semanas',
-      'Ajuste sempre que você precisar',
+      'Ajuste do treino uma vez por mês',
     ],
   },
   {
@@ -409,7 +409,8 @@ export const PLANOS = [
     itens: [
       'Relatório de evolução todo mês, em PDF',
       'Todo mês eu abro o seu histórico de carga',
-      'Troco o que travou, antes de você reclamar',
+      'Ajuste sempre que você precisar, sem limite',
+      'Preparação para prova alvo',
     ],
   },
   {
@@ -422,6 +423,8 @@ export const PLANOS = [
       'Você grava dois exercícios e eu corrijo na chamada',
       'A gente decide junto o mês seguinte',
     ],
+    // A preparação para prova entra nos DOIS de cima, mas o card do Individual
+    // não repete: ele já diz "tudo do Completo, mais".
   },
 ];
 
@@ -459,8 +462,17 @@ export const MINHA_PARTE = [
     d: 'Todo dia, inclusive fim de semana, quantas vezes você precisar. Não é robô e não é atendente: sou eu.',
   },
   {
-    t: 'Mexer no seu treino sempre que precisar',
-    d: 'Machucou, mudou de academia, mudou o horário, viajou. Não tem limite de ajuste e não custa a mais.',
+    // ESTA PROMESSA ENCOLHEU quando os planos ganharam níveis de ajuste, e a
+    // correção veio do Matheus: no Essencial o ajuste é mensal, e "sem limite"
+    // é do Completo pra cima. A versão anterior dizia "não tem limite de
+    // ajuste" pra todo mundo, o que passou a contradizer o próprio card de
+    // preço logo abaixo.
+    //
+    // O que sobra aqui é o que vale em QUALQUER plano: imprevisto não espera o
+    // mês virar. Se machucou ou trocou de academia, eu mexo na hora — isso
+    // nunca foi item de plano, é o mínimo de quem acompanha alguém.
+    t: 'Mexer no seu treino quando a sua vida mudar',
+    d: 'Machucou, trocou de academia, mudou o horário, viajou. Isso eu ajusto em qualquer plano, sem esperar o mês virar e sem cobrar a mais.',
   },
   {
     t: 'Olhar os seus números antes de mudar qualquer coisa',
