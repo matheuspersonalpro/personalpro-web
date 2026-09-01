@@ -114,6 +114,12 @@ export const DEPOIMENTOS = [
     texto: 'Minhas roupas voltaram a servir. O suporte é maravilhoso.',
     quem: 'Fernanda',
   },
+  {
+    texto:
+      'Resultado real e sem neura. Minha autoestima mudou completamente: ' +
+      'olho no espelho e amo o que vejo hoje.',
+    quem: 'Karina',
+  },
 ];
 
 /** @type {{antes:string, depois:string, quem:string, resultado:string}[]} */
