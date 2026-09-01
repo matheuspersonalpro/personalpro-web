@@ -185,12 +185,15 @@ export const TRANSFORMACOES = [
   },
 ];
 
-// Números que ele confirmar. Enquanto estiverem vazios, a faixa não aparece —
-// número inventado numa página de venda é o tipo de coisa que se descobre.
+// Confirmados pelo Matheus em 01/09/2026. Estavam comentados desde que a
+// página nasceu, esperando ele dizer os números de verdade — número
+// inventado numa página de venda é o tipo de coisa que se descobre.
+//
+// Se algum mudar, muda aqui: a faixa some sozinha se a lista ficar vazia.
 /** @type {{n:string, oq:string}[]} */
 export const NUMEROS = [
-  // { n: '8 anos', oq: 'de profissão' },
-  // { n: '+200', oq: 'alunos atendidos' },
+  { n: '8 anos', oq: 'de profissão' },
+  { n: '+200', oq: 'alunos atendidos' },
 ];
 
 // ── AS TELAS DO APLICATIVO ───────────────────────────────────────────────────
