@@ -26,7 +26,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
   WHATSAPP, PLANOS, VALE_PARA_TODOS, DEPOIMENTOS, TRANSFORMACOES, NUMEROS,
-  PARA_VOCE, RECEBE, PASSOS, FAQ, GARANTIA, FOTOS_TOPO,
+  PARA_VOCE, RECEBE, PASSOS, FAQ, GARANTIA, FOTOS_TOPO, TELAS_APP,
   MINHA_PARTE, SUA_PARTE, ABERTURA_ACORDO, PROTOCOLO_FOTOS,
 } from './dados';
 
@@ -296,6 +296,48 @@ export default function Treine() {
           </div>
         </section>
 
+        {/* ── AS TELAS DO APLICATIVO ──────────────────────────────────────────
+            Só aparece quando houver imagem em TELAS_APP.
+
+            Vem logo depois do "o que você recebe" de propósito: a lista ali em
+            cima PROMETE o aplicativo, e aqui a pessoa vê. Descrever software é
+            o jeito mais difícil de vender software, e os dois concorrentes que
+            ele mandou de referência mostram as telas deles.
+
+            A moldura de celular é desenhada em CSS, sem imagem de aparelho: um
+            PNG de iPhone amarraria a página a um modelo que envelhece, e ainda
+            teria dono. */}
+        {TELAS_APP.length > 0 && (
+          <section className="pt-20">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              O aplicativo por dentro
+            </h2>
+            <p className="mt-4 max-w-xl text-lg leading-relaxed text-white/70">
+              Não é planilha em PDF nem grupo de WhatsApp com vídeo solto. É um
+              aplicativo que eu fiz, e é por ele que o seu treino chega.
+            </p>
+
+            <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {TELAS_APP.map((t) => (
+                <figure key={t.src}>
+                  <div className="rounded-[2rem] border-[6px] border-white/15 bg-black p-0 shadow-2xl">
+                    <img
+                      src={t.src}
+                      alt={t.titulo}
+                      loading="lazy"
+                      className="aspect-[9/19.5] w-full rounded-[1.6rem] object-cover"
+                    />
+                  </div>
+                  <figcaption className="mt-4">
+                    <h3 className="text-lg font-bold">{t.titulo}</h3>
+                    <p className="mt-1 leading-relaxed text-white/60">{t.d}</p>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* ── TRANSFORMAÇÕES ──────────────────────────────────────────────────
             Passa sozinha, da esquerda pra direita.
 
@@ -399,14 +441,33 @@ export default function Treine() {
                   <figure
                     key={i}
                     aria-hidden={i >= DEPOIMENTOS.length}
-                    className="flex w-[290px] shrink-0 flex-col border border-white/12 bg-white/[0.03] p-6 sm:w-[340px]"
+                    className="flex w-[300px] shrink-0 flex-col border border-white/12 bg-white/[0.03] p-7 sm:w-[360px]"
                   >
-                    <p className="flex-1 leading-relaxed text-white/85">{d.texto}</p>
-                    <figcaption className="mt-5 border-t border-white/10 pt-4">
-                      <p className="font-semibold">{d.quem}</p>
-                      {d.detalhe && (
-                        <p className="text-sm text-white/45">{d.detalhe}</p>
+                    <span aria-hidden className="text-3xl leading-none text-[#E5484D]">&ldquo;</span>
+
+                    {/* A primeira frase sai maior que o resto. É o que a página
+                        do concorrente faz e funciona: quem passa o olho lê só
+                        ela, e ela sozinha já tem que valer a leitura. O corte
+                        é no primeiro ponto final. */}
+                    <p className="mt-3 text-lg font-semibold leading-snug text-white">
+                      {d.texto.split(/(?<=\.)\s/)[0]}
+                    </p>
+                    {d.texto.split(/(?<=\.)\s/).slice(1).join(" ").trim() && (
+                      <p className="mt-3 flex-1 leading-relaxed text-white/60">
+                        {d.texto.split(/(?<=\.)\s/).slice(1).join(" ").trim()}
+                      </p>
+                    )}
+
+                    <figcaption className="mt-6 flex items-center gap-3 border-t border-white/10 pt-5">
+                      {d.foto && (
+                        <img src={d.foto} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" />
                       )}
+                      <div>
+                        <p className="font-semibold leading-tight">{d.quem}</p>
+                        {d.detalhe && (
+                          <p className="text-sm text-white/45">{d.detalhe}</p>
+                        )}
+                      </div>
                     </figcaption>
                   </figure>
                 ))}

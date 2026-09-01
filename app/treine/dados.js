@@ -97,6 +97,32 @@ export const NUMEROS = [
   // { n: '+200', oq: 'alunos atendidos' },
 ];
 
+// ── AS TELAS DO APLICATIVO ───────────────────────────────────────────────────
+// A seção só aparece quando houver imagem aqui.
+//
+// É a maior falta da página hoje. Os dois concorrentes que ele mandou de
+// referência mostram a plataforma deles em telas de celular; esta página
+// descreve a dele em texto e não mostra nada. E a dele é a mais forte das três
+// — o aplicativo é PRÓPRIO, enquanto os outros alugam plataforma de terceiro.
+// Descrever software é o jeito mais difícil de vender software.
+//
+// AS IMAGENS PRECISAM SER DA TELA DO ALUNO, não da tela dele de personal: a de
+// personal tem nome de aluno na lista, e nome de cliente não vai pra página
+// pública (foi o cuidado que a gente já teve no Reels, onde a lista rolava e a
+// tarja curta deixava escapar quem entrava depois).
+//
+// Recorte: 9:19.5 (proporção de celular moderno). Print da tela inteira, sem a
+// barra de status se der.
+/** @type {{src:string, titulo:string, d:string}[]} */
+export const TELAS_APP = [
+  // { src: '/app/treino.png',   titulo: 'O treino do dia',
+  //   d: 'Séries, repetições, carga e descanso. Você abre e executa.' },
+  // { src: '/app/execucao.png', titulo: 'Vídeo de execução',
+  //   d: 'Na dúvida de como fazer, o vídeo está no próprio exercício.' },
+  // { src: '/app/carga.png',    titulo: 'A sua carga guardada',
+  //   d: 'Cada exercício com o histórico do que você levantou.' },
+];
+
 // ── CONTEÚDO FIXO ────────────────────────────────────────────────────────────
 
 // Faz a pessoa se reconhecer. É a seção que mais funciona na página que ele
