@@ -324,12 +324,18 @@ export const SUA_PARTE = [
     extra: 'Ficam guardadas na sua conta dentro do aplicativo, visíveis só pra você e pra mim.',
   },
   {
+    // "Bloco" saiu: é palavra de dentro da profissão. O aluno sabe o que é o
+    // treino do mês seguinte; não sabe o que é um bloco de periodização.
     t: 'A carga que você usou de verdade',
-    d: 'Se você fez 12 repetições onde eu pedi 8, o peso está leve e eu preciso saber. Sem esse registro, eu monto o bloco seguinte no escuro e você fica meses no mesmo lugar.',
+    d: 'Se você fez 12 repetições onde eu pedi 8, o peso está leve e eu preciso saber. Sem esse registro, eu monto o treino do mês seguinte no escuro e você fica meses no mesmo lugar.',
   },
   {
+    // Era "quase sempre a SOLUÇÃO ERA trocar um exercício", e o Matheus
+    // corrigiu: solução é ajuste. "Solução" trata a dor como um problema que
+    // ficou grande; a palavra certa é a que diz que quase sempre é pequeno —
+    // e é exatamente por ser pequeno que vale avisar no mesmo dia.
     t: 'Me avisar no dia em que doer',
-    d: 'Dor que aparece na terça e me chega no domingo já virou uma semana inteira de treino errado. Quase sempre a solução era trocar um exercício.',
+    d: 'Dor que aparece na terça e me chega no domingo já virou uma semana inteira de treino errado. E quase sempre o ajuste é pequeno: trocar um exercício.',
   },
   {
     t: 'Falar quando a semana foi ruim',
