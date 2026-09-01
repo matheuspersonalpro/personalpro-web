@@ -558,10 +558,6 @@ export const PROTOCOLO_FOTOS = {
     { src: '/como-tirar/lateral.jpg', rotulo: 'Lateral' },
     { src: '/como-tirar/posterior.jpg', rotulo: 'Posterior' },
   ],
-  // Esta linha sobrevive ao corte porque a foto NÃO mostra: o modelo é homem,
-  // e na lateral ele aparece com os braços ao lado do corpo. Sem o aviso, a
-  // aluna copiaria a posição errada olhando a imagem.
-  mulheres: 'Na lateral, mulheres erguem os braços à frente.',
   roupa:
     'De preferência roupa de piscina, que é o que mostra melhor a composição ' +
     'corporal. Se você não se sentir à vontade, top e shorts para mulheres e ' +

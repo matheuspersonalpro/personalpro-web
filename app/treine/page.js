@@ -801,9 +801,6 @@ export default function Treine() {
                       </div>
 
                       <p className="mt-4 text-sm leading-relaxed text-white/70">
-                        {PROTOCOLO_FOTOS.mulheres}
-                      </p>
-                      <p className="mt-2 text-sm leading-relaxed text-white/60">
                         {PROTOCOLO_FOTOS.roupa}                      </p>
                         </details>
                       )}
