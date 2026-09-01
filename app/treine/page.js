@@ -759,7 +759,31 @@ export default function Treine() {
           </div>
         </section>
 
-        {/* ── FORMULÁRIO ──────────────────────────────────────────────────────*/}
+        {/* ── DÚVIDAS ─────────────────────────────────────────────────────────*/}
+        <section className="pt-20">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Dúvidas</h2>
+          <div className="mt-8 divide-y divide-white/10 border-y border-white/10">
+            {FAQ.map(({ q, r }) => (
+              <details key={q} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold marker:hidden">
+                  {q}
+                  <span aria-hidden className="shrink-0 text-white/30 transition group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 leading-relaxed text-white/65">{r}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        {/* ── FORMULÁRIO ──────────────────────────────────────────────────────
+            Última seção da página, DEPOIS das dúvidas.
+
+            Estava antes do FAQ, e assim a página terminava numa sanfona de
+            perguntas, sem nada pra fazer. Quem lê as dúvidas até o fim é
+            justamente quem está mais perto de decidir -- e chegava no fim sem
+            botão nenhum, tendo que rolar de volta.
+
+            Agora a última coisa que a pessoa vê é o campo de nome. */}
         <section id="comecar" className="scroll-mt-6 pt-20">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Começar</h2>
           <p className="mt-3 text-lg text-white/60">
@@ -813,22 +837,6 @@ export default function Treine() {
               Você vai pro meu WhatsApp com os seus dados já preenchidos.
             </p>
           </form>
-        </section>
-
-        {/* ── DÚVIDAS ─────────────────────────────────────────────────────────*/}
-        <section className="pt-20">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Dúvidas</h2>
-          <div className="mt-8 divide-y divide-white/10 border-y border-white/10">
-            {FAQ.map(({ q, r }) => (
-              <details key={q} className="group py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold marker:hidden">
-                  {q}
-                  <span aria-hidden className="shrink-0 text-white/30 transition group-open:rotate-45">+</span>
-                </summary>
-                <p className="mt-3 leading-relaxed text-white/65">{r}</p>
-              </details>
-            ))}
-          </div>
         </section>
 
         <footer className="mt-20 border-t border-white/10 pt-8 text-sm text-white/35">
