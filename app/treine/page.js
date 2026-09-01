@@ -26,7 +26,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
   WHATSAPP, PLANOS, VALE_PARA_TODOS, DEPOIMENTOS, TRANSFORMACOES, NUMEROS,
-  PARA_VOCE, RECEBE, PASSOS, FAQ, GARANTIA, FOTOS_TOPO, TELAS_APP, SOBRE,
+  PARA_VOCE, RECEBE, PASSOS, FAQ, GARANTIA, FOTOS_TOPO, TELAS_APP, CREF,
   MINHA_PARTE, SUA_PARTE, ABERTURA_ACORDO, PROTOCOLO_FOTOS,
 } from './dados';
 
@@ -71,6 +71,25 @@ export default function Treine() {
 
   const trocarFoto = (passo) =>
     setFoto((i) => (i + passo + FOTOS_TOPO.length) % FOTOS_TOPO.length);
+
+  // Qual depoimento está na tela. Era uma esteira rolando sem parar, e o
+  // Matheus comparou com as duas páginas de referência: elas TROCAM de cartão,
+  // uma por vez, com bolinhas embaixo.
+  //
+  // Ele tem razão e o motivo é visual: esteira contínua deixa sempre um cartão
+  // cortado em cada ponta, e meio depoimento na borda parece defeito. Um por
+  // vez, inteiro e centralizado, é o que dá acabamento.
+  const [dep, setDep] = useState(0);
+
+  useEffect(() => {
+    if (DEPOIMENTOS.length < 2) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // 7 segundos: é quanto leva pra ler três linhas sem pressa. `dep` na lista
+    // de dependências reinicia a contagem a cada troca, então clicar numa
+    // bolinha dá o tempo cheio pra ler aquele.
+    const t = setTimeout(() => setDep((i) => (i + 1) % DEPOIMENTOS.length), 7000);
+    return () => clearTimeout(t);
+  }, [dep]);
 
   const campo = (k, transforma) => (e) => {
     const v = transforma ? transforma(e.target.value) : e.target.value;
@@ -416,112 +435,63 @@ export default function Treine() {
           </section>
         )}
 
-        {/* ── QUEM ELE É ──────────────────────────────────────────────────────
-            Vem logo depois das transformações e antes do "como funciona": a
-            pessoa acabou de ver os resultados, e a pergunta seguinte é quem
-            fez aquilo.
-
-            O CREF fica em destaque, com a cor da marca. Numa academia ele
-            seria burocracia no rodapé; aqui é o que responde "por que eu
-            confiaria num programa de alguém que nunca me viu". */}
-        <section className="pt-20">
-          <div className="grid gap-8 sm:grid-cols-[auto_1fr] sm:items-start">
-            <div className="relative aspect-square w-32 shrink-0 overflow-hidden sm:w-40">
-              <Image
-                src="/matheus.jpg"
-                alt={SOBRE.nome}
-                fill sizes="160px"
-                className="object-cover"
-                style={{ objectPosition: "center 12%" }}
-              />
-            </div>
-
-            <div>
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Quem vai montar o seu treino
-              </h2>
-
-              <p className="mt-4 text-lg font-semibold">{SOBRE.nome}</p>
-              <p className="mt-1 text-sm font-bold uppercase tracking-[0.14em] text-[#E5484D]">
-                {SOBRE.cref}
-              </p>
-
-              <ul className="mt-5 space-y-1.5">
-                {SOBRE.formacao.map((f) => (
-                  <li key={f} className="flex gap-2.5 leading-relaxed text-white/70">
-                    <span aria-hidden className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-white/40" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              <p className="mt-6 max-w-xl leading-relaxed text-white/60">
-                {SOBRE.texto}
-              </p>
-            </div>
-          </div>
-        </section>
-
         {/* ── DEPOIMENTOS ─────────────────────────────────────────────────────
-            Carrossel que desliza sozinho da esquerda pra direita, sem
-            biblioteca: a lista é renderizada DUAS vezes lado a lado e o trilho
-            anda exatamente metade da própria largura. Quando a animação
-            reinicia, a segunda cópia está no lugar em que a primeira começou,
-            então o corte é invisível e o giro é infinito.
+            Um por vez, com bolinhas -- o formato das duas páginas de
+            referência, e não a esteira contínua que estava aqui antes.
 
-            `aria-hidden` na segunda cópia pra quem usa leitor de tela não
-            ouvir cada depoimento duas vezes. Pausa ao passar o mouse, senão
-            não dá pra terminar de ler um que interessou.
+            A esteira tinha um defeito que só aparece olhando: como o trilho
+            corre sem parar, sempre sobra meio cartão cortado em cada ponta da
+            tela. Fica parecendo erro de layout, e ainda obriga a pessoa a ler
+            um texto que está andando.
 
-            A seção só existe quando houver depoimento REAL em DEPOIMENTOS —
-            escrito pela pessoa, com autorização dela. */}
+            Aqui o cartão fica PARADO enquanto está na tela, e a troca é um
+            deslize curto. Dá pra ler sem correr atrás. */}
         {DEPOIMENTOS.length > 0 && (
           <section className="pt-20">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
               Quem já treina comigo
             </h2>
 
-            <div className={`mt-8 overflow-hidden ${DEPOIMENTOS.length > 1 ? "carrossel" : ""}`}>
-              <div className={`flex gap-5 ${DEPOIMENTOS.length > 1 ? "carrossel-trilho w-max" : ""}`}>
-                {(DEPOIMENTOS.length > 1 ? [...DEPOIMENTOS, ...DEPOIMENTOS] : DEPOIMENTOS).map((d, i) => (
+            <div className="mt-8 overflow-hidden">
+              <div
+                className="flex transition-transform duration-500 ease-out"
+                style={{ transform: `translateX(-${dep * 100}%)` }}
+              >
+                {DEPOIMENTOS.map((d, i) => (
                   <figure
                     key={i}
-                    aria-hidden={DEPOIMENTOS.length > 1 && i >= DEPOIMENTOS.length}
-                    className="flex w-[300px] shrink-0 flex-col border border-white/12 bg-white/[0.03] p-7 sm:w-[360px]"
+                    aria-hidden={i !== dep}
+                    className="w-full shrink-0 border border-white/12 bg-white/[0.03] p-7 sm:p-9"
                   >
-                    <span aria-hidden className="text-3xl leading-none text-[#E5484D]">&ldquo;</span>
+                    <span aria-hidden className="text-4xl leading-none text-[#E5484D]">&ldquo;</span>
 
-                    {/* A primeira frase sai maior que o resto: quem passa o olho
-                        lê só ela, então ela sozinha tem que valer a leitura.
-
-                        Mas só quando ela é CURTA. O depoimento da Renata é uma
-                        frase única e longa ("achei que a consultoria online
-                        seria fria, que seria apenas mais um treino, mas...") e,
-                        sem o limite, o cartão inteiro saía em corpo grande --
-                        o destaque deixa de destacar quando é tudo. Acima de 95
-                        caracteres, o depoimento fica todo no mesmo tamanho. */}
+                    {/* A primeira frase sai maior: quem passa o olho lê só ela,
+                        então ela sozinha tem que valer a leitura. Mas só quando
+                        é CURTA -- o depoimento da Renata é uma frase única e
+                        longa, e sem o limite o cartão inteiro saía em corpo
+                        grande. Destaque deixa de destacar quando é tudo. */}
                     {(() => {
                       const partes = d.texto.split(/(?<=\.)\s/);
                       const resto = partes.slice(1).join(" ").trim();
                       const destacar = partes[0].length <= 95 && !!resto;
                       if (!destacar) {
                         return (
-                          <p className="mt-3 flex-1 text-lg font-semibold leading-snug text-white">
+                          <p className="mt-3 text-xl font-semibold leading-snug text-white sm:text-2xl">
                             {d.texto}
                           </p>
                         );
                       }
                       return (
                         <>
-                          <p className="mt-3 text-lg font-semibold leading-snug text-white">
+                          <p className="mt-3 text-xl font-semibold leading-snug text-white sm:text-2xl">
                             {partes[0]}
                           </p>
-                          <p className="mt-3 flex-1 leading-relaxed text-white/60">{resto}</p>
+                          <p className="mt-4 text-lg leading-relaxed text-white/60">{resto}</p>
                         </>
                       );
                     })()}
 
-                    <figcaption className="mt-6 flex items-center gap-3 border-t border-white/10 pt-5">
+                    <figcaption className="mt-7 flex items-center gap-3 border-t border-white/10 pt-5">
                       {d.foto && (
                         <img src={d.foto} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" />
                       )}
@@ -537,32 +507,24 @@ export default function Treine() {
               </div>
             </div>
 
-            <style jsx>{`
-              .carrossel-trilho {
-                /* A conta e por LARGURA, nao por gosto: sao ~2550px de trilho
-                   por volta, e a 44s isso da ~58px por segundo -- cada cartao
-                   leva uns 6 segundos pra atravessar, que e o tempo de ler tres
-                   linhas.
-
-                   Comecou em 26s com oito cartoes de teste e ficou rapido
-                   demais quando entraram os oito de verdade, que sao mais
-                   largos. Se entrarem muitos mais, subir o numero junto. */
-                animation: desliza 44s linear infinite;
-              }
-              .carrossel:hover .carrossel-trilho {
-                animation-play-state: paused;
-              }
-              /* Quem pediu menos movimento no sistema não recebe carrossel
-                 animado — o conteúdo continua ali, só parado. */
-              @media (prefers-reduced-motion: reduce) {
-                .carrossel { overflow-x: auto; }
-                .carrossel-trilho { animation: none; }
-              }
-              @keyframes desliza {
-                from { transform: translateX(calc(-50% - 0.625rem)); }
-                to   { transform: translateX(0); }
-              }
-            `}</style>
+            {/* As bolinhas dizem QUANTOS são, coisa que a esteira não passava:
+                lá a pessoa nunca sabia se tinha visto todos. */}
+            {DEPOIMENTOS.length > 1 && (
+              <div className="mt-6 flex items-center gap-2">
+                {DEPOIMENTOS.map((d, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setDep(i)}
+                    aria-label={`Depoimento de ${d.quem}`}
+                    aria-current={i === dep}
+                    className={`h-1.5 rounded-full transition-all ${
+                      i === dep ? "w-7 bg-[#E5484D]" : "w-1.5 bg-white/30 hover:bg-white/60"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
           </section>
         )}
 
@@ -863,7 +825,7 @@ export default function Treine() {
         </section>
 
         <footer className="mt-20 border-t border-white/10 pt-8 text-sm text-white/35">
-          <p className="font-medium text-white/55">Matheus Wruck Barbosa · Personal Trainer</p>
+          <p className="font-medium text-white/55">Matheus Wruck Barbosa · {CREF}</p>
           <p className="mt-1">
             O treino é entregue pelo aplicativo PersonalPro, para Android e iPhone.
           </p>
