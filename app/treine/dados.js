@@ -358,27 +358,46 @@ export const RECEBE = [
 
 // Os três planos.
 //
-// A ESCADA É POR ATENÇÃO, NÃO POR CONTEÚDO. A divisão óbvia seria fatiar por
-// modalidade — musculação num plano, corrida e ciclismo noutro — e é
-// exatamente o que não pode ser feito: hoje o endurance entra no mesmo valor,
-// e "a maioria cobra à parte ou simplesmente não faz" é uma das frases mais
-// fortes da página. Fatiando por modalidade, ele VIRA a maioria.
+// A ESCADA É POR CADÊNCIA DE CHECK-IN. Segunda versão desta seção, e a primeira
+// estava com o eixo errado: separava os planos por OBJETO entregue (relatório,
+// PDF, chamada). O Matheus reclamou com razão -- "não vejo diferença pra essa
+// mudança de preço" -- e o cartão dele provava: o Essencial tinha 8 itens e o
+// Completo, 4. O plano barato parecia mais completo que o caro.
 //
-// O que não escala é o tempo dele. Conteúdo o aplicativo entrega igual pra 10
-// ou pra 100; olhar o treino de alguém, não. Então é o olhar que custa mais, e
-// a escada inteira é uma coisa só: quão de perto ele acompanha a execução.
-// WhatsApp -> relatório e revisão mensal -> chamada de vídeo.
+// A correção veio de olhar como quem vive disso monta a oferta: RP Strength,
+// 3D Muscle Journey e Barbell Medicine não escalonam por conteúdo, escalonam
+// por FREQUÊNCIA DE REVISÃO. No 3DMJ o off-season é quinzenal (US$ 400) e o de
+// competição é semanal (US$ 500); na RP o topo é uma chamada semanal. É a
+// mesma entrega, olhada mais vezes.
 //
-// O DO MEIO PRECISA ENTREGAR UM OBJETO, não um comportamento. "Eu olho os seus
-// números todo mês" é impossível de valorar pra quem nunca foi aluno dele. O
-// relatório em PDF é uma coisa que chega, tem data e dá pra mostrar pra
-// alguém — e é o que nenhum concorrente consegue copiar, porque depende de ter
-// o histórico de carga do aluno. Ele já gera PDF hoje.
+// Isso corrige um erro meu, que fica registrado: eu tinha dito que ele "deu de
+// graça" o WhatsApp no plano barato. Errado -- comunicação direta com o coach
+// está em TODOS os tiers dessas consultorias, inclusive nos de US$ 500.
+// Ninguém cobra pelo canal. O que se cobra é o olhar periódico.
 //
-// Valores decididos pelo Matheus em 31/08. Ele tinha proposto começar em
-// 139,90 e voltou pros 149,90 por um motivo prático: os alunos atuais pagam
-// isso, e publicar mais barato criaria uma conversa ruim com quem já está com
-// ele.
+// A escada, então, é uma frase por plano:
+//   Essencial  -- "eu monto, você executa."       check-in mensal
+//   Completo   -- "a cada 15 dias eu olho e mexo." check-in quinzenal
+//   Individual -- "me corrige agora."              check-in semanal + ao vivo
+//
+// O QUE NÃO PODE SER FEITO continua valendo: fatiar por modalidade, deixando
+// corrida e ciclismo num plano separado. Hoje o endurance entra no mesmo valor,
+// e "a maioria cobra à parte ou simplesmente não faz" é das frases mais fortes
+// da página. Fatiando por modalidade, ele VIRA a maioria.
+//
+// O que muda por plano no endurance é a PROFUNDIDADE, não o acesso: no
+// Essencial a rotina entra junto; no Completo as zonas saem de teste (VDOT na
+// corrida, 20 min no ciclismo -- o que o motor do app calcula de verdade) e
+// existe periodização até a data de uma prova. O tier mais caro do mundo
+// inteiro é o que tem data marcada, e essa é a coisa mais bem posicionada que
+// ele já tem.
+//
+// Cadência quinzenal e aplicação do teste foram confirmadas pelo Matheus em
+// 01/09/2026. Linha de plano só entra depois que a entrega existe.
+//
+// Valores decididos por ele em 31/08. Tinha proposto começar em 139,90 e voltou
+// pros 149,90 por um motivo prático: os alunos atuais pagam isso, e publicar
+// mais barato criaria uma conversa ruim com quem já está com ele.
 //
 // Nomes em português de propósito. O concorrente usa Light/Standard/Plus e
 // funciona pra ELES porque Just Move é uma marca, que carrega o sentido que o
@@ -391,51 +410,52 @@ export const PLANOS = [
     preco: 'R$ 149,90',
     // Não usar a palavra "completo" aqui: é o nome do plano do meio, e dizer
     // que o Essencial já é o completo esvazia o de cima antes de a pessoa ler.
-    resumo: 'O treino inteiro, com acompanhamento por WhatsApp.',
+    resumo: 'Você tem o programa inteiro. Eu reviso uma vez por mês.',
     itens: [
       'Programa de musculação montado pra você',
-      'Rotina de ciclismo e corrida junto, se quiser',
-      'Vídeo de execução no aplicativo',
+      'Rotina de corrida ou ciclismo junto, se quiser',
+      'Vídeo de execução de cada exercício',
       'Registro de carga treino a treino',
       'Treino baixado no celular, funciona sem internet',
-      'WhatsApp direto comigo, sem limite',
-      'Avaliação a cada 12 semanas',
-      'Ajuste do treino uma vez por mês',
+      'WhatsApp direto comigo pra tirar dúvida',
+      'Revisão do programa uma vez por mês',
+      'Avaliação física a cada 12 semanas',
     ],
   },
   {
     nome: 'Completo',
     preco: 'R$ 219,90',
     destaque: 'Mais escolhido',
-    // O resumo diz o QUE muda; os itens dizem o que eu FAÇO. Antes o primeiro
-    // item repetia o resumo com as mesmas palavras -- sobrou de quando o
-    // relatório em PDF saiu daqui, e ficou dizendo a mesma coisa duas vezes no
-    // mesmo cartão.
-    resumo: 'Eu vou atrás dos seus números, sem você precisar pedir.',
+    // O resumo diz a CADÊNCIA, que é o que muda de verdade. A versão anterior
+    // dizia "eu vou atrás dos seus números, sem você precisar pedir" -- bonito,
+    // mas sem número nenhum a pessoa não sabia se isso era uma vez por ano.
+    resumo: 'A cada 15 dias eu abro os seus números e mexo — sem você pedir.',
     herda: 'Essencial',
-    // O RELATÓRIO VOLTOU em 31/08. Ele tinha saído daqui enquanto não existia,
-    // e voltou quando ficou pronto no aplicativo. A página não chegou a ser
-    // divulgada nesse meio-tempo, então ninguém viu a promessa antes da
-    // entrega. Fica a regra: linha de plano só entra depois que existe.
-    //
-    // E "você recebe o que mudou e por quê" saiu pra abrir espaço: o relatório
-    // mensal É esse aviso, em forma de documento. As duas linhas gastavam o
-    // dobro do espaço com a mesma promessa.
     itens: [
+      // O primeiro item é o degrau. Vem antes de tudo porque é o que a pessoa
+      // está comprando; o resto sustenta.
+      'Revisão a cada 15 dias, não uma vez por mês',
+      // O item mais usado do mercado pra justificar o tier do meio, e o que
+      // responde o medo real de quem treina sozinho: "estou fazendo certo?".
+      // Ele já faz isso ao vivo no Individual -- aqui é assíncrono.
+      'Você grava a execução e eu corrijo por vídeo',
       'Relatório de evolução todo mês, em PDF',
-      'Todo mês eu abro o seu histórico de carga',
-      'Ajuste sempre que você precisar, sem limite',
-      'Preparação para prova alvo',
+      // Diferença técnica de verdade, e o motor do app calcula: VDOT (Daniels)
+      // na corrida, teste de 20 min (Coggan) no ciclismo.
+      'Suas zonas de corrida e ciclismo saem de teste, não de estimativa',
+      'Preparação para prova alvo, com o plano até o dia',
+      'Ajuste do treino sempre que precisar, sem limite',
     ],
   },
   {
     nome: 'Individual',
     preco: 'R$ 279,90',
-    resumo: 'A sua execução conferida por mim, ao vivo.',
+    resumo: 'Toda semana, e comigo na sua frente uma vez por mês.',
     herda: 'Completo',
     itens: [
+      'Revisão toda semana',
       'Videochamada de 30 minutos por mês',
-      'Você grava dois exercícios e eu corrijo na chamada',
+      'A execução conferida ao vivo, comigo te corrigindo na hora',
       'A gente decide junto o mês seguinte',
     ],
     // A preparação para prova entra nos DOIS de cima, mas o card do Individual
