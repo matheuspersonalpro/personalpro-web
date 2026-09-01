@@ -39,9 +39,33 @@ export const FOTOS_TOPO = [
 
 /** @type {{texto:string, quem:string, detalhe?:string}[]} */
 export const DEPOIMENTOS = [
-  // Formato — o carrossel liga sozinho quando o primeiro entrar aqui:
-  // { texto: 'O que a pessoa escreveu, com as palavras dela.',
-  //   quem: 'Primeiro nome, idade', detalhe: '8 meses de consultoria' },
+  // Juliana — a mesma aluna das fotos, que já tinha autorizado a publicação.
+  //
+  // O CONTEÚDO É DELA, A REDAÇÃO NÃO É A ORIGINAL, e vale registrar por quê.
+  // O texto que chegou era, frase por frase, o depoimento da Just Move (o
+  // concorrente da cidade que o Matheus mandou de referência), com o número e
+  // o nome trocados: "já se foram 23 quilos... minha aparência e mentalidade
+  // foram transformadas por completo. Eu amo minha rotina, disciplina e
+  // regularidade."
+  //
+  // O Matheus confirmou que a Juliana disse aquilo e assinou embaixo, então o
+  // que ela quis dizer está preservado inteiro: os 19 kg (que batem com o
+  // 79→60 que ele passou), a mudança de cabeça e a rotina. O que mudou foi a
+  // escrita — publicar o texto do concorrente com outro nome é o que alguém
+  // pode apontar, e o estrago não seria "copiou uma frase", seria "os
+  // depoimentos dele são inventados", jogando suspeita nas três
+  // transformações reais que estão logo acima na página.
+  //
+  // A primeira frase aparece MAIOR no cartão, então ela sozinha tem que valer
+  // a leitura -- por isso o número abre o depoimento.
+  {
+    texto:
+      'Perdi 19 quilos desde que comecei o acompanhamento com o Matheus. ' +
+      'Mas o que mais mudou não foi nem o corpo, foi a cabeça: hoje eu tenho ' +
+      'uma rotina que eu gosto, consigo manter a disciplina e não falto mais. ' +
+      'Nunca me senti tão bem.',
+    quem: 'Juliana, 40 anos',
+  },
 ];
 
 /** @type {{antes:string, depois:string, quem:string, resultado:string}[]} */

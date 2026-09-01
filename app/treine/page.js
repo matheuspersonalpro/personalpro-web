@@ -481,12 +481,12 @@ export default function Treine() {
               Quem já treina comigo
             </h2>
 
-            <div className="carrossel mt-8 overflow-hidden">
-              <div className="carrossel-trilho flex w-max gap-5">
-                {[...DEPOIMENTOS, ...DEPOIMENTOS].map((d, i) => (
+            <div className={`mt-8 overflow-hidden ${DEPOIMENTOS.length > 1 ? "carrossel" : ""}`}>
+              <div className={`flex gap-5 ${DEPOIMENTOS.length > 1 ? "carrossel-trilho w-max" : ""}`}>
+                {(DEPOIMENTOS.length > 1 ? [...DEPOIMENTOS, ...DEPOIMENTOS] : DEPOIMENTOS).map((d, i) => (
                   <figure
                     key={i}
-                    aria-hidden={i >= DEPOIMENTOS.length}
+                    aria-hidden={DEPOIMENTOS.length > 1 && i >= DEPOIMENTOS.length}
                     className="flex w-[300px] shrink-0 flex-col border border-white/12 bg-white/[0.03] p-7 sm:w-[360px]"
                   >
                     <span aria-hidden className="text-3xl leading-none text-[#E5484D]">&ldquo;</span>
