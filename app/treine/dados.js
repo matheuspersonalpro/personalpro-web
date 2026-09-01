@@ -67,6 +67,7 @@ export const DEPOIMENTOS = [
     frase: 'Perdi 19 quilos desde que comecei o acompanhamento com o Matheus.',
     resto: 'Mas o que mais mudou não foi nem o corpo, foi a cabeça: hoje eu tenho uma rotina que eu gosto, consigo manter a disciplina e não falto mais. Nunca me senti tão bem.',
     quem: 'Juliana',
+    detalhe: 'Musculação',
   },
   {
     // A ÚNICA edição de ordem em toda a lista. Chegou como três frases soltas e
@@ -76,14 +77,20 @@ export const DEPOIMENTOS = [
     frase: 'Evoluí mais em 3 meses do que em 1 ano sozinha.',
     resto: 'Minhas pernas e glúteos mudaram muito, e consegui ganhar massa magra sem ficar com aspecto pesado. Treinos muito intensos!',
     quem: 'Talita',
+    detalhe: 'Musculação',
   },
   {
-    // O único que ataca a objeção de frente. Cita correção de vídeo pelo
-    // WhatsApp -- coisa que ele faz e a página NÃO conta em lugar nenhum.
-    // Pergunta aberta pro Matheus: se vale pra todo mundo, é venda perdida.
+    // O único que ataca a objeção de frente, e por isso vale mesmo sendo o
+    // mais longo.
+    //
+    // Ele cita correção de vídeo pelo WhatsApp. Perguntei ao Matheus se isso
+    // valia pra todos os planos -- seria argumento de venda que a página não
+    // conta -- e ele respondeu que não: e um comentário dela, não um item da
+    // oferta. Fica registrado pra ninguém transformar isso em promessa depois.
     frase: 'Achei que a consultoria online seria fria, que seria apenas mais um treino.',
     resto: 'Mas o suporte diário e a correção de vídeos pelo WhatsApp e o bate-papo com o Matheus são impecáveis.',
     quem: 'Renata',
+    detalhe: 'Musculação',
   },
   {
     // "Resultado real e sem neura" é a melhor abertura do conjunto: responde
@@ -91,18 +98,21 @@ export const DEPOIMENTOS = [
     frase: 'Resultado real e sem neura.',
     resto: 'Minha autoestima mudou completamente: olho no espelho e amo o que vejo hoje.',
     quem: 'Karina',
+    detalhe: 'Musculação',
   },
   {
     // Ciclismo. Veio numa frase só; o ponto entrou antes de "em apenas".
     frase: 'Minha média de velocidade subiu muito.',
     resto: 'Em apenas 2 meses de treino estruturado.',
     quem: 'Fabio',
+    detalhe: 'Ciclismo',
   },
   {
     // Ciclismo. Veio numa frase só; o ponto entrou antes do verbo.
     frase: 'Treinos curtos e intensos no rolo durante a semana.',
     resto: 'Mudaram completamente o meu rendimento no fim de semana.',
     quem: 'Leonardo',
+    detalhe: 'Ciclismo',
   },
   {
     // Corrida. O melhor da lista pra quem nunca correu: nomeia o motivo real de
@@ -110,12 +120,14 @@ export const DEPOIMENTOS = [
     frase: 'Sempre parei por falta de ar.',
     resto: 'Com a planilha personalizada, aprendi a controlar meu ritmo e hoje corro meus primeiros 5 km sem parar.',
     quem: 'Fabiana',
+    detalhe: 'Corrida',
   },
   {
     // Corrida.
     frase: 'Eu achava que correr era só colocar o tênis e ir.',
     resto: 'Hoje entendo de ritmo, variação de treino, e me sinto muito mais segura.',
     quem: 'Débora',
+    detalhe: 'Corrida',
   },
 ];
 
