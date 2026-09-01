@@ -26,7 +26,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
   WHATSAPP, PLANOS, VALE_PARA_TODOS, DEPOIMENTOS, TRANSFORMACOES, NUMEROS,
-  PARA_VOCE, RECEBE, PASSOS, FAQ, GARANTIA, FOTOS_TOPO, TELAS_APP,
+  PARA_VOCE, RECEBE, PASSOS, FAQ, GARANTIA, FOTOS_TOPO, TELAS_APP, SOBRE,
   MINHA_PARTE, SUA_PARTE, ABERTURA_ACORDO, PROTOCOLO_FOTOS,
 } from './dados';
 
@@ -415,6 +415,52 @@ export default function Treine() {
             `}</style>
           </section>
         )}
+
+        {/* ── QUEM ELE É ──────────────────────────────────────────────────────
+            Vem logo depois das transformações e antes do "como funciona": a
+            pessoa acabou de ver os resultados, e a pergunta seguinte é quem
+            fez aquilo.
+
+            O CREF fica em destaque, com a cor da marca. Numa academia ele
+            seria burocracia no rodapé; aqui é o que responde "por que eu
+            confiaria num programa de alguém que nunca me viu". */}
+        <section className="pt-20">
+          <div className="grid gap-8 sm:grid-cols-[auto_1fr] sm:items-start">
+            <div className="relative aspect-square w-32 shrink-0 overflow-hidden sm:w-40">
+              <Image
+                src="/matheus.jpg"
+                alt={SOBRE.nome}
+                fill sizes="160px"
+                className="object-cover"
+                style={{ objectPosition: "center 12%" }}
+              />
+            </div>
+
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                Quem vai montar o seu treino
+              </h2>
+
+              <p className="mt-4 text-lg font-semibold">{SOBRE.nome}</p>
+              <p className="mt-1 text-sm font-bold uppercase tracking-[0.14em] text-[#E5484D]">
+                {SOBRE.cref}
+              </p>
+
+              <ul className="mt-5 space-y-1.5">
+                {SOBRE.formacao.map((f) => (
+                  <li key={f} className="flex gap-2.5 leading-relaxed text-white/70">
+                    <span aria-hidden className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-white/40" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              <p className="mt-6 max-w-xl leading-relaxed text-white/60">
+                {SOBRE.texto}
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* ── DEPOIMENTOS ─────────────────────────────────────────────────────
             Carrossel que desliza sozinho da esquerda pra direita, sem

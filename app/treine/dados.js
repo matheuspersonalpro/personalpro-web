@@ -123,6 +123,32 @@ export const TELAS_APP = [
   //   d: 'Cada exercício com o histórico do que você levantou.' },
 ];
 
+// ── QUEM ELE É ───────────────────────────────────────────────────────────────
+// A página tinha três fotos dele e não dizia uma linha sobre quem ele é. Todo
+// concorrente tem essa seção, e é o que separa "um cara na internet" de um
+// profissional registrado.
+//
+// O CREF pesa MAIS aqui do que pesaria numa academia, e o texto diz isso na
+// cara: à distância a pessoa vai seguir um programa feito por alguém que nunca
+// a viu pessoalmente. O registro é o que responde "por que eu confiaria nisso".
+//
+// Faltam dois dados que ele ainda não passou — há quantos anos atua e quantos
+// alunos atende. Ficam de fora até ele dizer: número de aluno inventado numa
+// página de venda é o tipo de coisa que se descobre.
+export const SOBRE = {
+  nome: 'Matheus Wruck Barbosa',
+  cref: 'CREF 167779-G/SP',
+  formacao: [
+    'Bacharelado e Licenciatura em Educação Física — UNIMEP',
+    'Pós-graduação em Biomecânica, Cinesiologia e Treinamento Físico',
+  ],
+  texto:
+    'Numa consultoria à distância você vai seguir um programa feito por alguém ' +
+    'que nunca te viu pessoalmente. Por isso eu começo dizendo quem eu sou: o ' +
+    'CREF é o registro que permite prescrever treino no Brasil, e o meu está ' +
+    'aqui em cima pra você conferir antes de decidir qualquer coisa.',
+};
+
 // ── CONTEÚDO FIXO ────────────────────────────────────────────────────────────
 
 // Faz a pessoa se reconhecer. É a seção que mais funciona na página que ele
