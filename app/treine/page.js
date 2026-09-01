@@ -262,23 +262,35 @@ export default function Treine() {
               Consultoria online
             </p>
 
-            {/* O título era "Treino montado pro seu caso. / Não pra qualquer
-                um.", com a última linha desbotada em cinza. O Matheus olhou e
-                disse que tinha cara de IA, e tinha mesmo: desbotar a última
-                linha é o truque mais copiado que existe, e a frase dizia uma
-                coisa que qualquer consultoria diria igual.
+            {/* Terceiro título da página, e cada troca corrigiu um defeito
+                diferente.
 
-                Agora são três frases curtas que descrevem o trabalho de
-                verdade, na ordem em que ele acontece — e a terceira é a que
-                separa isto de comprar uma planilha, então é ela que fica em
-                vermelho. Personalização todo mundo promete; continuar mexendo
-                depois é o que quase ninguém faz. */}
+                O primeiro era "Treino montado pro seu caso. / Não pra qualquer
+                um.", com a última linha desbotada em cinza -- o truque mais
+                copiado que existe, e uma frase que qualquer consultoria diria
+                igual.
+
+                O segundo era "Eu monto. Você treina. A gente ajusta." O
+                Matheus cortou: descrevia o PROCESSO, e processo não emociona.
+                Dizia o que acontece, não por que ele e não outro.
+
+                Este concede o que é commodity pra reivindicar o que não é.
+                Montar treino qualquer um monta -- inclusive de graça, na
+                internet, que é a alternativa real de quem está lendo.
+                Acompanhar é o que ninguém entrega, e é o que a página inteira
+                defende: os números olhados todo mês, a carga que travou
+                trocada antes da reclamação, a resposta em 24h.
+
+                E funciona pros seis perfis do "isso aqui é pra você que": o
+                iniciante e o que treina há anos precisam da mesma coisa. Um
+                título sobre carga parada, por exemplo, deixaria cinco deles
+                de fora. */}
             <h1 className="mt-5 text-[2.9rem] font-bold leading-[1.05] tracking-[-0.02em] sm:text-[3.6rem] xl:text-[4.25rem]">
-              Eu monto.
+              Treino,
               <br />
-              Você treina.
+              qualquer um monta.
               <br />
-              <span className="text-[#E5484D]">A gente ajusta.</span>
+              <span className="text-[#E5484D]">Acompanhar é outra coisa.</span>
             </h1>
 
             <p className="mt-6 max-w-md text-lg leading-relaxed text-white/70">
