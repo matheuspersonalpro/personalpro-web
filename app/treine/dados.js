@@ -24,13 +24,11 @@ export const WHATSAPP = '5519997984847';
 // lado. As três têm proporção diferente (9:16, 2:3 e 3:4), então cada uma
 // precisa do seu recorte pra não cortar cabeça nem pé.
 export const FOTOS_TOPO = [
-  { src: '/matheus.jpg',           alt: 'Matheus Barbosa na academia',        pos: 'center 12%', posLg: 'top' },
-  { src: '/matheus-corrida.jpg',   alt: 'Matheus Barbosa correndo uma prova', pos: 'center 25%', posLg: 'center 20%' },
-  // Trocada em 30/08 por uma na estrada, em movimento. Ela e 3:4 exata, que e
-  // a proporcao da coluna do computador -- entra inteira, sem recorte nenhum.
-  // No celular sobra largura e falta altura, entao corta so pelos lados, e o
-  // rosto esta no meio: 'center' resolve as duas.
+  { src: '/matheus.jpg',           alt: 'Matheus Barbosa na academia',          pos: 'center 12%', posLg: 'top' },
+  // Ordem escolhida pelo Matheus: personal, ciclismo, corrida. A do ciclismo é
+  // 3:4 exata, que é a proporção da coluna — entra inteira, sem recorte nenhum.
   { src: '/matheus-ciclismo.jpg',  alt: 'Matheus Barbosa pedalando na estrada', pos: 'center',     posLg: 'center' },
+  { src: '/matheus-corrida.jpg',   alt: 'Matheus Barbosa correndo uma prova',   pos: 'center 25%', posLg: 'center 20%' },
 ];
 
 
