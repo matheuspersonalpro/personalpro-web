@@ -539,17 +539,31 @@ export const SUA_PARTE = [
 ];
 
 // O passo a passo das fotos, atrás de um clique. Quem está decidindo não
-// precisa; quem já decidiu quer saber exatamente o que fazer.
+// precisa; quem já decidiu quer exatamente isso.
+//
+// ERA TEXTO E VIROU FOTO, por sugestão do Matheus: "fica mais prático pros
+// novos alunos verem". Ele tem razão -- "de frente, corpo relaxado" não
+// responde a dúvida que a pessoa realmente tem, que é "está certo assim?".
+// Uma foto responde.
+//
+// São de um aluno real, com a CABEÇA PIXELIZADA nas três. Pixelização e não
+// desfoque: desfoque fraco ainda deixa reconhecer, que foi a lição do Reels.
+// A tarja cobre a cabeça inteira, não só o rosto -- mais segura, e fica com
+// cara de escolha em vez de remendo.
 export const PROTOCOLO_FOTOS = {
-  angulos: [
-    ['Frontal', 'de frente, corpo relaxado.'],
-    ['Lateral', 'mulheres com os braços erguidos à frente; homens com os braços estendidos ao lado do corpo.'],
-    ['Posterior', 'de costas, mesma posição para todos.'],
+  modelo: [
+    { src: '/como-tirar/frontal.jpg', rotulo: 'Frontal', nota: 'De frente, corpo relaxado, braços ao lado.' },
+    // A observação das mulheres CONTINUA em texto porque o modelo é homem: a
+    // foto mostra os braços ao lado do corpo, e sem a linha a aluna copiaria
+    // a posição errada.
+    { src: '/como-tirar/lateral.jpg', rotulo: 'Lateral', nota: 'De lado. Mulheres: braços erguidos à frente.' },
+    { src: '/como-tirar/posterior.jpg', rotulo: 'Posterior', nota: 'De costas, mesma posição para todos.' },
   ],
   roupa:
     'De preferência roupa de piscina, que é o que mostra melhor a composição ' +
     'corporal. Se você não se sentir à vontade, top e shorts para mulheres e ' +
-    'shorts para homens resolvem.',
+    'shorts para homens resolvem. E procure repetir o mesmo lugar, a mesma ' +
+    'luz e a mesma distância nas próximas — é o que deixa a comparação justa.',
 };
 
 // Segunda escrita, pelo mesmo motivo da seção dos compromissos: a primeira era

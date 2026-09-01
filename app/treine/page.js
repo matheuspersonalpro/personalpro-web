@@ -743,17 +743,29 @@ export default function Treine() {
                             <span aria-hidden className="mr-2 inline-block text-[#E5484D] transition group-open:rotate-90">›</span>
                             Como tirar as fotos
                           </summary>
-                          <dl className="mt-4 space-y-2.5 text-sm">
-                            {PROTOCOLO_FOTOS.angulos.map(([nome, como]) => (
-                              <div key={nome} className="leading-relaxed text-white/60">
-                                <dt className="inline font-semibold text-white/85">{nome} · </dt>
-                                <dd className="inline">{como}</dd>
-                              </div>
-                            ))}
-                          </dl>
-                          <p className="mt-4 text-sm leading-relaxed text-white/60">
-                            {PROTOCOLO_FOTOS.roupa}
-                          </p>
+                          {/* Foto no lugar de lista de instruções: "de frente,
+                          corpo relaxado" não responde a dúvida real, que é
+                          "está certo assim?". A cabeça do aluno que serviu de
+                          modelo está pixelizada nas três. */}
+                      <div className="mt-4 grid grid-cols-3 gap-2">
+                        {PROTOCOLO_FOTOS.modelo.map((m) => (
+                          <figure key={m.rotulo}>
+                            <img
+                              src={m.src}
+                              alt={`Exemplo de foto ${m.rotulo.toLowerCase()}`}
+                              loading="lazy"
+                              className="w-full rounded border border-white/10"
+                            />
+                            <figcaption className="mt-1.5">
+                              <span className="block text-xs font-semibold text-white/85">{m.rotulo}</span>
+                              <span className="block text-[11px] leading-snug text-white/45">{m.nota}</span>
+                            </figcaption>
+                          </figure>
+                        ))}
+                      </div>
+
+                      <p className="mt-4 text-sm leading-relaxed text-white/60">
+                        {PROTOCOLO_FOTOS.roupa}                      </p>
                         </details>
                       )}
                     </li>
