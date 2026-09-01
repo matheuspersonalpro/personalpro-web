@@ -39,22 +39,38 @@ export const FOTOS_TOPO = [
 
 /** @type {{texto:string, quem:string, detalhe?:string}[]} */
 export const DEPOIMENTOS = [
+  // OITO depoimentos: quatro de musculação e quatro de endurance (dois de
+  // ciclismo, dois de corrida).
+  //
+  // O equilíbrio importa porque a página vende TRÊS modalidades. Com prova só
+  // de musculação, a linha "corrida ou ciclismo junto" fica sendo a única
+  // promessa da página sem ninguém confirmando.
+  //
+  // Chegaram nove. O Matheus pediu pra tirar três de musculação e abrir espaço
+  // pros de bike, e o critério foi: fica quem diz algo ESPECÍFICO, sai quem
+  // elogia. "O suporte é maravilhoso" e "me sinto acompanhado o tempo todo"
+  // são elogio -- soam bem e não provam nada, e é justamente o tipo de frase
+  // que faz o leitor desconfiar do conjunto inteiro.
+  //
+  // Saíram: Fernanda ("roupas voltaram a servir. O suporte é maravilhoso"),
+  // Mario ("me sinto acompanhado o tempo todo") e Célia ("pela primeira vez
+  // consigo ser constante" -- essa doeu, mas o ponto dela sobre encaixar na
+  // rotina corrida ficou coberto pelo Leonardo, que diz a mesma coisa com
+  // horário e resultado). Os textos estão no histórico do git.
+  //
+  // Cada um que ficou prova uma coisa diferente: número (Juliana),
+  // comparação com treinar sozinha (Talita), objeção vencida (Renata),
+  // cabeça e autoestima (Karina), e endurance (Fabio, Leonardo).
+
   // Juliana — a mesma aluna das fotos, que já tinha autorizado a publicação.
   //
-  // O CONTEÚDO É DELA, A REDAÇÃO NÃO É A ORIGINAL, e vale registrar por quê.
-  // O texto que chegou era, frase por frase, o depoimento da Just Move (o
-  // concorrente da cidade que o Matheus mandou de referência), com o número e
-  // o nome trocados: "já se foram 23 quilos... minha aparência e mentalidade
-  // foram transformadas por completo. Eu amo minha rotina, disciplina e
-  // regularidade."
-  //
-  // O Matheus confirmou que a Juliana disse aquilo e assinou embaixo, então o
-  // que ela quis dizer está preservado inteiro: os 19 kg (que batem com o
-  // 79→60 que ele passou), a mudança de cabeça e a rotina. O que mudou foi a
-  // escrita — publicar o texto do concorrente com outro nome é o que alguém
-  // pode apontar, e o estrago não seria "copiou uma frase", seria "os
-  // depoimentos dele são inventados", jogando suspeita nas três
-  // transformações reais que estão logo acima na página.
+  // O CONTEÚDO É DELA, A REDAÇÃO NÃO É A ORIGINAL. O texto que chegou era,
+  // frase por frase, o depoimento da Just Move (o concorrente da cidade que o
+  // próprio Matheus mandou de referência), com o número e o nome trocados. Ele
+  // confirmou que a Juliana disse aquilo e assinou embaixo, então o sentido
+  // está preservado inteiro -- os 19 kg batem com o 79→60 que ele passou. O
+  // que mudou foi a escrita: publicar o texto do concorrente com outro nome
+  // jogaria suspeita nas três transformações REAIS logo acima na página.
   //
   // A primeira frase aparece MAIOR no cartão, então ela sozinha tem que valer
   // a leitura -- por isso o número abre o depoimento.
@@ -66,26 +82,11 @@ export const DEPOIMENTOS = [
       'Nunca me senti tão bem.',
     quem: 'Juliana, 40 anos',
   },
-  // Os quatro abaixo chegaram em 31/08, escritos por eles. A ÚNICA coisa
-  // mexida foi acento e pontuação -- gente escreve no WhatsApp sem acento, e
-  // "sao impecaveis" num site parece desleixo do dono da página, não de quem
-  // escreveu. Palavra nenhuma foi trocada, nem a ordem delas.
   {
-    texto:
-      'O treino encaixa perfeitamente na minha rotina corrida. Pela primeira ' +
-      'vez consigo ser constante.',
-    quem: 'Célia',
-  },
-  {
-    // Ela trocou o depoimento em 31/08. Chegou como três frases soltas, na
-    // ordem: pernas e glúteos, massa magra, e "evoluí mais em 3 meses do que
-    // em 1 ano sozinha".
-    //
-    // A ÚNICA edição foi de ORDEM, não de palavra: a comparação com o ano
+    // Ela trocou o depoimento em 31/08. Chegou como três frases soltas, e a
+    // ÚNICA edição foi de ORDEM, não de palavra: a comparação com o ano
     // sozinha veio por último e é de longe a frase mais forte -- e no cartão só
-    // a primeira frase sai em destaque. Enterrada no fim, ela seria lida por
-    // quem já tinha decidido ler tudo; na frente, é ela que segura quem passa
-    // o olho. Se o Matheus preferir a ordem original, é só remontar.
+    // a primeira frase sai em destaque.
     texto:
       'Evoluí mais em 3 meses do que em 1 ano sozinha. Minhas pernas e ' +
       'glúteos mudaram muito, e consegui ganhar massa magra sem ficar com ' +
@@ -93,17 +94,10 @@ export const DEPOIMENTOS = [
     quem: 'Talita, 42 anos',
   },
   {
-    texto:
-      'Cada treino é pensado exclusivamente para as minhas dores e objetivos. ' +
-      'Me sinto acompanhado o tempo todo.',
-    quem: 'Mario',
-  },
-  {
-    // Este menciona correção de vídeo pelo WhatsApp -- que é coisa que ele faz
-    // hoje e a página NÃO conta em lugar nenhum. Fica registrado como pergunta
-    // aberta pro Matheus: se vale pra todo mundo, é argumento de venda perdido
-    // e devia estar no plano Essencial; se é só pra alguns, o depoimento
-    // promete o que nem todo aluno recebe.
+    // Único que ataca a objeção de frente ("achei que seria fria"), e por isso
+    // vale mesmo sendo o mais longo. Cita correção de vídeo pelo WhatsApp --
+    // coisa que ele faz e a página NÃO conta em lugar nenhum. Pergunta aberta
+    // pro Matheus: se vale pra todo mundo, é argumento de venda perdido.
     texto:
       'Achei que a consultoria online seria fria, que seria apenas mais um ' +
       'treino, mas o suporte diário e a correção de vídeos pelo WhatsApp e o ' +
@@ -111,26 +105,53 @@ export const DEPOIMENTOS = [
     quem: 'Renata, 41 anos',
   },
   {
-    texto: 'Minhas roupas voltaram a servir. O suporte é maravilhoso.',
-    quem: 'Fernanda',
-  },
-  {
+    // "Resultado real e sem neura" é a melhor primeira frase do conjunto:
+    // responde sozinha a objeção de quem acha que consultoria online vira
+    // obsessão com dieta e balança.
     texto:
       'Resultado real e sem neura. Minha autoestima mudou completamente: ' +
       'olho no espelho e amo o que vejo hoje.',
     quem: 'Karina',
   },
   {
-    // O unico da lista que prova a parte de ENDURANCE. Todos os outros falam
-    // de musculacao, e corrida/ciclismo e justamente a promessa que mais gera
-    // duvida num personal -- quase todo mundo diz que faz.
+    // Os dois abaixo provam a parte de ENDURANCE, que é a promessa mais fácil
+    // de duvidar num personal -- quase todo mundo diz que faz. Sem eles, os
+    // depoimentos falavam só de musculação enquanto a página vendia as três
+    // modalidades.
     //
-    // Ficaria mais forte se dissesse a modalidade ("media de velocidade"
-    // sugere bike). Perguntado ao Matheus; entra assim ate ele confirmar.
+    // Ficaria mais forte com a modalidade dita ("média de velocidade" sugere
+    // bike). Perguntado ao Matheus.
     texto:
       'Minha média de velocidade subiu muito em apenas 2 meses de treino ' +
       'estruturado.',
     quem: 'Fabio',
+  },
+  {
+    // Este é o mais completo dos dois: diz o método (curto e intenso no rolo
+    // durante a semana) e o resultado (rendimento no fim de semana). É a prova
+    // de que existe periodização de verdade por trás, e não uma planilha
+    // qualquer de bike.
+    texto:
+      'Os treinos curtos e intensos no rolo durante a semana mudaram meu ' +
+      'rendimento no fim de semana.',
+    quem: 'Leonardo',
+  },
+  {
+    // Os dois de CORRIDA. O da Fabiana é o melhor de toda a lista pra quem
+    // nunca correu: nomeia o motivo real de desistir ("sempre parei por falta
+    // de ar"), o que resolveu (aprender a controlar o ritmo) e um marco que
+    // qualquer um entende (5 km sem parar). Quem lê e nunca correu se vê ali.
+    texto:
+      'Sempre parei por falta de ar. Com a planilha personalizada, aprendi a ' +
+      'controlar meu ritmo e hoje corro meus primeiros 5 km sem parar.',
+    quem: 'Fabiana',
+  },
+  {
+    texto:
+      'Antes da consultoria, eu achava que correr era só colocar o tênis e ' +
+      'ir. Hoje entendo de ritmo, variação de treino e me sinto muito mais ' +
+      'segura.',
+    quem: 'Débora',
   },
 ];
 
