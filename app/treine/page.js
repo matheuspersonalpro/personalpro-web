@@ -72,6 +72,17 @@ export default function Treine() {
   const trocarFoto = (passo) =>
     setFoto((i) => (i + passo + FOTOS_TOPO.length) % FOTOS_TOPO.length);
 
+  // Dedo segurando a fila de transformações.
+  //
+  // O :hover resolve isso no computador, mas no celular ele MENTE: o toque
+  // aplica hover e o estado gruda, então a fila pausava e nunca mais voltava.
+  // Tirei o hover do toque e aí ela deixou de pausar — o Matheus queria as
+  // duas coisas: segurar pausa, soltar volta.
+  //
+  // Evento de toque de verdade faz exatamente isso, e funciona em qualquer
+  // aparelho, sem depender de o navegador fingir um ponteiro.
+  const [filaParada, setFilaParada] = useState(false);
+
   // Qual tela do aplicativo está aparecendo. Eram três celulares parados lado
   // a lado, e o Matheus pediu que elas mudassem.
   //
@@ -465,7 +476,12 @@ export default function Treine() {
               Corpos transformados
             </h2>
 
-            <div className="fila mt-8 overflow-hidden">
+            <div
+              className={`fila mt-8 overflow-hidden ${filaParada ? "fila-parada" : ""}`}
+              onTouchStart={() => setFilaParada(true)}
+              onTouchEnd={() => setFilaParada(false)}
+              onTouchCancel={() => setFilaParada(false)}
+            >
               <div className="fila-trilho flex w-max gap-5">
                 {[...TRANSFORMACOES, ...TRANSFORMACOES].map((t, n) => (
                   <figure
@@ -502,17 +518,22 @@ export default function Treine() {
                    comparando duas imagens, não lendo uma frase. */
                 animation: corre 34s linear infinite;
               }
-              /* A PAUSA SÓ VALE ONDE EXISTE MOUSE.
-                 No celular não existe "tirar o dedo de cima": o navegador
-                 aplica :hover no toque e o estado GRUDA. O carrossel pausava
-                 no primeiro toque e nunca mais voltava a andar -- foi o que o
-                 Matheus viu no telefone dele.
-                 (hover: hover) é verdadeiro só em aparelho com ponteiro de
-                 verdade, então no toque a animação simplesmente não pausa. */
+              /* Pausar tem DOIS caminhos, um pra cada tipo de aparelho.
+
+                 No computador é o mouse em cima. A media query é obrigatória:
+                 no celular o navegador aplica :hover no toque e o estado GRUDA,
+                 então sem ela a fila pausava no primeiro toque e nunca mais
+                 voltava a andar.
+
+                 No celular é o dedo segurando, via evento de toque de verdade
+                 (a classe .fila-parada). Solta, volta a andar. */
               @media (hover: hover) and (pointer: fine) {
                 .fila:hover .fila-trilho {
                   animation-play-state: paused;
                 }
+              }
+              .fila-parada .fila-trilho {
+                animation-play-state: paused;
               }
               /* Quem pediu menos movimento no sistema recebe a versão que
                  rola, em vez de ficar preso na primeira transformação. */
