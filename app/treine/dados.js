@@ -168,9 +168,20 @@ export const RECEBE = [
     d: 'Pergunte quantas vezes quiser. Eu respondo em até 24 horas, todo dia, inclusive fim de semana.',
   },
   {
+    // "Avaliação FÍSICA" ficou de fora de propósito, mesmo tendo sido a
+    // sugestão inicial. No Brasil o termo significa o protocolo presencial com
+    // adipômetro (as 7 dobras) e consultoria é à distância — prometer isso e
+    // entregar comparação de foto é o tipo de coisa que o aluno cobra na
+    // primeira vez. "Avaliação" sem o sobrenome descreve o que de fato
+    // acontece.
+    //
+    // E o ciclo virou 12 SEMANAS em toda a página, no lugar de 90 dias: a
+    // garantia já falava em 12 semanas, então havia dois números pro mesmo
+    // ciclo. São 84 dias em vez de 90 — seis dias de diferença que não mudam
+    // nada no corpo e resolvem a incoerência.
     tag: 'Evolução',
-    t: 'Reavaliação a cada 90 dias',
-    d: 'Fotos e medidas comparadas lado a lado, e o plano muda com você.',
+    t: 'Avaliação a cada 12 semanas',
+    d: 'Suas fotos comparadas lado a lado com as anteriores, e o plano refeito a partir dali.',
   },
   {
     tag: 'Registro',
@@ -227,7 +238,7 @@ export const PLANOS = [
       'Registro de carga treino a treino',
       'Treino em PDF pra imprimir',
       'WhatsApp direto comigo, sem limite',
-      'Reavaliação a cada 90 dias',
+      'Avaliação a cada 12 semanas',
       'Ajuste sempre que você precisar',
     ],
   },
@@ -282,7 +293,7 @@ export const VALE_PARA_TODOS = [
 // próprias obrigações antes de listar as do outro.
 //
 // Nada na coluna dele é promessa nova. Tudo já estava dito em algum canto da
-// página (24h, ajuste quando precisar, garantia dos 90 dias, sem fidelidade) —
+// página (24h, ajuste quando precisar, garantia das 12 semanas, sem fidelidade) —
 // só nunca tinha aparecido junto, como compromisso assumido.
 export const ABERTURA_ACORDO =
   'Eu não estou do seu lado na academia. O que a gente combina aqui é o que faz ' +
@@ -318,7 +329,7 @@ export const MINHA_PARTE = [
 // um copia; específico não dá pra copiar.
 export const SUA_PARTE = [
   {
-    t: 'Fotos a cada 90 dias',
+    t: 'Fotos a cada 12 semanas',
     d: 'A balança mente. Peso parado com o corpo diferente é a coisa mais comum que eu vejo, e é a foto que mostra isso — não o número.',
     // Fica visível, não escondido no protocolo: é a dúvida que trava a pessoa,
     // e responder antes de ela perguntar vale mais que qualquer instrução.
@@ -420,8 +431,8 @@ export const PASSOS = [
     d: 'É o ajuste mais importante e quase ninguém fala dele. O primeiro programa é um chute educado — só quando eu vejo os pesos que você conseguiu de verdade é que ele vira o seu.',
   },
   {
-    quando: 'A cada 90 dias',
-    t: 'Reavaliação com foto e medida',
+    quando: 'A cada 12 semanas',
+    t: 'Avaliação com as suas fotos',
     d: 'Comparo com as anteriores e refaço o planejamento a partir dali. É também quando vale a garantia.',
   },
 ];
@@ -449,7 +460,7 @@ export const FAQ = [
   },
   {
     q: 'As fotos são obrigatórias?',
-    r: 'São como eu enxergo a sua evolução à distância — sem elas, o ajuste vira chute. Você manda no primeiro dia e a cada 90. Elas ficam guardadas na sua conta dentro do aplicativo, visíveis só pra você e pra mim.',
+    r: 'São como eu enxergo a sua evolução à distância — sem elas, o ajuste vira chute. Você manda no primeiro dia e a cada 12 semanas. Elas ficam guardadas na sua conta dentro do aplicativo, visíveis só pra você e pra mim.',
   },
 ];
 
@@ -468,6 +479,6 @@ export const GARANTIA = {
   texto:
     'Se depois de 12 semanas seguindo o programa você não tiver evoluído, eu ' +
     'refaço o seu planejamento inteiro do zero, sem custo nenhum. É por isso ' +
-    'que as fotos e o registro de carga importam: nos 90 dias a gente tem os ' +
+    'que as fotos e o registro de carga importam: nessa altura a gente tem os ' +
     'dois lados pra comparar, e não precisa ficar no achismo.',
 };
