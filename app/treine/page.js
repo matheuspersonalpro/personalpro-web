@@ -539,9 +539,15 @@ export default function Treine() {
 
             <style jsx>{`
               .carrossel-trilho {
-                /* 26s por volta com 8 depoimentos: rápido o bastante pra não
-                   parecer travado, lento o bastante pra dar tempo de ler. */
-                animation: desliza 26s linear infinite;
+                /* A conta e por LARGURA, nao por gosto: sao ~2550px de trilho
+                   por volta, e a 44s isso da ~58px por segundo -- cada cartao
+                   leva uns 6 segundos pra atravessar, que e o tempo de ler tres
+                   linhas.
+
+                   Comecou em 26s com oito cartoes de teste e ficou rapido
+                   demais quando entraram os oito de verdade, que sao mais
+                   largos. Se entrarem muitos mais, subir o numero junto. */
+                animation: desliza 44s linear infinite;
               }
               .carrossel:hover .carrossel-trilho {
                 animation-play-state: paused;

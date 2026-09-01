@@ -120,6 +120,18 @@ export const DEPOIMENTOS = [
       'olho no espelho e amo o que vejo hoje.',
     quem: 'Karina',
   },
+  {
+    // O unico da lista que prova a parte de ENDURANCE. Todos os outros falam
+    // de musculacao, e corrida/ciclismo e justamente a promessa que mais gera
+    // duvida num personal -- quase todo mundo diz que faz.
+    //
+    // Ficaria mais forte se dissesse a modalidade ("media de velocidade"
+    // sugere bike). Perguntado ao Matheus; entra assim ate ele confirmar.
+    texto:
+      'Minha média de velocidade subiu muito em apenas 2 meses de treino ' +
+      'estruturado.',
+    quem: 'Fabio',
+  },
 ];
 
 /** @type {{antes:string, depois:string, quem:string, resultado:string}[]} */
