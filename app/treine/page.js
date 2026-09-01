@@ -81,15 +81,43 @@ export default function Treine() {
   // vez, inteiro e centralizado, é o que dá acabamento.
   const [dep, setDep] = useState(0);
 
+  // Quantos depoimentos cabem numa página: 3 no computador, 2 no tablet, 1 no
+  // celular. Precisa ser estado, e não só CSS, porque o NÚMERO DE BOLINHAS
+  // depende disso -- com 8 depoimentos são 3 páginas no computador e 8 no
+  // celular. Só CSS acertaria a largura dos cartões e erraria as bolinhas.
+  const [porPagina, setPorPagina] = useState(3);
+
   useEffect(() => {
-    if (DEPOIMENTOS.length < 2) return;
+    // Os limites são os pontos de quebra do Tailwind (sm=640, lg=1024) porque
+    // é o CSS que manda na largura — se divergirem, a contagem de bolinhas
+    // deixa de bater com o que está na tela.
+    const medir = () => {
+      const l = window.innerWidth;
+      setPorPagina(l >= 1024 ? 3 : l >= 640 ? 2 : 1);
+    };
+    medir();
+    window.addEventListener('resize', medir);
+    return () => window.removeEventListener('resize', medir);
+  }, []);
+
+  const paginasDep = Math.ceil(DEPOIMENTOS.length / porPagina);
+
+  // Girar a tela pode deixar a página atual fora do intervalo (estava na 7 de
+  // 8 no celular, virou o computador com 3 páginas). Sem isso, o trilho
+  // desliza pra um lugar vazio e a seção fica em branco.
+  useEffect(() => {
+    setDep((i) => Math.min(i, Math.max(0, paginasDep - 1)));
+  }, [paginasDep]);
+
+  useEffect(() => {
+    if (paginasDep < 2) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    // 7 segundos: é quanto leva pra ler três linhas sem pressa. `dep` na lista
-    // de dependências reinicia a contagem a cada troca, então clicar numa
-    // bolinha dá o tempo cheio pra ler aquele.
-    const t = setTimeout(() => setDep((i) => (i + 1) % DEPOIMENTOS.length), 7000);
+    // 8 segundos por página: com três cartões na tela é mais texto pra ler do
+    // que era com um só. `dep` nas dependências reinicia a contagem a cada
+    // troca, então clicar numa bolinha dá o tempo cheio naquela página.
+    const t = setTimeout(() => setDep((i) => (i + 1) % paginasDep), 8000);
     return () => clearTimeout(t);
-  }, [dep]);
+  }, [dep, paginasDep]);
 
   const campo = (k, transforma) => (e) => {
     const v = transforma ? transforma(e.target.value) : e.target.value;
@@ -436,87 +464,93 @@ export default function Treine() {
         )}
 
         {/* ── DEPOIMENTOS ─────────────────────────────────────────────────────
-            Um por vez, com bolinhas -- o formato das duas páginas de
-            referência, e não a esteira contínua que estava aqui antes.
+            Três por página no computador, dois no tablet, um no celular. As
+            bolinhas trocam a PÁGINA inteira, não um cartão.
 
-            A esteira tinha um defeito que só aparece olhando: como o trilho
-            corre sem parar, sempre sobra meio cartão cortado em cada ponta da
-            tela. Fica parecendo erro de layout, e ainda obriga a pessoa a ler
-            um texto que está andando.
+            Foi esteira contínua antes, e o Matheus apontou o defeito: sempre
+            sobrava meio cartão cortado em cada ponta. Depois virou um por vez,
+            e aí a seção ficou ocupando muita altura pra pouca informação.
+            Este é o formato das duas páginas de referência.
 
-            Aqui o cartão fica PARADO enquanto está na tela, e a troca é um
-            deslize curto. Dá pra ler sem correr atrás. */}
+            O ESPAÇAMENTO É POR DENTRO DO CARTÃO (px-2.5), e não `gap` no
+            trilho. Com gap, três cartões não somam exatamente 100% da largura
+            e a conta do deslize erra alguns pixels por página -- um desalinho
+            que se acumula e fica visível na última. */}
         {DEPOIMENTOS.length > 0 && (
           <section className="pt-20">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
               Quem já treina comigo
             </h2>
 
-            <div className="mt-8 overflow-hidden">
+            <div className="-mx-2.5 mt-8 overflow-hidden">
               <div
                 className="flex transition-transform duration-500 ease-out"
                 style={{ transform: `translateX(-${dep * 100}%)` }}
               >
                 {DEPOIMENTOS.map((d, i) => (
-                  <figure
+                  <div
                     key={i}
-                    aria-hidden={i !== dep}
-                    className="w-full shrink-0 border border-white/12 bg-white/[0.03] p-7 sm:p-9"
+                    // A LARGURA VEM DO CSS, não do JavaScript. Vinha de
+                    // `porPagina`, que só é medido depois que a página carrega —
+                    // e como o valor inicial é 3, num celular a primeira imagem
+                    // aparecia com três cartões de 116px, ilegíveis, até o
+                    // efeito rodar. Com classe do Tailwind já nasce certo.
+                    //
+                    // O JavaScript continua sabendo quantos cabem, mas só pra
+                    // contar bolinha e girar a página: se ele errar por um
+                    // instante, erra o número de bolinhas, não o layout.
+                    className="w-full shrink-0 px-2.5 sm:w-1/2 lg:w-1/3"
+                    aria-hidden={Math.floor(i / porPagina) !== dep}
                   >
-                    <span aria-hidden className="text-4xl leading-none text-[#E5484D]">&ldquo;</span>
+                    <figure className="flex h-full flex-col border border-white/12 bg-white/[0.03] p-6">
+                      <span aria-hidden className="text-2xl leading-none text-[#E5484D]">&ldquo;</span>
 
-                    {/* A primeira frase sai maior: quem passa o olho lê só ela,
-                        então ela sozinha tem que valer a leitura. Mas só quando
-                        é CURTA -- o depoimento da Renata é uma frase única e
-                        longa, e sem o limite o cartão inteiro saía em corpo
-                        grande. Destaque deixa de destacar quando é tudo. */}
-                    {(() => {
-                      const partes = d.texto.split(/(?<=\.)\s/);
-                      const resto = partes.slice(1).join(" ").trim();
-                      const destacar = partes[0].length <= 95 && !!resto;
-                      if (!destacar) {
+                      {/* A primeira frase sai maior: quem passa o olho lê só
+                          ela. Mas só quando é CURTA -- o depoimento da Renata é
+                          uma frase única e longa, e sem o limite o cartão
+                          inteiro saía em corpo grande. Destaque deixa de
+                          destacar quando é tudo. */}
+                      {(() => {
+                        const partes = d.texto.split(/(?<=\.)\s/);
+                        const resto = partes.slice(1).join(" ").trim();
+                        const destacar = partes[0].length <= 95 && !!resto;
+                        if (!destacar) {
+                          return (
+                            <p className="mt-2 flex-1 font-semibold leading-snug text-white">
+                              {d.texto}
+                            </p>
+                          );
+                        }
                         return (
-                          <p className="mt-3 text-xl font-semibold leading-snug text-white sm:text-2xl">
-                            {d.texto}
-                          </p>
+                          <>
+                            <p className="mt-2 text-lg font-semibold leading-snug text-white">
+                              {partes[0]}
+                            </p>
+                            <p className="mt-2.5 flex-1 text-sm leading-relaxed text-white/60">{resto}</p>
+                          </>
                         );
-                      }
-                      return (
-                        <>
-                          <p className="mt-3 text-xl font-semibold leading-snug text-white sm:text-2xl">
-                            {partes[0]}
-                          </p>
-                          <p className="mt-4 text-lg leading-relaxed text-white/60">{resto}</p>
-                        </>
-                      );
-                    })()}
+                      })()}
 
-                    <figcaption className="mt-7 flex items-center gap-3 border-t border-white/10 pt-5">
-                      {d.foto && (
-                        <img src={d.foto} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" />
-                      )}
-                      <div>
-                        <p className="font-semibold leading-tight">{d.quem}</p>
+                      <figcaption className="mt-5 border-t border-white/10 pt-4">
+                        <p className="text-sm font-semibold leading-tight">{d.quem}</p>
                         {d.detalhe && (
-                          <p className="text-sm text-white/45">{d.detalhe}</p>
+                          <p className="text-xs text-white/45">{d.detalhe}</p>
                         )}
-                      </div>
-                    </figcaption>
-                  </figure>
+                      </figcaption>
+                    </figure>
+                  </div>
                 ))}
               </div>
             </div>
 
-            {/* As bolinhas dizem QUANTOS são, coisa que a esteira não passava:
-                lá a pessoa nunca sabia se tinha visto todos. */}
-            {DEPOIMENTOS.length > 1 && (
-              <div className="mt-6 flex items-center gap-2">
-                {DEPOIMENTOS.map((d, i) => (
+            {paginasDep > 1 && (
+              <div className="mt-6 flex items-center justify-center gap-2">
+                {Array.from({ length: paginasDep }, (_, i) => (
                   <button
                     key={i}
                     type="button"
                     onClick={() => setDep(i)}
-                    aria-label={`Depoimento de ${d.quem}`}
+                    aria-label={`Página ${i + 1} de ${paginasDep}`}
                     aria-current={i === dep}
                     className={`h-1.5 rounded-full transition-all ${
                       i === dep ? "w-7 bg-[#E5484D]" : "w-1.5 bg-white/30 hover:bg-white/60"

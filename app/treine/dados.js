@@ -80,7 +80,7 @@ export const DEPOIMENTOS = [
       'Mas o que mais mudou não foi nem o corpo, foi a cabeça: hoje eu tenho ' +
       'uma rotina que eu gosto, consigo manter a disciplina e não falto mais. ' +
       'Nunca me senti tão bem.',
-    quem: 'Juliana, 40 anos',
+    quem: 'Juliana',
   },
   {
     // Ela trocou o depoimento em 31/08. Chegou como três frases soltas, e a
@@ -91,7 +91,7 @@ export const DEPOIMENTOS = [
       'Evoluí mais em 3 meses do que em 1 ano sozinha. Minhas pernas e ' +
       'glúteos mudaram muito, e consegui ganhar massa magra sem ficar com ' +
       'aspecto pesado. Treinos muito intensos!',
-    quem: 'Talita, 42 anos',
+    quem: 'Talita',
   },
   {
     // Único que ataca a objeção de frente ("achei que seria fria"), e por isso
@@ -102,7 +102,7 @@ export const DEPOIMENTOS = [
       'Achei que a consultoria online seria fria, que seria apenas mais um ' +
       'treino, mas o suporte diário e a correção de vídeos pelo WhatsApp e o ' +
       'bate-papo com o Matheus são impecáveis.',
-    quem: 'Renata, 41 anos',
+    quem: 'Renata',
   },
   {
     // "Resultado real e sem neura" é a melhor primeira frase do conjunto:
