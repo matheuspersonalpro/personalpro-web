@@ -25,8 +25,8 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
-  WHATSAPP, PRECO, DEPOIMENTOS, TRANSFORMACOES, NUMEROS,
-  PARA_VOCE, RECEBE, INCLUSO, PASSOS, FAQ, GARANTIA, FOTOS_TOPO,
+  WHATSAPP, PLANOS, VALE_PARA_TODOS, DEPOIMENTOS, TRANSFORMACOES, NUMEROS,
+  PARA_VOCE, RECEBE, PASSOS, FAQ, GARANTIA, FOTOS_TOPO,
   MINHA_PARTE, SUA_PARTE, ABERTURA_ACORDO, PROTOCOLO_FOTOS,
 } from './dados';
 
@@ -555,45 +555,90 @@ export default function Treine() {
           </div>
         </section>
 
-        {/* ── PREÇO ───────────────────────────────────────────────────────────
-            A frase antes do número existe porque a objeção real não é o valor,
-            é o que a pessoa acha que está pagando. Quem lê "aplicativo" compara
+        {/* ── PLANOS ──────────────────────────────────────────────────────────
+            Três, e a escada é por ATENÇÃO, não por conteúdo. O porquê está em
+            dados.js, junto dos planos.
+
+            A frase antes dos preços existe porque a objeção real não é o valor,
+            é o que a pessoa acha que está pagando: quem lê "aplicativo" compara
             com mensalidade de aplicativo e acha caro; quem entende que está
-            contratando alguém compara com personal, e aí o número é barato. */}
+            contratando alguém compara com personal, e aí o número é barato.
+
+            Cada plano diz "tudo do anterior, mais" em vez de repetir a lista
+            inteira. Três listas quase idênticas lado a lado obrigam a pessoa a
+            caçar a diferença — e o que ela quer saber é exatamente isso, o que
+            muda de um pro outro. */}
         <section className="pt-20">
-          <p className="mb-6 max-w-xl text-xl leading-relaxed text-white/80">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Planos</h2>
+          <p className="mt-4 max-w-xl text-lg leading-relaxed text-white/80">
             Você não está assinando um aplicativo. Está contratando alguém que
             olha o seu treino, vê a sua carga subir e mexe no que precisa mexer.
             O aplicativo é só por onde isso chega até você.
           </p>
-          <div className="border border-[#E5484D]/40 bg-[#E5484D]/[0.06] p-8">
-            <p className="text-sm font-semibold uppercase tracking-widest text-[#E5484D]">
-              Plano mensal
-            </p>
-            <p className="mt-3 text-5xl font-bold tracking-tight">
-              {PRECO}<span className="text-2xl font-normal text-white/40">/mês</span>
-            </p>
-            <p className="mt-5 text-lg leading-relaxed text-white/75">
-              Sem fidelidade. Cancela quando quiser, sem multa e sem justificar.
-              Musculação com corrida ou ciclismo inclusos — não é pacote separado.
-            </p>
 
-            {/* A conferência do que entra. Na seção de cima a pessoa estava
-                conhecendo; aqui ela está decidindo, e quem decide quer ver
-                tudo junto num lugar só. */}
-            <ul className="mt-7 space-y-2.5 border-t border-white/10 pt-7">
-              {INCLUSO.map((item) => (
-                <li key={item} className="flex gap-3 leading-snug text-white/80">
-                  <span aria-hidden className="font-bold text-[#E5484D]">✓</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <a href="#comecar"
-              className="mt-7 inline-flex w-fit items-center bg-[#E5484D] px-8 py-4 text-lg font-bold text-white transition hover:bg-[#d63c41]">
-              Quero começar
-            </a>
+          <div className="mt-10 grid gap-5 lg:grid-cols-3">
+            {PLANOS.map(({ nome, preco, resumo, destaque, herda, itens }) => (
+              <div
+                key={nome}
+                className={`flex flex-col border p-7 ${
+                  destaque
+                    ? 'border-[#E5484D] bg-[#E5484D]/[0.07]'
+                    : 'border-white/15 bg-white/[0.02]'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="text-xl font-bold">{nome}</h3>
+                  {destaque && (
+                    <span className="shrink-0 bg-[#E5484D] px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
+                      {destaque}
+                    </span>
+                  )}
+                </div>
+
+                <p className="mt-4 text-3xl font-bold tracking-tight">
+                  {preco}
+                  <span className="text-base font-normal text-white/40">/mês</span>
+                </p>
+
+                <p className="mt-3 leading-relaxed text-white/60">{resumo}</p>
+
+                {herda && (
+                  <p className="mt-6 border-t border-white/10 pt-5 text-sm font-semibold text-white/75">
+                    Tudo do {herda}, mais:
+                  </p>
+                )}
+
+                <ul className={`space-y-2.5 ${herda ? 'mt-4' : 'mt-6 border-t border-white/10 pt-6'}`}>
+                  {itens.map((item) => (
+                    <li key={item} className="flex gap-2.5 text-sm leading-snug text-white/75">
+                      <span aria-hidden className="font-bold text-[#E5484D]">✓</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+
+                <a href="#comecar"
+                  className={`mt-7 block px-6 py-3.5 text-center font-bold transition ${
+                    destaque
+                      ? 'bg-[#E5484D] text-white hover:bg-[#d63c41]'
+                      : 'border border-white/25 text-white hover:border-white/60'
+                  }`}>
+                  Quero esse
+                </a>
+              </div>
+            ))}
           </div>
+
+          {/* Vale pros três, então fica fora dos cards: repetir em cada um
+              gastaria três vezes o espaço pra dizer a mesma coisa. */}
+          <ul className="mt-6 flex flex-wrap gap-x-7 gap-y-2">
+            {VALE_PARA_TODOS.map((item) => (
+              <li key={item} className="flex gap-2 text-sm text-white/50">
+                <span aria-hidden className="text-[#E5484D]">✓</span>
+                {item}
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* ── GARANTIA ──────────────────────────────────────

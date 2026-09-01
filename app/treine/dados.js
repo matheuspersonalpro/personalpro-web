@@ -33,7 +33,6 @@ export const FOTOS_TOPO = [
   { src: '/matheus-ciclismo.jpg',  alt: 'Matheus Barbosa pedalando na estrada', pos: 'center',     posLg: 'center' },
 ];
 
-export const PRECO = 'R$ 149,90';
 
 // ── PROVA ────────────────────────────────────────────────────────────────────
 // Preencher só com autorização por escrito de cada aluno, guardada no WhatsApp.
@@ -181,20 +180,82 @@ export const RECEBE = [
   },
 ];
 
-// Lista do que está dentro do valor, logo abaixo do preço. É a mesma entrega
-// da seção de cima, mas em forma de conferência: ali a pessoa está conhecendo,
-// aqui ela está decidindo — e na hora de decidir ela quer ver tudo junto.
-export const INCLUSO = [
-  'Programa de musculação montado pra você',
-  'Treino que muda de estímulo conforme você evolui',
-  'Planilha de corrida ou ciclismo, se quiser',
-  'Aplicativo com vídeo de cada exercício',
-  'Registro de carga treino a treino',
-  'Treino em PDF pra imprimir',
-  'WhatsApp direto comigo, sem limite de mensagens',
-  'Reavaliação a cada 90 dias, com fotos e medidas',
-  'Ajuste do plano sempre que precisar',
+// Os três planos.
+//
+// A ESCADA É POR ATENÇÃO, NÃO POR CONTEÚDO. A divisão óbvia seria fatiar por
+// modalidade — musculação num plano, corrida e ciclismo noutro — e é
+// exatamente o que não pode ser feito: hoje o endurance entra no mesmo valor,
+// e "a maioria cobra à parte ou simplesmente não faz" é uma das frases mais
+// fortes da página. Fatiando por modalidade, ele VIRA a maioria.
+//
+// O que não escala é o tempo dele. Conteúdo o aplicativo entrega igual pra 10
+// ou pra 100; olhar o treino de alguém, não. Então é o olhar que custa mais, e
+// a escada inteira é uma coisa só: quão de perto ele acompanha a execução.
+// WhatsApp -> relatório e revisão mensal -> chamada de vídeo.
+//
+// O DO MEIO PRECISA ENTREGAR UM OBJETO, não um comportamento. "Eu olho os seus
+// números todo mês" é impossível de valorar pra quem nunca foi aluno dele. O
+// relatório em PDF é uma coisa que chega, tem data e dá pra mostrar pra
+// alguém — e é o que nenhum concorrente consegue copiar, porque depende de ter
+// o histórico de carga do aluno. Ele já gera PDF hoje.
+//
+// Valores decididos pelo Matheus em 31/08. Ele tinha proposto começar em
+// 139,90 e voltou pros 149,90 por um motivo prático: os alunos atuais pagam
+// isso, e publicar mais barato criaria uma conversa ruim com quem já está com
+// ele.
+//
+// Nomes em português de propósito. O concorrente usa Light/Standard/Plus e
+// funciona pra ELES porque Just Move é uma marca, que carrega o sentido que o
+// nome genérico não tem. Aqui quem está sendo vendido é o Matheus, numa página
+// inteira na voz dele — três palavras em inglês seriam as únicas estrangeiras
+// no meio.
+export const PLANOS = [
+  {
+    nome: 'Essencial',
+    preco: 'R$ 149,90',
+    resumo: 'O programa completo, com acompanhamento por WhatsApp.',
+    itens: [
+      'Programa de musculação montado pra você',
+      'Corrida ou ciclismo junto, se quiser',
+      'Aplicativo com vídeo de cada exercício',
+      'Registro de carga treino a treino',
+      'Treino em PDF pra imprimir',
+      'WhatsApp direto comigo, sem limite',
+      'Reavaliação a cada 90 dias',
+      'Ajuste do treino sempre que precisar',
+    ],
+  },
+  {
+    nome: 'Completo',
+    preco: 'R$ 219,90',
+    destaque: 'Mais escolhido',
+    resumo: 'Eu vou atrás dos seus números, você não precisa pedir.',
+    herda: 'Essencial',
+    itens: [
+      'Relatório de evolução todo mês, em PDF',
+      'Revisão mensal do treino olhando as suas cargas',
+      'Eu te aviso o que mudei e por quê',
+    ],
+  },
+  {
+    nome: 'Individual',
+    preco: 'R$ 279,90',
+    resumo: 'A execução conferida por mim, ao vivo.',
+    herda: 'Completo',
+    itens: [
+      'Videochamada de 30 minutos por mês',
+      'Correção de execução ao vivo, com vídeo seu',
+      'O plano do mês seguinte decidido junto',
+    ],
+  },
+];
+
+// Vale pros três planos, e por isso fica fora dos cards: repetir em cada um
+// gastaria três vezes o espaço pra dizer a mesma coisa.
+export const VALE_PARA_TODOS = [
   'Sem fidelidade — cancela quando quiser',
+  'Resposta em até 24 horas, todo dia',
+  'Garantia de 12 semanas',
 ];
 
 // O ACORDO, nas duas direções.
@@ -281,6 +342,18 @@ export const PROTOCOLO_FOTOS = {
     'shorts para homens resolvem.',
 };
 
+// Segunda escrita, pelo mesmo motivo da seção dos compromissos: a primeira era
+// genérica. "Eu monto o seu programa — em cima do que você respondeu" não diz
+// nada que a pessoa já não tenha suposto.
+//
+// O que faltava era responder as duas perguntas que quem está decidindo tem de
+// verdade e não pergunta em voz alta: QUANDO eu começo a treinar, e O QUE ele
+// vai me perguntar. Por isso cada etapa agora carrega um "quando" na frente e
+// diz, em concreto, o que acontece nela.
+//
+// O `quando` do passo em que ele monta o programa está deliberadamente sem
+// prazo em dias — falta o Matheus dizer quanto tempo ele leva de verdade.
+// Inventar "em até 48h" aqui seria criar uma promessa que ele não combinou.
 // Segunda escrita, pelo mesmo motivo da seção dos compromissos: a primeira era
 // genérica. "Eu monto o seu programa — em cima do que você respondeu" não diz
 // nada que a pessoa já não tenha suposto.
