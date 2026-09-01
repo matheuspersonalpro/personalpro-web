@@ -110,7 +110,10 @@ export const DEPOIMENTOS = [
   },
   {
     // Ciclismo. Veio numa frase só; o ponto entrou antes de "em apenas".
-    frase: 'Minha média de velocidade subiu muito.',
+    // Ele confirmou que é ciclismo e pediu pra dizer na frase, não só na
+    // etiqueta embaixo do nome: quem passa o olho lê a frase e não chega na
+    // etiqueta. "Velocidade" sozinha podia ser corrida.
+    frase: 'Minha média no ciclismo melhorou muito.',
     resto: 'Em apenas 2 meses de treino estruturado.',
     quem: 'Fabio',
     detalhe: 'Ciclismo',

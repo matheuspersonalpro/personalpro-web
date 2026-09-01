@@ -361,16 +361,19 @@ export default function Treine() {
         </section>
 
         {/* ── AS TELAS DO APLICATIVO ──────────────────────────────────────────
-            Um celular só, alternando entre as telas. Eram três parados lado a
-            lado, e além de não se mexer eles ficavam pequenos demais pra dar
-            pra ler o que está escrito na tela -- que é justamente o que prova
-            o produto. Miniatura só mostra que o aplicativo existe.
+            Desliza pro lado, igual aos depoimentos e às transformações. Era
+            um esmaecer no lugar, e destoava: a página tem um jeito só de
+            trocar conteúdo, e três jeitos diferentes fazem parecer remendo.
+
+            A MOLDURA É 9:19.5, e não a proporção do print. Os prints têm
+            560x2036 (uma tela de app que ROLA, achatada num arquivo só), e
+            usar essa proporção fazia um celular impossivelmente estreito e
+            comprido, que no telefone não cabia na tela. Agora a moldura tem
+            proporção de aparelho de verdade e mostra o topo da tela, que é
+            onde está o que interessa em todas as três.
 
             A autoria dele NÃO aparece aqui: a frase dizia "é um aplicativo que
             eu fiz" e ele mandou tirar, mesma decisão do Instagram do produto.
-
-            A moldura é desenhada em CSS, sem imagem de aparelho: um PNG de
-            iPhone amarraria a página a um modelo que envelhece, e teria dono.
 
             Só aparece quando houver imagem em TELAS_APP. */}
         {TELAS_APP.length > 0 && (
@@ -383,52 +386,60 @@ export default function Treine() {
               ele que o seu treino chega.
             </p>
 
-            <div className="mt-10 grid items-center gap-10 sm:grid-cols-[auto_1fr]">
-              <div className="relative mx-auto w-[260px] shrink-0 rounded-[2rem] border-[6px] border-white/15 bg-black shadow-2xl sm:mx-0">
-                {/* As telas ficam empilhadas e trocam por opacidade, e não uma
-                    lista que aparece e some: assim a moldura nunca muda de
-                    altura no meio da troca. O aspecto vem da primeira. */}
-                <div className="relative aspect-[560/2036] w-full overflow-hidden rounded-[1.6rem]">
-                  {TELAS_APP.map((t, i) => (
-                    <img
-                      key={t.src}
-                      src={t.src}
-                      alt={t.titulo}
-                      aria-hidden={i !== tela}
-                      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
-                        i === tela ? "opacity-100" : "opacity-0"
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                {/* O texto troca junto com a tela: sem isso a legenda descreveria
-                    a imagem errada durante toda a exibição. */}
-                <h3 className="text-2xl font-bold leading-snug">{TELAS_APP[tela].titulo}</h3>
-                <p className="mt-3 max-w-md text-lg leading-relaxed text-white/65">
-                  {TELAS_APP[tela].d}
-                </p>
-
-                {TELAS_APP.length > 1 && (
-                  <div className="mt-7 flex items-center gap-2">
-                    {TELAS_APP.map((t, i) => (
-                      <button
-                        key={t.src}
-                        type="button"
-                        onClick={() => setTela(i)}
-                        aria-label={t.titulo}
-                        aria-current={i === tela}
-                        className={`h-1.5 rounded-full transition-all ${
-                          i === tela ? "w-7 bg-[#E5484D]" : "w-1.5 bg-white/30 hover:bg-white/60"
-                        }`}
+            <div className="mt-10 overflow-hidden">
+              <div
+                className="flex transition-transform duration-500 ease-out"
+                style={{ transform: `translateX(-${tela * 100}%)` }}
+              >
+                {TELAS_APP.map((t, i) => (
+                  <div
+                    key={t.src}
+                    aria-hidden={i !== tela}
+                    className="grid w-full shrink-0 items-center gap-8 sm:grid-cols-[auto_1fr]"
+                  >
+                    <div className="mx-auto w-[220px] rounded-[2rem] border-[6px] border-white/15 bg-black shadow-2xl sm:mx-0 sm:w-[240px]">
+                      <img
+                        src={t.src}
+                        alt={t.titulo}
+                        loading={i === 0 ? undefined : "lazy"}
+                        // A moldura usa a proporcao REAL dos prints (560x1100 em
+                        // media), e nao 9/19.5 de aparelho: com 9/19.5 o cover
+                        // escalava pela altura e cortava as LATERAIS -- comeu o "S"
+                        // de "SEU TREINO" e de "SUA SEMANA" na tela de corrida.
+                        //
+                        // E object-contain, nao cover: as tres tem proporcao um
+                        // pouco diferente entre si (0,493 a 0,530), e contain
+                        // garante que nenhuma perca nada. A sobra fica preta,
+                        // invisivel dentro da moldura preta.
+                        className="aspect-[560/1100] w-full rounded-[1.6rem] object-contain"
                       />
-                    ))}
+                    </div>
+
+                    <div>
+                      <h3 className="text-2xl font-bold leading-snug">{t.titulo}</h3>
+                      <p className="mt-3 max-w-md text-lg leading-relaxed text-white/65">{t.d}</p>
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
             </div>
+
+            {TELAS_APP.length > 1 && (
+              <div className="mt-7 flex items-center gap-2">
+                {TELAS_APP.map((t, i) => (
+                  <button
+                    key={t.src}
+                    type="button"
+                    onClick={() => setTela(i)}
+                    aria-label={t.titulo}
+                    aria-current={i === tela}
+                    className={`h-1.5 rounded-full transition-all ${
+                      i === tela ? "w-7 bg-[#E5484D]" : "w-1.5 bg-white/30 hover:bg-white/60"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
           </section>
         )}
 
