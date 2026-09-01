@@ -68,7 +68,7 @@ export const DEPOIMENTOS = [
     // Encurtado: era o mais longo dos oito e puxava a altura de todos os
     // cartões pra cima. Saiu "consigo manter a disciplina" (que "não falto
     // mais" já diz) e "nunca me senti tão bem" (elogio, e a página tem outros).
-    resto: 'Mas o que mais mudou não foi o corpo, foi a cabeça: hoje eu tenho uma rotina que eu gosto e não falto mais.',
+    resto: 'Mas o que mais mudou não foi o corpo, foi a cabeça.',
     quem: 'Juliana',
     detalhe: 'Musculação',
   },
@@ -78,7 +78,7 @@ export const DEPOIMENTOS = [
     // forte, e só a primeira sai em destaque. Enterrada no fim, seria lida por
     // quem já decidiu ler tudo.
     frase: 'Evoluí mais em 3 meses do que em 1 ano sozinha.',
-    resto: 'Minhas pernas e glúteos mudaram muito, e ganhei massa magra sem ficar com aspecto pesado.',
+    resto: 'Pernas e glúteos mudaram muito, e ganhei massa magra.',
     quem: 'Talita',
     detalhe: 'Musculação',
   },
@@ -90,7 +90,7 @@ export const DEPOIMENTOS = [
     // valia pra todos os planos -- seria argumento de venda que a página não
     // conta -- e ele respondeu que não: e um comentário dela, não um item da
     // oferta. Fica registrado pra ninguém transformar isso em promessa depois.
-    frase: 'Achei que a consultoria online seria fria, que seria apenas mais um treino.',
+    frase: 'Achei que a consultoria online seria fria, apenas mais um treino.',
     // A menção à correção de vídeo saiu junto do encurtamento, e isso resolve
     // duas coisas de uma vez: o cartão fica do tamanho dos outros, E a página
     // para de exibir num depoimento algo que o Matheus confirmou NÃO fazer
@@ -104,7 +104,7 @@ export const DEPOIMENTOS = [
     // "Resultado real e sem neura" é a melhor abertura do conjunto: responde
     // sozinha a objeção de quem acha que consultoria vira obsessão com balança.
     frase: 'Resultado real e sem neura.',
-    resto: 'Minha autoestima mudou completamente: olho no espelho e amo o que vejo hoje.',
+    resto: 'Minha autoestima mudou: olho no espelho e amo o que vejo hoje.',
     quem: 'Karina',
     detalhe: 'Musculação',
   },
@@ -133,7 +133,7 @@ export const DEPOIMENTOS = [
   {
     // Corrida.
     frase: 'Eu achava que correr era só colocar o tênis e ir.',
-    resto: 'Hoje entendo de ritmo, variação de treino, e me sinto muito mais segura.',
+    resto: 'Hoje entendo de ritmo e me sinto muito mais segura.',
     quem: 'Débora',
     detalhe: 'Corrida',
   },

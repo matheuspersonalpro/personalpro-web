@@ -346,6 +346,12 @@ export default function Treine() {
         {/* ── AS TELAS DO APLICATIVO ──────────────────────────────────────────
             Só aparece quando houver imagem em TELAS_APP.
 
+            A autoria dele NAO aparece aqui. A frase dizia "e um aplicativo que
+            eu fiz" e ele mandou tirar -- mesma decisao do Instagram do produto,
+            onde ele nao assume a autoria por causa do ego que existe no meio.
+            Aqui o aplicativo vende sozinho: quem esta comprando consultoria nao
+            precisa saber quem escreveu o codigo.
+
             Vem logo depois do "o que você recebe" de propósito: a lista ali em
             cima PROMETE o aplicativo, e aqui a pessoa vê. Descrever software é
             o jeito mais difícil de vender software, e os dois concorrentes que
@@ -360,8 +366,8 @@ export default function Treine() {
               O aplicativo por dentro
             </h2>
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-white/70">
-              Não é planilha em PDF nem grupo de WhatsApp com vídeo solto. É um
-              aplicativo que eu fiz, e é por ele que o seu treino chega.
+              Não é planilha em PDF nem grupo de WhatsApp com vídeo solto. É por
+              ele que o seu treino chega.
             </p>
 
             <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -484,12 +490,11 @@ export default function Treine() {
 
             <div className="-mx-2.5 mt-8 overflow-hidden">
               <div
-                // items-start: sem isso, os cartões esticam todos até a
-                // altura do MAIS ALTO DOS OITO -- e não do mais alto da página,
-                // porque o trilho é uma linha só com todos eles. Um depoimento
-                // curto virava um cartão com um vão enorme entre o texto e o
-                // nome, que foi o que o Matheus viu na Fabiana e na Débora.
-                className="flex items-start transition-transform duration-500 ease-out"
+                // Altura uniforme de novo, a pedido do Matheus: "eu quero
+                // padrao". O vao que existia antes nao vinha da altura igual em
+                // si -- vinha da DIFERENCA de tamanho entre os textos. Com todos
+                // calibrados pra ocupar as mesmas linhas, esticar nao cria buraco.
+                className="flex transition-transform duration-500 ease-out"
                 style={{ transform: `translateX(-${dep * 100}%)` }}
               >
                 {DEPOIMENTOS.map((d, i) => (
@@ -507,7 +512,7 @@ export default function Treine() {
                     className="w-full shrink-0 px-2.5 sm:w-1/2 lg:w-1/3"
                     aria-hidden={Math.floor(i / porPagina) !== dep}
                   >
-                    <figure className="flex flex-col border border-white/12 bg-white/[0.03] p-6">
+                    <figure className="flex h-full flex-col border border-white/12 bg-white/[0.03] p-6">
                       <span aria-hidden className="text-2xl leading-none text-[#E5484D]">&ldquo;</span>
 
                       {/* Título e subtítulo, sempre os dois.
@@ -519,11 +524,11 @@ export default function Treine() {
                       <p className="mt-2 text-lg font-semibold leading-snug text-white">
                         {d.frase}
                       </p>
-                      {/* Sem flex-1: ele empurrava a legenda pro rodapé do
-                          cartão, o que só fazia sentido quando todos tinham a
-                          mesma altura forçada. Agora a legenda vem logo depois
-                          do texto. */}
-                      <p className="mt-2.5 text-sm leading-relaxed text-white/60">
+                      {/* flex-1 empurra a legenda pro rodapé, o que alinha o
+                          nome de todos os cartões da linha. Só funciona bem
+                          porque os textos têm tamanho parecido — se voltarem a
+                          divergir, volta o vão. */}
+                      <p className="mt-2.5 flex-1 text-sm leading-relaxed text-white/60">
                         {d.resto}
                       </p>
 
