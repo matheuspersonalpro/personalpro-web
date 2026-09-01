@@ -61,6 +61,44 @@ export default function Treine() {
   // verdade, alguém precisa saber em qual foto estamos.
   const [foto, setFoto] = useState(0);
 
+  // Barra fixa de "Quero começar", so no celular.
+  //
+  // A pagina tem doze secoes. Quem se convence nas transformacoes, la pelo
+  // meio, tinha que rolar ate o fim pra achar o formulario -- e no telefone
+  // isso e muito rolar. As duas consultorias que o Matheus mandou de
+  // referencia tem botao permanente, e era o pedaco delas que faltava aqui.
+  //
+  // Ela NAO aparece de cara: em cima da dobra ja existe o botao grande, e
+  // duas chamadas iguais na mesma tela viram barulho. E some quando o
+  // formulario entra em cena, senao tampa justamente o campo que a pessoa
+  // esta preenchendo.
+  const [barra, setBarra] = useState(false);
+
+  useEffect(() => {
+    const alvo = document.getElementById('comecar');
+    let noFormulario = false;
+
+    // Duas perguntas diferentes: o observador responde "o formulario esta
+    // na tela?", o scroll responde "ja passou da dobra?".
+    const atualizar = () =>
+      setBarra(window.scrollY > window.innerHeight * 0.9 && !noFormulario);
+
+    const obs = alvo
+      ? new IntersectionObserver(
+          ([e]) => { noFormulario = e.isIntersecting; atualizar(); },
+          { rootMargin: '0px 0px -35% 0px' },
+        )
+      : null;
+    if (obs) obs.observe(alvo);
+
+    window.addEventListener('scroll', atualizar, { passive: true });
+    atualizar();
+    return () => {
+      if (obs) obs.disconnect();
+      window.removeEventListener('scroll', atualizar);
+    };
+  }, []);
+
   useEffect(() => {
     // Quem liga "reduzir movimento" no sistema não recebe troca automática —
     // é gente que passa mal com animação. As setas continuam funcionando.
@@ -1040,6 +1078,21 @@ export default function Treine() {
           </p>
         </footer>
 
+      </div>
+
+      {/* pb-24 no <main> ja reserva o espaco embaixo, entao ela nao tampa o
+          rodape. `lg:hidden` porque no computador a pagina rola menos e o
+          botao do topo continua por perto. */}
+      <div
+        aria-hidden={!barra}
+        className={`fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#080f1d]/95 px-4 py-3 backdrop-blur transition-transform duration-300 lg:hidden ${
+          barra ? 'translate-y-0' : 'translate-y-full'
+        }`}
+      >
+        <a href="#comecar" tabIndex={barra ? 0 : -1}
+          className="block bg-[#E5484D] px-6 py-3.5 text-center text-base font-bold text-white">
+          Quero começar
+        </a>
       </div>
     </main>
   );
