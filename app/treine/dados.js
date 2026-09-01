@@ -252,10 +252,18 @@ export const PLANOS = [
     // mesmo cartão.
     resumo: 'Eu vou atrás dos seus números, sem você precisar pedir.',
     herda: 'Essencial',
+    // O RELATÓRIO VOLTOU em 31/08. Ele tinha saído daqui enquanto não existia,
+    // e voltou quando ficou pronto no aplicativo. A página não chegou a ser
+    // divulgada nesse meio-tempo, então ninguém viu a promessa antes da
+    // entrega. Fica a regra: linha de plano só entra depois que existe.
+    //
+    // E "você recebe o que mudou e por quê" saiu pra abrir espaço: o relatório
+    // mensal É esse aviso, em forma de documento. As duas linhas gastavam o
+    // dobro do espaço com a mesma promessa.
     itens: [
+      'Relatório de evolução todo mês, em PDF',
       'Todo mês eu abro o seu histórico de carga',
       'Troco o que travou, antes de você reclamar',
-      'Você recebe o que mudou e por quê',
     ],
   },
   {
