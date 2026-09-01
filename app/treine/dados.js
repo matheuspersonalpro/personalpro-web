@@ -208,21 +208,24 @@ export const NUMEROS = [
 // barra de status se der.
 /** @type {{src:string, titulo:string, d:string}[]} */
 export const TELAS_APP = [
-  // Prints reais da conta de uma aluna, tirados pelo Matheus em 31/08.
+  // Prints reais da conta de uma aluna. O "Olá, Gabriela" foi cortado fora do
+  // painel -- nome de aluna não vai pra página pública, mesmo cuidado do Reels.
   //
-  // O "Olá, Gabriela" foi cortado fora do painel -- nome de aluna não vai pra
-  // página pública. É o mesmo cuidado do Reels, e por isso os dois recortes
-  // são diferentes: no painel o corte come 128px pra tirar a saudação; no
-  // treino não há nome nenhum, então corta só a barra de status (128 ali
-  // cortava o título do treino ao meio).
-  //
-  // NÃO EXISTE terceira tela de histórico de carga. Eu tinha pedido uma e o
-  // Matheus corrigiu: o aluno vê só o último valor, em cima do exercício
-  // ("↑ 03/07/2026: 40" no print). O histórico completo é da tela DELE.
+  // A de CORRIDA saiu de um quadro das gravações do Reels, e teve uma emenda:
+  // naquela versão o app repetia a descrição do treino duas vezes (o bug
+  // corrigido em cea4fe8, que vai na 1.3.32). Recortei a repetição e emendei o
+  // que sobrou. Não é maquiagem -- é a tela como ela fica na versão que está
+  // subindo pras lojas agora; publicar com o bug seria mostrar um defeito que
+  // já não existe.
   {
     src: '/app/treino.jpg',
     titulo: 'O treino do dia',
     d: 'Séries, repetições, carga e descanso na tela — e o vídeo de execução dentro do próprio exercício.',
+  },
+  {
+    src: '/app/corrida.jpg',
+    titulo: 'A corrida e o ciclismo',
+    d: 'Cada treino com o pace alvo, a zona e a frequência cardíaca. A semana inteira, e o PDF pra levar.',
   },
   {
     src: '/app/painel.jpg',

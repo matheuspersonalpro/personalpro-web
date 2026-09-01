@@ -72,6 +72,23 @@ export default function Treine() {
   const trocarFoto = (passo) =>
     setFoto((i) => (i + passo + FOTOS_TOPO.length) % FOTOS_TOPO.length);
 
+  // Qual tela do aplicativo está aparecendo. Eram três celulares parados lado
+  // a lado, e o Matheus pediu que elas mudassem.
+  //
+  // Um celular só em vez de três: alternando, cada tela aparece grande o
+  // bastante pra dar pra LER o que está escrito nela — que é o ponto de
+  // mostrar o produto. Três miniaturas provam que o aplicativo existe e não
+  // provam mais nada.
+  const [tela, setTela] = useState(0);
+
+  useEffect(() => {
+    if (TELAS_APP.length < 2) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // 6 segundos: é o tempo de correr o olho por uma tela de celular inteira.
+    const t = setTimeout(() => setTela((i) => (i + 1) % TELAS_APP.length), 6000);
+    return () => clearTimeout(t);
+  }, [tela]);
+
   // Qual depoimento está na tela. Era uma esteira rolando sem parar, e o
   // Matheus comparou com as duas páginas de referência: elas TROCAM de cartão,
   // uma por vez, com bolinhas embaixo.
@@ -344,22 +361,18 @@ export default function Treine() {
         </section>
 
         {/* ── AS TELAS DO APLICATIVO ──────────────────────────────────────────
-            Só aparece quando houver imagem em TELAS_APP.
+            Um celular só, alternando entre as telas. Eram três parados lado a
+            lado, e além de não se mexer eles ficavam pequenos demais pra dar
+            pra ler o que está escrito na tela -- que é justamente o que prova
+            o produto. Miniatura só mostra que o aplicativo existe.
 
-            A autoria dele NAO aparece aqui. A frase dizia "e um aplicativo que
-            eu fiz" e ele mandou tirar -- mesma decisao do Instagram do produto,
-            onde ele nao assume a autoria por causa do ego que existe no meio.
-            Aqui o aplicativo vende sozinho: quem esta comprando consultoria nao
-            precisa saber quem escreveu o codigo.
+            A autoria dele NÃO aparece aqui: a frase dizia "é um aplicativo que
+            eu fiz" e ele mandou tirar, mesma decisão do Instagram do produto.
 
-            Vem logo depois do "o que você recebe" de propósito: a lista ali em
-            cima PROMETE o aplicativo, e aqui a pessoa vê. Descrever software é
-            o jeito mais difícil de vender software, e os dois concorrentes que
-            ele mandou de referência mostram as telas deles.
+            A moldura é desenhada em CSS, sem imagem de aparelho: um PNG de
+            iPhone amarraria a página a um modelo que envelhece, e teria dono.
 
-            A moldura de celular é desenhada em CSS, sem imagem de aparelho: um
-            PNG de iPhone amarraria a página a um modelo que envelhece, e ainda
-            teria dono. */}
+            Só aparece quando houver imagem em TELAS_APP. */}
         {TELAS_APP.length > 0 && (
           <section className="pt-20">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -370,23 +383,51 @@ export default function Treine() {
               ele que o seu treino chega.
             </p>
 
-            <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {TELAS_APP.map((t) => (
-                <figure key={t.src}>
-                  <div className="rounded-[2rem] border-[6px] border-white/15 bg-black p-0 shadow-2xl">
+            <div className="mt-10 grid items-center gap-10 sm:grid-cols-[auto_1fr]">
+              <div className="relative mx-auto w-[260px] shrink-0 rounded-[2rem] border-[6px] border-white/15 bg-black shadow-2xl sm:mx-0">
+                {/* As telas ficam empilhadas e trocam por opacidade, e não uma
+                    lista que aparece e some: assim a moldura nunca muda de
+                    altura no meio da troca. O aspecto vem da primeira. */}
+                <div className="relative aspect-[560/2036] w-full overflow-hidden rounded-[1.6rem]">
+                  {TELAS_APP.map((t, i) => (
                     <img
+                      key={t.src}
                       src={t.src}
                       alt={t.titulo}
-                      loading="lazy"
-                      className="aspect-[9/19.5] w-full rounded-[1.6rem] object-cover"
+                      aria-hidden={i !== tela}
+                      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+                        i === tela ? "opacity-100" : "opacity-0"
+                      }`}
                     />
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                {/* O texto troca junto com a tela: sem isso a legenda descreveria
+                    a imagem errada durante toda a exibição. */}
+                <h3 className="text-2xl font-bold leading-snug">{TELAS_APP[tela].titulo}</h3>
+                <p className="mt-3 max-w-md text-lg leading-relaxed text-white/65">
+                  {TELAS_APP[tela].d}
+                </p>
+
+                {TELAS_APP.length > 1 && (
+                  <div className="mt-7 flex items-center gap-2">
+                    {TELAS_APP.map((t, i) => (
+                      <button
+                        key={t.src}
+                        type="button"
+                        onClick={() => setTela(i)}
+                        aria-label={t.titulo}
+                        aria-current={i === tela}
+                        className={`h-1.5 rounded-full transition-all ${
+                          i === tela ? "w-7 bg-[#E5484D]" : "w-1.5 bg-white/30 hover:bg-white/60"
+                        }`}
+                      />
+                    ))}
                   </div>
-                  <figcaption className="mt-4">
-                    <h3 className="text-lg font-bold">{t.titulo}</h3>
-                    <p className="mt-1 leading-relaxed text-white/60">{t.d}</p>
-                  </figcaption>
-                </figure>
-              ))}
+                )}
+              </div>
             </div>
           </section>
         )}
