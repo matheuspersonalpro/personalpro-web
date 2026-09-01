@@ -224,12 +224,27 @@ export const NUMEROS = [
 // barra de status se der.
 /** @type {{src:string, titulo:string, d:string}[]} */
 export const TELAS_APP = [
-  // { src: '/app/treino.png',   titulo: 'O treino do dia',
-  //   d: 'Séries, repetições, carga e descanso. Você abre e executa.' },
-  // { src: '/app/execucao.png', titulo: 'Vídeo de execução',
-  //   d: 'Na dúvida de como fazer, o vídeo está no próprio exercício.' },
-  // { src: '/app/carga.png',    titulo: 'A sua carga guardada',
-  //   d: 'Cada exercício com o histórico do que você levantou.' },
+  // Prints reais da conta de uma aluna, tirados pelo Matheus em 31/08.
+  //
+  // O "Olá, Gabriela" foi cortado fora do painel -- nome de aluna não vai pra
+  // página pública. É o mesmo cuidado do Reels, e por isso os dois recortes
+  // são diferentes: no painel o corte come 128px pra tirar a saudação; no
+  // treino não há nome nenhum, então corta só a barra de status (128 ali
+  // cortava o título do treino ao meio).
+  //
+  // NÃO EXISTE terceira tela de histórico de carga. Eu tinha pedido uma e o
+  // Matheus corrigiu: o aluno vê só o último valor, em cima do exercício
+  // ("↑ 03/07/2026: 40" no print). O histórico completo é da tela DELE.
+  {
+    src: '/app/treino.jpg',
+    titulo: 'O treino do dia',
+    d: 'Séries, repetições, carga e descanso na tela — e o vídeo de execução dentro do próprio exercício.',
+  },
+  {
+    src: '/app/painel.jpg',
+    titulo: 'Onde você acompanha tudo',
+    d: 'Sua frequência da semana, as fotos de evolução, o seu plano, e eu a um toque de distância.',
+  },
 ];
 
 // O registro profissional, no rodapé.
