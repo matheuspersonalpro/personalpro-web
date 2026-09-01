@@ -217,46 +217,45 @@ export const PLANOS = [
   {
     nome: 'Essencial',
     preco: 'R$ 149,90',
-    // Nao usar a palavra "completo" aqui: e o nome do plano do meio, e dizer
-    // que o Essencial ja e o completo esvazia o de cima antes de a pessoa ler.
-    resumo: 'Todo o treino, com acompanhamento por WhatsApp.',
+    // Não usar a palavra "completo" aqui: é o nome do plano do meio, e dizer
+    // que o Essencial já é o completo esvazia o de cima antes de a pessoa ler.
+    resumo: 'O treino inteiro, com acompanhamento por WhatsApp.',
     itens: [
       'Programa de musculação montado pra você',
       'Corrida ou ciclismo junto, se quiser',
-      'Aplicativo com vídeo de execução dos exercícios',
+      'Vídeo de execução dentro do treino',
       'Registro de carga treino a treino',
       'Treino em PDF pra imprimir',
       'WhatsApp direto comigo, sem limite',
       'Reavaliação a cada 90 dias',
-      'Ajuste do treino sempre que precisar',
+      'Ajuste sempre que você precisar',
     ],
   },
   {
     nome: 'Completo',
     preco: 'R$ 219,90',
     destaque: 'Mais escolhido',
-    resumo: 'Eu vou atrás dos seus números, você não precisa pedir.',
+    // O resumo diz o QUE muda; os itens dizem o que eu FAÇO. Antes o primeiro
+    // item repetia o resumo com as mesmas palavras -- sobrou de quando o
+    // relatório em PDF saiu daqui, e ficou dizendo a mesma coisa duas vezes no
+    // mesmo cartão.
+    resumo: 'Eu vou atrás dos seus números, sem você precisar pedir.',
     herda: 'Essencial',
-    // O RELATÓRIO EM PDF SAIU DAQUI ATÉ EXISTIR. Ele está sendo construído
-    // (a conta da progressão de carga já passa em teste), mas a página está no
-    // ar e alguém pode assinar hoje — vender o que ainda não foi entregue é o
-    // tipo de coisa que só aparece como problema depois, quando o primeiro
-    // aluno cobra. Volta pra cá no dia em que subir no aplicativo.
     itens: [
-      'Revisão mensal do treino olhando as suas cargas',
-      'Eu vou atrás dos seus números, sem você precisar pedir',
-      'Eu te aviso o que mudei e por quê',
+      'Todo mês eu abro o seu histórico de carga',
+      'Troco o que travou, antes de você reclamar',
+      'Você recebe o que mudou e por quê',
     ],
   },
   {
     nome: 'Individual',
     preco: 'R$ 279,90',
-    resumo: 'A execução conferida por mim, ao vivo.',
+    resumo: 'A sua execução conferida por mim, ao vivo.',
     herda: 'Completo',
     itens: [
       'Videochamada de 30 minutos por mês',
-      'Correção de execução ao vivo, com vídeo seu',
-      'O plano do mês seguinte decidido junto',
+      'Você grava dois exercícios e eu corrijo na chamada',
+      'A gente decide junto o mês seguinte',
     ],
   },
 ];

@@ -623,7 +623,7 @@ export default function Treine() {
                       ? 'bg-[#E5484D] text-white hover:bg-[#d63c41]'
                       : 'border border-white/25 text-white hover:border-white/60'
                   }`}>
-                  Quero esse
+                  Quero o {nome}
                 </a>
               </div>
             ))}
