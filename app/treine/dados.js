@@ -127,7 +127,11 @@ export const RECEBE = [
   },
   {
     tag: 'Plataforma',
-    t: 'Treino no aplicativo, com vídeo de cada exercício',
+    // Era "vídeo de CADA exercício". A biblioteca de vídeo é um mapa por nome
+    // de exercício e não cobre a lista inteira -- boa parte dos exercícios do
+    // motor só existe como personalizado, sem vídeo associado. "Com vídeo de
+    // execução" é verdade; "de cada" não era.
+    t: 'Treino no aplicativo, com vídeo de execução',
     d: 'Séries, repetições, carga e descanso na tela. Você abre e executa.',
   },
   {
@@ -217,7 +221,7 @@ export const PLANOS = [
     itens: [
       'Programa de musculação montado pra você',
       'Corrida ou ciclismo junto, se quiser',
-      'Aplicativo com vídeo de cada exercício',
+      'Aplicativo com vídeo de execução dos exercícios',
       'Registro de carga treino a treino',
       'Treino em PDF pra imprimir',
       'WhatsApp direto comigo, sem limite',
@@ -231,9 +235,14 @@ export const PLANOS = [
     destaque: 'Mais escolhido',
     resumo: 'Eu vou atrás dos seus números, você não precisa pedir.',
     herda: 'Essencial',
+    // O RELATÓRIO EM PDF SAIU DAQUI ATÉ EXISTIR. Ele está sendo construído
+    // (a conta da progressão de carga já passa em teste), mas a página está no
+    // ar e alguém pode assinar hoje — vender o que ainda não foi entregue é o
+    // tipo de coisa que só aparece como problema depois, quando o primeiro
+    // aluno cobra. Volta pra cá no dia em que subir no aplicativo.
     itens: [
-      'Relatório de evolução todo mês, em PDF',
       'Revisão mensal do treino olhando as suas cargas',
+      'Eu vou atrás dos seus números, sem você precisar pedir',
       'Eu te aviso o que mudei e por quê',
     ],
   },
@@ -370,17 +379,17 @@ export const PASSOS = [
   {
     quando: 'Agora',
     t: 'Você preenche os seus dados aqui',
-    d: 'Nome, e-mail, CPF e se quer corrida ou ciclismo junto. Um minuto.',
+    d: 'Nome, WhatsApp e se quer corrida ou ciclismo junto. Leva um minuto.',
   },
   {
-    quando: 'Assim que o pagamento confirmar',
-    t: 'Chega o acesso ao aplicativo e a avaliação',
-    d: 'Objetivo, quantos dias por semana você consegue treinar, quanto tempo tem por sessão, onde treina e o que tem lá, há quanto tempo treina, lesão ou dor que eu precise respeitar, e remédio ou condição de saúde que mude alguma coisa.',
+    quando: 'No mesmo dia',
+    t: 'Eu te chamo no WhatsApp',
+    d: 'A gente conversa sobre o seu objetivo e a sua rotina, eu tiro as suas dúvidas, e só então mando a cobrança. Você não paga nada antes de falar comigo.',
   },
   {
-    quando: 'Depois das suas respostas',
-    t: 'Eu monto o seu programa',
-    d: 'Escolho a divisão pelos dias que você tem, monto os treinos em cima da estrutura do seu lugar, e faço a planilha de corrida ou ciclismo se você pediu. Você recebe pelo aplicativo e já treina no mesmo dia.',
+    quando: 'Depois do pagamento',
+    t: 'Chega o seu acesso ao aplicativo',
+    d: 'Com o programa já montado em cima do que você me contou: os dias que você tem, o tempo por sessão e o que existe no lugar onde você treina.',
   },
   {
     quando: 'Nas primeiras semanas',
