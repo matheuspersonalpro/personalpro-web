@@ -484,7 +484,12 @@ export default function Treine() {
 
             <div className="-mx-2.5 mt-8 overflow-hidden">
               <div
-                className="flex transition-transform duration-500 ease-out"
+                // items-start: sem isso, os cartões esticam todos até a
+                // altura do MAIS ALTO DOS OITO -- e não do mais alto da página,
+                // porque o trilho é uma linha só com todos eles. Um depoimento
+                // curto virava um cartão com um vão enorme entre o texto e o
+                // nome, que foi o que o Matheus viu na Fabiana e na Débora.
+                className="flex items-start transition-transform duration-500 ease-out"
                 style={{ transform: `translateX(-${dep * 100}%)` }}
               >
                 {DEPOIMENTOS.map((d, i) => (
@@ -502,7 +507,7 @@ export default function Treine() {
                     className="w-full shrink-0 px-2.5 sm:w-1/2 lg:w-1/3"
                     aria-hidden={Math.floor(i / porPagina) !== dep}
                   >
-                    <figure className="flex h-full flex-col border border-white/12 bg-white/[0.03] p-6">
+                    <figure className="flex flex-col border border-white/12 bg-white/[0.03] p-6">
                       <span aria-hidden className="text-2xl leading-none text-[#E5484D]">&ldquo;</span>
 
                       {/* Título e subtítulo, sempre os dois.
@@ -514,7 +519,11 @@ export default function Treine() {
                       <p className="mt-2 text-lg font-semibold leading-snug text-white">
                         {d.frase}
                       </p>
-                      <p className="mt-2.5 flex-1 text-sm leading-relaxed text-white/60">
+                      {/* Sem flex-1: ele empurrava a legenda pro rodapé do
+                          cartão, o que só fazia sentido quando todos tinham a
+                          mesma altura forçada. Agora a legenda vem logo depois
+                          do texto. */}
+                      <p className="mt-2.5 text-sm leading-relaxed text-white/60">
                         {d.resto}
                       </p>
 

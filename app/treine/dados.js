@@ -65,7 +65,10 @@ export const DEPOIMENTOS = [
     // está inteiro -- os 19 kg batem com o 79→60 dela. Publicar o texto do
     // concorrente com outro nome jogaria suspeita nas transformações REAIS.
     frase: 'Perdi 19 quilos desde que comecei o acompanhamento com o Matheus.',
-    resto: 'Mas o que mais mudou não foi nem o corpo, foi a cabeça: hoje eu tenho uma rotina que eu gosto, consigo manter a disciplina e não falto mais. Nunca me senti tão bem.',
+    // Encurtado: era o mais longo dos oito e puxava a altura de todos os
+    // cartões pra cima. Saiu "consigo manter a disciplina" (que "não falto
+    // mais" já diz) e "nunca me senti tão bem" (elogio, e a página tem outros).
+    resto: 'Mas o que mais mudou não foi o corpo, foi a cabeça: hoje eu tenho uma rotina que eu gosto e não falto mais.',
     quem: 'Juliana',
     detalhe: 'Musculação',
   },
@@ -75,7 +78,7 @@ export const DEPOIMENTOS = [
     // forte, e só a primeira sai em destaque. Enterrada no fim, seria lida por
     // quem já decidiu ler tudo.
     frase: 'Evoluí mais em 3 meses do que em 1 ano sozinha.',
-    resto: 'Minhas pernas e glúteos mudaram muito, e consegui ganhar massa magra sem ficar com aspecto pesado. Treinos muito intensos!',
+    resto: 'Minhas pernas e glúteos mudaram muito, e ganhei massa magra sem ficar com aspecto pesado.',
     quem: 'Talita',
     detalhe: 'Musculação',
   },
@@ -88,7 +91,12 @@ export const DEPOIMENTOS = [
     // conta -- e ele respondeu que não: e um comentário dela, não um item da
     // oferta. Fica registrado pra ninguém transformar isso em promessa depois.
     frase: 'Achei que a consultoria online seria fria, que seria apenas mais um treino.',
-    resto: 'Mas o suporte diário e a correção de vídeos pelo WhatsApp e o bate-papo com o Matheus são impecáveis.',
+    // A menção à correção de vídeo saiu junto do encurtamento, e isso resolve
+    // duas coisas de uma vez: o cartão fica do tamanho dos outros, E a página
+    // para de exibir num depoimento algo que o Matheus confirmou NÃO fazer
+    // parte da oferta. Ficar ali era prometer pela boca de uma aluna o que os
+    // planos não prometem.
+    resto: 'Mas o suporte diário e o bate-papo com o Matheus são impecáveis.',
     quem: 'Renata',
     detalhe: 'Musculação',
   },
@@ -118,7 +126,7 @@ export const DEPOIMENTOS = [
     // Corrida. O melhor da lista pra quem nunca correu: nomeia o motivo real de
     // desistir, o que resolveu, e um marco que qualquer um entende.
     frase: 'Sempre parei por falta de ar.',
-    resto: 'Com a planilha personalizada, aprendi a controlar meu ritmo e hoje corro meus primeiros 5 km sem parar.',
+    resto: 'Aprendi a controlar meu ritmo e hoje corro meus primeiros 5 km sem parar.',
     quem: 'Fabiana',
     detalhe: 'Corrida',
   },
