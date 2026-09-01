@@ -40,117 +40,81 @@ export const FOTOS_TOPO = [
 /** @type {{texto:string, quem:string, detalhe?:string}[]} */
 export const DEPOIMENTOS = [
   // OITO depoimentos: quatro de musculação e quatro de endurance (dois de
-  // ciclismo, dois de corrida).
+  // ciclismo, dois de corrida). O equilíbrio importa porque a página vende TRÊS
+  // modalidades -- com prova só de musculação, "ciclismo e corrida junto" era a
+  // única promessa sem ninguém confirmando, e é a mais fácil de duvidar.
   //
-  // O equilíbrio importa porque a página vende TRÊS modalidades. Com prova só
-  // de musculação, a linha "corrida ou ciclismo junto" fica sendo a única
-  // promessa da página sem ninguém confirmando.
+  // Chegaram nove. Saíram Fernanda, Mario e Célia pelo critério "fica quem diz
+  // algo ESPECÍFICO, sai quem elogia" -- "o suporte é maravilhoso" soa bem e não
+  // prova nada. Os textos estão no histórico do git.
   //
-  // Chegaram nove. O Matheus pediu pra tirar três de musculação e abrir espaço
-  // pros de bike, e o critério foi: fica quem diz algo ESPECÍFICO, sai quem
-  // elogia. "O suporte é maravilhoso" e "me sinto acompanhado o tempo todo"
-  // são elogio -- soam bem e não provam nada, e é justamente o tipo de frase
-  // que faz o leitor desconfiar do conjunto inteiro.
+  // CADA UM TEM DUAS PARTES, e isso não é enfeite: no cartão a `frase` sai
+  // grande e o `resto` pequeno. Antes o corte era automático, no primeiro ponto
+  // final -- e quem mandou uma frase só (Fabio, Leonardo, Renata) ficava sem
+  // subtítulo, com o cartão visivelmente diferente dos outros. O Matheus viu na
+  // hora.
   //
-  // Saíram: Fernanda ("roupas voltaram a servir. O suporte é maravilhoso"),
-  // Mario ("me sinto acompanhado o tempo todo") e Célia ("pela primeira vez
-  // consigo ser constante" -- essa doeu, mas o ponto dela sobre encaixar na
-  // rotina corrida ficou coberto pelo Leonardo, que diz a mesma coisa com
-  // horário e resultado). Os textos estão no histórico do git.
-  //
-  // Cada um que ficou prova uma coisa diferente: número (Juliana),
-  // comparação com treinar sozinha (Talita), objeção vencida (Renata),
-  // cabeça e autoestima (Karina), e endurance (Fabio, Leonardo).
-
-  // Juliana — a mesma aluna das fotos, que já tinha autorizado a publicação.
-  //
-  // O CONTEÚDO É DELA, A REDAÇÃO NÃO É A ORIGINAL. O texto que chegou era,
-  // frase por frase, o depoimento da Just Move (o concorrente da cidade que o
-  // próprio Matheus mandou de referência), com o número e o nome trocados. Ele
-  // confirmou que a Juliana disse aquilo e assinou embaixo, então o sentido
-  // está preservado inteiro -- os 19 kg batem com o 79→60 que ele passou. O
-  // que mudou foi a escrita: publicar o texto do concorrente com outro nome
-  // jogaria suspeita nas três transformações REAIS logo acima na página.
-  //
-  // A primeira frase aparece MAIOR no cartão, então ela sozinha tem que valer
-  // a leitura -- por isso o número abre o depoimento.
+  // Onde a pessoa escreveu tudo emendado, a divisão é de PONTUAÇÃO, não de
+  // palavra: entra um ponto onde havia vírgula ou nada. Nenhuma palavra foi
+  // trocada, tirada ou reordenada -- com uma exceção, marcada na Talita.
   {
-    texto:
-      'Perdi 19 quilos desde que comecei o acompanhamento com o Matheus. ' +
-      'Mas o que mais mudou não foi nem o corpo, foi a cabeça: hoje eu tenho ' +
-      'uma rotina que eu gosto, consigo manter a disciplina e não falto mais. ' +
-      'Nunca me senti tão bem.',
+    // O conteúdo é dela, a redação não é a que chegou: o texto original era,
+    // frase por frase, o depoimento da Just Move (o concorrente que o próprio
+    // Matheus mandou de referência) com o número e o nome trocados. Ele
+    // confirmou que a Juliana disse aquilo e assinou embaixo, então o sentido
+    // está inteiro -- os 19 kg batem com o 79→60 dela. Publicar o texto do
+    // concorrente com outro nome jogaria suspeita nas transformações REAIS.
+    frase: 'Perdi 19 quilos desde que comecei o acompanhamento com o Matheus.',
+    resto: 'Mas o que mais mudou não foi nem o corpo, foi a cabeça: hoje eu tenho uma rotina que eu gosto, consigo manter a disciplina e não falto mais. Nunca me senti tão bem.',
     quem: 'Juliana',
   },
   {
-    // Ela trocou o depoimento em 31/08. Chegou como três frases soltas, e a
-    // ÚNICA edição foi de ORDEM, não de palavra: a comparação com o ano
-    // sozinha veio por último e é de longe a frase mais forte -- e no cartão só
-    // a primeira frase sai em destaque.
-    texto:
-      'Evoluí mais em 3 meses do que em 1 ano sozinha. Minhas pernas e ' +
-      'glúteos mudaram muito, e consegui ganhar massa magra sem ficar com ' +
-      'aspecto pesado. Treinos muito intensos!',
+    // A ÚNICA edição de ordem em toda a lista. Chegou como três frases soltas e
+    // a comparação com o ano sozinha veio por último -- sendo de longe a mais
+    // forte, e só a primeira sai em destaque. Enterrada no fim, seria lida por
+    // quem já decidiu ler tudo.
+    frase: 'Evoluí mais em 3 meses do que em 1 ano sozinha.',
+    resto: 'Minhas pernas e glúteos mudaram muito, e consegui ganhar massa magra sem ficar com aspecto pesado. Treinos muito intensos!',
     quem: 'Talita',
   },
   {
-    // Único que ataca a objeção de frente ("achei que seria fria"), e por isso
-    // vale mesmo sendo o mais longo. Cita correção de vídeo pelo WhatsApp --
-    // coisa que ele faz e a página NÃO conta em lugar nenhum. Pergunta aberta
-    // pro Matheus: se vale pra todo mundo, é argumento de venda perdido.
-    texto:
-      'Achei que a consultoria online seria fria, que seria apenas mais um ' +
-      'treino, mas o suporte diário e a correção de vídeos pelo WhatsApp e o ' +
-      'bate-papo com o Matheus são impecáveis.',
+    // O único que ataca a objeção de frente. Cita correção de vídeo pelo
+    // WhatsApp -- coisa que ele faz e a página NÃO conta em lugar nenhum.
+    // Pergunta aberta pro Matheus: se vale pra todo mundo, é venda perdida.
+    frase: 'Achei que a consultoria online seria fria, que seria apenas mais um treino.',
+    resto: 'Mas o suporte diário e a correção de vídeos pelo WhatsApp e o bate-papo com o Matheus são impecáveis.',
     quem: 'Renata',
   },
   {
-    // "Resultado real e sem neura" é a melhor primeira frase do conjunto:
-    // responde sozinha a objeção de quem acha que consultoria online vira
-    // obsessão com dieta e balança.
-    texto:
-      'Resultado real e sem neura. Minha autoestima mudou completamente: ' +
-      'olho no espelho e amo o que vejo hoje.',
+    // "Resultado real e sem neura" é a melhor abertura do conjunto: responde
+    // sozinha a objeção de quem acha que consultoria vira obsessão com balança.
+    frase: 'Resultado real e sem neura.',
+    resto: 'Minha autoestima mudou completamente: olho no espelho e amo o que vejo hoje.',
     quem: 'Karina',
   },
   {
-    // Os dois abaixo provam a parte de ENDURANCE, que é a promessa mais fácil
-    // de duvidar num personal -- quase todo mundo diz que faz. Sem eles, os
-    // depoimentos falavam só de musculação enquanto a página vendia as três
-    // modalidades.
-    //
-    // Ficaria mais forte com a modalidade dita ("média de velocidade" sugere
-    // bike). Perguntado ao Matheus.
-    texto:
-      'Minha média de velocidade subiu muito em apenas 2 meses de treino ' +
-      'estruturado.',
+    // Ciclismo. Veio numa frase só; o ponto entrou antes de "em apenas".
+    frase: 'Minha média de velocidade subiu muito.',
+    resto: 'Em apenas 2 meses de treino estruturado.',
     quem: 'Fabio',
   },
   {
-    // Este é o mais completo dos dois: diz o método (curto e intenso no rolo
-    // durante a semana) e o resultado (rendimento no fim de semana). É a prova
-    // de que existe periodização de verdade por trás, e não uma planilha
-    // qualquer de bike.
-    texto:
-      'Os treinos curtos e intensos no rolo durante a semana mudaram meu ' +
-      'rendimento no fim de semana.',
+    // Ciclismo. Veio numa frase só; o ponto entrou antes do verbo.
+    frase: 'Treinos curtos e intensos no rolo durante a semana.',
+    resto: 'Mudaram completamente o meu rendimento no fim de semana.',
     quem: 'Leonardo',
   },
   {
-    // Os dois de CORRIDA. O da Fabiana é o melhor de toda a lista pra quem
-    // nunca correu: nomeia o motivo real de desistir ("sempre parei por falta
-    // de ar"), o que resolveu (aprender a controlar o ritmo) e um marco que
-    // qualquer um entende (5 km sem parar). Quem lê e nunca correu se vê ali.
-    texto:
-      'Sempre parei por falta de ar. Com a planilha personalizada, aprendi a ' +
-      'controlar meu ritmo e hoje corro meus primeiros 5 km sem parar.',
+    // Corrida. O melhor da lista pra quem nunca correu: nomeia o motivo real de
+    // desistir, o que resolveu, e um marco que qualquer um entende.
+    frase: 'Sempre parei por falta de ar.',
+    resto: 'Com a planilha personalizada, aprendi a controlar meu ritmo e hoje corro meus primeiros 5 km sem parar.',
     quem: 'Fabiana',
   },
   {
-    texto:
-      'Antes da consultoria, eu achava que correr era só colocar o tênis e ' +
-      'ir. Hoje entendo de ritmo, variação de treino e me sinto muito mais ' +
-      'segura.',
+    // Corrida.
+    frase: 'Eu achava que correr era só colocar o tênis e ir.',
+    resto: 'Hoje entendo de ritmo, variação de treino, e me sinto muito mais segura.',
     quem: 'Débora',
   },
 ];

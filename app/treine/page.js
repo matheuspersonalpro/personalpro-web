@@ -505,31 +505,18 @@ export default function Treine() {
                     <figure className="flex h-full flex-col border border-white/12 bg-white/[0.03] p-6">
                       <span aria-hidden className="text-2xl leading-none text-[#E5484D]">&ldquo;</span>
 
-                      {/* A primeira frase sai maior: quem passa o olho lê só
-                          ela. Mas só quando é CURTA -- o depoimento da Renata é
-                          uma frase única e longa, e sem o limite o cartão
-                          inteiro saía em corpo grande. Destaque deixa de
-                          destacar quando é tudo. */}
-                      {(() => {
-                        const partes = d.texto.split(/(?<=\.)\s/);
-                        const resto = partes.slice(1).join(" ").trim();
-                        const destacar = partes[0].length <= 95 && !!resto;
-                        if (!destacar) {
-                          return (
-                            <p className="mt-2 flex-1 font-semibold leading-snug text-white">
-                              {d.texto}
-                            </p>
-                          );
-                        }
-                        return (
-                          <>
-                            <p className="mt-2 text-lg font-semibold leading-snug text-white">
-                              {partes[0]}
-                            </p>
-                            <p className="mt-2.5 flex-1 text-sm leading-relaxed text-white/60">{resto}</p>
-                          </>
-                        );
-                      })()}
+                      {/* Título e subtítulo, sempre os dois.
+                          O corte era automático, no primeiro ponto final — e
+                          quem mandou o depoimento numa frase só ficava sem
+                          subtítulo, com o cartão visivelmente diferente dos
+                          vizinhos. Agora as duas partes vêm definidas uma a uma
+                          em dados.js, e nenhum cartão sai torto. */}
+                      <p className="mt-2 text-lg font-semibold leading-snug text-white">
+                        {d.frase}
+                      </p>
+                      <p className="mt-2.5 flex-1 text-sm leading-relaxed text-white/60">
+                        {d.resto}
+                      </p>
 
                       <figcaption className="mt-5 border-t border-white/10 pt-4">
                         <p className="text-sm font-semibold leading-tight">{d.quem}</p>
