@@ -382,12 +382,16 @@ export const PASSOS = [
     d: 'Nome, WhatsApp e se quer corrida ou ciclismo junto. Leva um minuto.',
   },
   {
+    // Falava em "mando a cobrança", e o Matheus cortou com razão: dinheiro no
+    // primeiro contato esfria a conversa. A tranquilidade que a frase queria
+    // passar — que ninguém paga às cegas — continua aqui, mas dita pelo lado
+    // que interessa a quem lê: primeiro a gente conversa.
     quando: 'No mesmo dia',
     t: 'Eu te chamo no WhatsApp',
-    d: 'A gente conversa sobre o seu objetivo e a sua rotina, eu tiro as suas dúvidas, e só então mando a cobrança. Você não paga nada antes de falar comigo.',
+    d: 'A gente conversa sobre o seu objetivo, a sua rotina e o que você já treinou até aqui. Nada é decidido antes dessa conversa.',
   },
   {
-    quando: 'Depois do pagamento',
+    quando: 'Quando você quiser começar',
     t: 'Chega o seu acesso ao aplicativo',
     d: 'Com o programa já montado em cima do que você me contou: os dias que você tem, o tempo por sessão e o que existe no lugar onde você treina.',
   },
