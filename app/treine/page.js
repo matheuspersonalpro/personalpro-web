@@ -101,6 +101,17 @@ export default function Treine() {
   // fila de transformações precisou.
   const [telaParada, setTelaParada] = useState(false);
 
+  // O NAVEGADOR DE CELULAR FINGE UM MOUSE. Depois de um toque ele dispara
+  // mouseenter, e o mouseleave correspondente nunca vem -- é a mesma armadilha
+  // do :hover grudado, só que em JavaScript. Sem esta checagem, `telaParada`
+  // ficava preso em true no primeiro toque e a troca automática não voltava
+  // mais: só as bolinhas funcionavam, que foi o que o Matheus viu.
+  //
+  // Na fila das transformações o mesmo problema foi resolvido por media query
+  // no CSS; aqui, como o controle é de código, a pergunta é feita na hora.
+  const temMouse = () =>
+    window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
   useEffect(() => {
     if (TELAS_APP.length < 2 || telaParada) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -408,8 +419,8 @@ export default function Treine() {
 
             <div
               className="mt-10 overflow-hidden"
-              onMouseEnter={() => setTelaParada(true)}
-              onMouseLeave={() => setTelaParada(false)}
+              onMouseEnter={() => { if (temMouse()) setTelaParada(true); }}
+              onMouseLeave={() => { if (temMouse()) setTelaParada(false); }}
               onTouchStart={() => setTelaParada(true)}
               onTouchEnd={() => setTelaParada(false)}
               onTouchCancel={() => setTelaParada(false)}
