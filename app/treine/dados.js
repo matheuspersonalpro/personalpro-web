@@ -183,6 +183,21 @@ export const TRANSFORMACOES = [
     depois: '/prova/renata-depois.jpg',
     quem: 'Renata, 41 anos',
   },
+  // O Everton chegou depois: em 30/08 so existia a foto do ANTES, e o par so
+  // ficou completo em 02/09, quando ele mandou a de agora.
+  //
+  // No "antes" a esposa aparecia na frente segurando o celular -- o braco dela
+  // foi removido, a pedido do Matheus, pra sobrar so ele.
+  //
+  // As duas foram recortadas na MESMA fatia de corpo (cabeca ate o quadril).
+  // A do antes e de perto e a do depois e num espelho de corpo inteiro: sem
+  // equalizar, ele apareceria menor por causa da distancia da camera, e a
+  // comparacao mentiria a favor.
+  {
+    antes: '/prova/everton-antes.jpg',
+    depois: '/prova/everton-depois.jpg',
+    quem: 'Everton, 38 anos',
+  },
 ];
 
 // Confirmados pelo Matheus em 01/09/2026. Estavam comentados desde que a
