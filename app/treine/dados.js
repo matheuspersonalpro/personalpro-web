@@ -376,9 +376,16 @@ export const RECEBE = [
 // Ninguém cobra pelo canal. O que se cobra é o olhar periódico.
 //
 // A escada, então, é uma frase por plano:
-//   Essencial  -- "eu monto, você executa."       check-in mensal
-//   Completo   -- "a cada 15 dias eu olho e mexo." check-in quinzenal
-//   Individual -- "me corrige agora."              check-in semanal + ao vivo
+//   Essencial  -- "eu monto, você executa."        revisão mensal
+//   Completo   -- "a cada 15 dias eu olho e mexo."  revisão quinzenal
+//   Individual -- "eu te vejo treinar."             quinzenal + chamada ao vivo
+//
+// O Individual chegou a ser escrito com revisão SEMANAL, e o Matheus fez a
+// conta do tempo dele: dava ~70 min por aluno/mês, contra ~30 do Completo.
+// Preferiu quinzenal nos dois e concentrar o degrau todo na chamada -- que
+// é a coisa que o Completo não tem de jeito nenhum, e a única da página
+// inteira em que ele aparece ao vivo. Cadência igual nos dois não achata a
+// escada: o degrau mudou de eixo.
 //
 // O QUE NÃO PODE SER FEITO continua valendo: fatiar por modalidade, deixando
 // corrida e ciclismo num plano separado. Hoje o endurance entra no mesmo valor,
@@ -438,7 +445,16 @@ export const PLANOS = [
       // O item mais usado do mercado pra justificar o tier do meio, e o que
       // responde o medo real de quem treina sozinho: "estou fazendo certo?".
       // Ele já faz isso ao vivo no Individual -- aqui é assíncrono.
-      'Você grava a execução e eu corrijo por vídeo',
+      //
+      // Eu propus um teto ("até 3 exercícios por mês") porque sem número o
+      // combinado é ilimitado, e um aluno sozinho poderia consumir mais tempo
+      // que um Individual inteiro. O Matheus recusou, e a razão dele é
+      // melhor: ninguém sai mandando tudo do nada -- manda o exercício em que
+      // tem dúvida. Pôr número onde não existe problema cria burocracia e faz
+      // a pessoa contar vídeo em vez de tirar a dúvida.
+      //
+      // Se um dia virar problema de volume, o conserto é este item aqui.
+      'Ficou em dúvida num exercício? Grava e eu corrijo por vídeo',
       'Relatório de evolução todo mês, em PDF',
       // Diferença técnica de verdade, e o motor do app calcula: VDOT (Daniels)
       // na corrida, teste de 20 min (Coggan) no ciclismo.
@@ -450,13 +466,12 @@ export const PLANOS = [
   {
     nome: 'Individual',
     preco: 'R$ 279,90',
-    resumo: 'Toda semana, e comigo na sua frente uma vez por mês.',
+    resumo: 'Uma vez por mês eu te vejo treinar e corrijo na hora.',
     herda: 'Completo',
     itens: [
-      'Revisão toda semana',
-      'Videochamada de 30 minutos por mês',
-      'A execução conferida ao vivo, comigo te corrigindo na hora',
-      'A gente decide junto o mês seguinte',
+      'Videochamada de 30 minutos, todo mês',
+      'Você treina na minha frente e eu corrijo na hora',
+      'A gente decide junto o mês seguinte, na chamada',
     ],
     // A preparação para prova entra nos DOIS de cima, mas o card do Individual
     // não repete: ele já diz "tudo do Completo, mais".
