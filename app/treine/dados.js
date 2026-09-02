@@ -198,6 +198,18 @@ export const TRANSFORMACOES = [
     depois: '/prova/everton-depois.jpg',
     quem: 'Everton, 38 anos',
   },
+  // As duas do Fabio sao de roupa social, e nao de academia como as outras --
+  // uma foto profissional e uma no escritorio. Nao tem problema: a mudanca
+  // aparece no rosto e no tronco, e roupa social ate ajuda, porque e o mesmo
+  // tipo de roupa nas duas.
+  //
+  // A do depois foi recortada a partir de 130px do topo pra tirar o icone de
+  // recorte do proprio celular, que tinha ficado no print.
+  {
+    antes: '/prova/fabio-antes.jpg',
+    depois: '/prova/fabio-depois.jpg',
+    quem: 'Fabio, 47 anos',
+  },
 ];
 
 // Confirmados pelo Matheus em 01/09/2026. Estavam comentados desde que a
