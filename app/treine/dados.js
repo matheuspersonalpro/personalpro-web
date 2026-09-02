@@ -712,6 +712,18 @@ export const FAQ = [
     r: 'Você me avisa e eu remonto. O que quebra o acompanhamento não é a semana que você perdeu — é a semana perdida que eu só descubro um mês depois, com o treino seguinte já montado em cima de um dado que não era verdade.',
   },
   {
+    // Pergunta do próprio Matheus: quem quer treinar com ele PRESENCIAL não
+    // tinha por onde falar. A página inteira diz "consultoria online" e o
+    // formulário manda uma mensagem de consultoria -- essa pessoa chegava e
+    // ia embora sem caminho.
+    //
+    // Sem valor nem cidade escritos aqui: ele não me disse nenhum dos dois, e
+    // inventar preço de presencial numa página pública é criar uma conversa
+    // ruim antes dela começar.
+    q: 'Você atende presencial também?',
+    r: 'Atendo. Esta página é da consultoria online, mas se você prefere treinar comigo pessoalmente é só me chamar no WhatsApp — a gente vê horário, local e valor por lá.',
+  },
+  {
     q: 'As fotos são obrigatórias?',
     r: 'São como eu enxergo a sua evolução à distância — sem elas, o ajuste vira chute. Você manda no primeiro dia e a cada 12 semanas. Elas ficam guardadas na sua conta dentro do aplicativo, visíveis só pra você e pra mim.',
   },

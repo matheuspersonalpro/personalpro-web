@@ -1065,6 +1065,26 @@ export default function Treine() {
               className="w-full bg-[#E5484D] px-8 py-5 text-lg font-bold text-white transition hover:bg-[#d63c41]">
               Continuar
             </button>
+
+            {/* Saída pra quem quer PRESENCIAL. Fica embaixo do botão, e não
+                acima: quem chegou até aqui já rolou a página inteira da
+                consultoria, então esta é a hora em que a pessoa errada
+                percebe que está no lugar errado -- e ela precisa de um
+                caminho, não de um beco.
+
+                Discreto de propósito: se competir com o Continuar, tira
+                gente do que a página inteira está vendendo. */}
+            <p className="pt-2 text-center text-sm text-white/45">
+              Quer treinar comigo presencialmente?{' '}
+              <a
+                href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(
+                  'Olá Matheus! Vi a sua página e queria saber sobre o treino presencial.',
+                )}`}
+                className="font-semibold text-white/75 underline underline-offset-4 transition hover:text-white"
+              >
+                Me chama no WhatsApp
+              </a>
+            </p>
           </form>
         </section>
 
