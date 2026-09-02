@@ -378,7 +378,7 @@ export const RECEBE = [
 // A escada, então, é uma frase por plano:
 //   Essencial  -- "eu monto, você executa."        revisão mensal
 //   Completo   -- "a cada 15 dias eu olho e mexo."  revisão quinzenal
-//   Individual -- "eu te vejo treinar."             quinzenal + chamada ao vivo
+//   Individual -- "meia hora por mês, só sua."       quinzenal + consulta ao vivo
 //
 // O Individual chegou a ser escrito com revisão SEMANAL, e o Matheus fez a
 // conta do tempo dele: dava ~70 min por aluno/mês, contra ~30 do Completo.
@@ -479,12 +479,23 @@ export const PLANOS = [
   {
     nome: 'Individual',
     preco: 'R$ 279,90',
-    resumo: 'Uma vez por mês eu te vejo treinar e corrijo na hora.',
+    // A CHAMADA NÃO É NA ACADEMIA, e essa correção é do Matheus: "se acha que
+    // o cara vai me ligar ao vivo na academia? isso faz sentido?". Não faz --
+    // ninguém filma a série com o celular apoiado no banco e gente esperando
+    // o aparelho. Eu tinha escrito sem imaginar a cena.
+    //
+    // O modelo que funciona é o da RP Strength: a pessoa está EM CASA,
+    // sentada, e a chamada é uma consulta -- veem juntos os vídeos que ela
+    // gravou durante o mês, a evolução da carga, e fecham o mês seguinte.
+    // O vídeo continua sendo gravado na academia, como no Completo; o que
+    // muda é ter meia hora de conversa em cima dele.
+    resumo: 'Meia hora por mês, só sua: a gente senta e olha o seu mês junto.',
     herda: 'Completo',
     itens: [
-      'Videochamada de 30 minutos, todo mês',
-      'Você treina na minha frente e eu corrijo na hora',
-      'A gente decide junto o mês seguinte, na chamada',
+      'Videochamada de 30 minutos, todo mês, marcada com você',
+      'A gente vê os seus vídeos juntos e eu explico o que mudar',
+      'Sua evolução aberta na tela, exercício por exercício',
+      'O mês seguinte decidido ali, com você junto',
     ],
     // A preparação para prova entra nos DOIS de cima, mas o card do Individual
     // não repete: ele já diz "tudo do Completo, mais".
