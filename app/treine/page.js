@@ -107,7 +107,10 @@ export default function Treine() {
     // O `foto` na lista de dependências é de propósito: cada troca reinicia a
     // contagem. Sem isso, clicar na seta faltando meio segundo pro tempo
     // acabar mostraria a foto escolhida por um piscar só.
-    const t = setTimeout(() => setFoto((i) => (i + 1) % FOTOS_TOPO.length), 5000);
+    // 3 s, a pedido do Matheus. Eram 5, e ele achou lento: quem chega na
+    // pagina precisa ver que existem varias fotos ANTES de decidir rolar, e
+    // 5 segundos parados fazem a primeira parecer a unica.
+    const t = setTimeout(() => setFoto((i) => (i + 1) % FOTOS_TOPO.length), 3000);
     return () => clearTimeout(t);
   }, [foto]);
 
