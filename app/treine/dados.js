@@ -721,7 +721,11 @@ export const FAQ = [
     // inventar preço de presencial numa página pública é criar uma conversa
     // ruim antes dela começar.
     q: 'Você atende presencial também?',
-    r: 'Atendo. Esta página é da consultoria online, mas se você prefere treinar comigo pessoalmente é só me chamar no WhatsApp — a gente vê horário, local e valor por lá.',
+    // "a gente vê horário, local e valor por lá" saiu a pedido do Matheus:
+    // detalhe de horário e preço morre no WhatsApp, não numa página pública.
+    // O que a resposta precisa fazer aqui é só uma coisa -- dizer que existe e
+    // apontar o caminho.
+    r: 'Atendo. Esta página é da consultoria online — se você prefere treinar comigo pessoalmente, é só me chamar no WhatsApp.',
   },
   {
     q: 'As fotos são obrigatórias?',
