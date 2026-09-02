@@ -433,10 +433,23 @@ export const PLANOS = [
     nome: 'Completo',
     preco: 'R$ 219,90',
     destaque: 'Mais escolhido',
-    // O resumo diz a CADÊNCIA, que é o que muda de verdade. A versão anterior
-    // dizia "eu vou atrás dos seus números, sem você precisar pedir" -- bonito,
-    // mas sem número nenhum a pessoa não sabia se isso era uma vez por ano.
-    resumo: 'A cada 15 dias eu abro os seus números e mexo — sem você pedir.',
+    // Terceira escrita deste resumo, e as duas anteriores caíram pelo mesmo
+    // tipo de defeito.
+    //
+    // "Eu vou atrás dos seus números, sem você precisar pedir" não dizia
+    // frequência nenhuma -- podia ser uma vez por ano.
+    //
+    // "A cada 15 dias eu abro os seus números e mexo, sem você pedir" ganhou a
+    // frequência mas o Matheus cortou o rabo da frase: "sem você pedir" é
+    // promessa de vendedor, e "os seus números" é vago a ponto de ele mesmo
+    // perguntar quais seriam.
+    //
+    // O que existe de verdade é ESPECÍFICO, e por isso entra com nome: o app
+    // grava cada série de cada exercício, todo dia, desde sempre
+    // (`historicoCargas`), e o relatório já separa o que subiu do que travou
+    // (`progressaoPorExercicio`). Dizer "histórico de carga" é mais forte que
+    // "seus números" justamente porque é uma coisa só, que existe e tem nome.
+    resumo: 'A cada 15 dias eu abro o seu histórico de carga e mexo no que travou.',
     herda: 'Essencial',
     itens: [
       // O primeiro item é o degrau. Vem antes de tudo porque é o que a pessoa
