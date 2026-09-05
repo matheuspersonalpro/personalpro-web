@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.matheuspersonalpro.personalpro",
+      "sha256_cert_fingerprints": [
+        "CD:2F:7C:13:22:AD:DC:5B:77:E7:B1:FC:B1:A6:10:30:12:9B:24:6E:EB:EB:F3:50:32:37:7F:C4:15:23:EC:98"
+      ]
+    }
+  }
+]

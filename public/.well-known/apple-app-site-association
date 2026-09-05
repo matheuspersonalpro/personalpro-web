@@ -1,0 +1,24 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "7AKBVBQU6B.com.matheuspersonalpro.personalpro"
+        ],
+        "components": [
+          {
+            "/": "/convite/*",
+            "?": {
+              "codigo": "*"
+            },
+            "comment": "Convite do aluno (com codigo)"
+          },
+          {
+            "/": "/convite/*",
+            "comment": "Convite do aluno"
+          }
+        ]
+      }
+    ]
+  }
+}
