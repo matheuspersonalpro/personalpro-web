@@ -1,0 +1,1754 @@
+[
+  {
+    "id": "supino_reto_com_barra",
+    "nome": "Supino Reto com Barra",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "supino_inclinado_com_barra",
+    "nome": "Supino Inclinado com Barra",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "supino_declinado_com_barra",
+    "nome": "Supino Declinado com Barra",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "supino_reto_com_halteres",
+    "nome": "Supino Reto com Halteres",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "supino_inclinado_com_halteres",
+    "nome": "Supino Inclinado com Halteres",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "supino_declinado_com_halteres",
+    "nome": "Supino Declinado com Halteres",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "supino_reto_na_m_quina",
+    "nome": "Supino Reto na Máquina",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "supino_reto_articulado",
+    "nome": "Supino Reto Articulado",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "supino_inclinado_na_m_quina",
+    "nome": "Supino Inclinado na Máquina",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "supino_declinado_na_m_quina",
+    "nome": "Supino Declinado na Máquina",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "supino_m_quina_unilateral",
+    "nome": "Supino Máquina Unilateral",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "supino_m_quina_deitado_pegada_fechada",
+    "nome": "Supino Máquina Deitado (Pegada Fechada)",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "crucifixo_reto_com_halteres",
+    "nome": "Crucifixo Reto com Halteres",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "crucifixo_inclinado_com_halteres",
+    "nome": "Crucifixo Inclinado com Halteres",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "crucifixo_declinado_com_halteres",
+    "nome": "Crucifixo Declinado com Halteres",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "fly_na_polia",
+    "nome": "Fly na Polia",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "cross_over",
+    "nome": "Cross Over",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "crossover_alto_para_baixo",
+    "nome": "Crossover Alto para Baixo",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "crossover_baixo_para_cima",
+    "nome": "Crossover Baixo para Cima",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "voador_peck_deck",
+    "nome": "Voador (Peck Deck)",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "crucifixo_m_quina_deitado",
+    "nome": "Crucifixo Máquina Deitado",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "flex_o_de_bra_o",
+    "nome": "Flexão de Braço",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "flex_o_de_bra_os_fechada",
+    "nome": "Flexão de Braços Fechada",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "flex_o_inclinada",
+    "nome": "Flexão Inclinada",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "flex_o_declinada",
+    "nome": "Flexão Declinada",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "mergulho_nas_paralelas_peitoral",
+    "nome": "Mergulho nas Paralelas (Peitoral)",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "pullover_com_halter",
+    "nome": "Pullover com Halter",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "pullover_na_polia",
+    "nome": "Pullover na Polia",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "supino_com_corrente",
+    "nome": "Supino com Corrente",
+    "grupoMuscular": "Peitoral",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_frontal_com_barra",
+    "nome": "Puxada Frontal com Barra",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_aberta",
+    "nome": "Puxada Aberta",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_fechada_tri_ngulo",
+    "nome": "Puxada Fechada / Triângulo",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_pronada",
+    "nome": "Puxada Pronada",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_supinada",
+    "nome": "Puxada Supinada",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_neutra_na_polia",
+    "nome": "Puxada Neutra na Polia",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_com_corda",
+    "nome": "Puxada com Corda",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_na_m_quina",
+    "nome": "Puxada na Máquina",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_m_quina_neutra",
+    "nome": "Puxada Máquina Neutra",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_articulada",
+    "nome": "Puxada Articulada",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_articulada_neutra",
+    "nome": "Puxada Articulada Neutra",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_articulada_supinada",
+    "nome": "Puxada Articulada Supinada",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_neutra_unilateral",
+    "nome": "Puxada Neutra Unilateral",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_supinada_unilateral",
+    "nome": "Puxada Supinada Unilateral",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "barra_fixa",
+    "nome": "Barra Fixa",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "barra_fixa_supinada",
+    "nome": "Barra Fixa Supinada",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_curvada_com_barra",
+    "nome": "Remada Curvada com Barra",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_com_haltere_serrote",
+    "nome": "Remada com Haltere (Serrote)",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_sentada_na_polia",
+    "nome": "Remada Sentada na Polia",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_sentada_na_m_quina",
+    "nome": "Remada Sentada na Máquina",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_unilateral_na_polia",
+    "nome": "Remada Unilateral na Polia",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_iso_na_m_quina",
+    "nome": "Remada ISO na Máquina",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_alta_na_m_quina",
+    "nome": "Remada Alta na Máquina",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_articulada_neutra",
+    "nome": "Remada Articulada Neutra",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_articulada_neutra_unilateral",
+    "nome": "Remada Articulada Neutra Unilateral",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_articulada_supinada",
+    "nome": "Remada Articulada Supinada",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_articulada_unilateral",
+    "nome": "Remada Articulada Unilateral",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_m_quina_aberta",
+    "nome": "Remada Máquina Aberta",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_m_quina_fechado",
+    "nome": "Remada Máquina Fechado",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_m_quina_unilateral",
+    "nome": "Remada Máquina Unilateral",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_cavalinho",
+    "nome": "Remada Cavalinho",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "remada_invertida",
+    "nome": "Remada Invertida",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_de_bra_o_estendido",
+    "nome": "Puxada de Braço Estendido",
+    "grupoMuscular": "Dorsal",
+    "equipamento": null
+  },
+  {
+    "id": "desenvolvimento_com_barra_frontal",
+    "nome": "Desenvolvimento com Barra Frontal",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "desenvolvimento_com_barra_por_tr_s",
+    "nome": "Desenvolvimento com Barra por Trás",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "desenvolvimento_com_halteres",
+    "nome": "Desenvolvimento com Halteres",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "desenvolvimento_arnold",
+    "nome": "Desenvolvimento Arnold",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "desenvolvimento_na_m_quina",
+    "nome": "Desenvolvimento na Máquina",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_lateral_com_halteres",
+    "nome": "Elevação Lateral com Halteres",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_lateral_na_polia",
+    "nome": "Elevação Lateral na Polia",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_lateral_unilateral_na_polia",
+    "nome": "Elevação Lateral Unilateral na Polia",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_lateral_na_m_quina",
+    "nome": "Elevação Lateral na Máquina",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_lateral_45",
+    "nome": "Elevação Lateral 45°",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "delt_ide_m_quina",
+    "nome": "Deltóide Máquina",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "desenvolvimento_m_quina_articulada",
+    "nome": "Desenvolvimento Máquina Articulada",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_frontal_com_barra",
+    "nome": "Elevação Frontal com Barra",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_frontal_com_halter",
+    "nome": "Elevação Frontal com Halter",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_frontal_na_polia",
+    "nome": "Elevação Frontal na Polia",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_frontal_com_corda",
+    "nome": "Elevação Frontal com Corda",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_posterior_com_halteres",
+    "nome": "Elevação Posterior com Halteres",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "crucifixo_invertido",
+    "nome": "Crucifixo Invertido",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "voador_invertido",
+    "nome": "Voador Invertido",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "face_pull",
+    "nome": "Face Pull",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "puxada_facial_com_corda",
+    "nome": "Puxada Facial com Corda",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "remada_alta_na_polia",
+    "nome": "Remada Alta na Polia",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "remada_alta_com_barra",
+    "nome": "Remada Alta com Barra",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "remada_alta_com_halteres",
+    "nome": "Remada Alta com Halteres",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "remada_alta_upright_row",
+    "nome": "Remada Alta (Upright Row)",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "rota_o_externa_com_polia",
+    "nome": "Rotação Externa com Polia",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "rota_o_interna_com_polia",
+    "nome": "Rotação Interna com Polia",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "press_militar_em_p",
+    "nome": "Press Militar em Pé",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "desenvolvimento_explosivo",
+    "nome": "Desenvolvimento Explosivo",
+    "grupoMuscular": "Deltóide",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_direta_com_barra",
+    "nome": "Rosca Direta com Barra",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_direta_com_ez",
+    "nome": "Rosca Direta com EZ",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_direta_com_halteres",
+    "nome": "Rosca Direta com Halteres",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_alternada_com_halteres",
+    "nome": "Rosca Alternada com Halteres",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_martelo",
+    "nome": "Rosca Martelo",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_concentrada",
+    "nome": "Rosca Concentrada",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_scott_com_barra",
+    "nome": "Rosca Scott com Barra",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_scott_com_ez",
+    "nome": "Rosca Scott com EZ",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_scott_com_haltere",
+    "nome": "Rosca Scott com Haltere",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_apoiada_no_banco_inclinado",
+    "nome": "Rosca Apoiada no Banco Inclinado",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_na_polia_baixa",
+    "nome": "Rosca na Polia Baixa",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_bilateral_na_polia",
+    "nome": "Rosca Bilateral na Polia",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_inclinada_com_halteres",
+    "nome": "Rosca Inclinada com Halteres",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_invertida",
+    "nome": "Rosca Invertida",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_21",
+    "nome": "Rosca 21",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_zottman",
+    "nome": "Rosca Zottman",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_na_m_quina",
+    "nome": "Rosca na Máquina",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "b_ceps_m_quina",
+    "nome": "Bíceps Máquina",
+    "grupoMuscular": "Bíceps",
+    "equipamento": null
+  },
+  {
+    "id": "tr_ceps_na_polia_corda",
+    "nome": "Tríceps na Polia (Corda)",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "tr_ceps_na_polia_barra",
+    "nome": "Tríceps na Polia (Barra)",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "tr_ceps_na_polia_barra_v",
+    "nome": "Tríceps na Polia (Barra V)",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "extens_o_unilateral_na_polia",
+    "nome": "Extensão Unilateral na Polia",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "extens_o_com_corda_acima_da_cabe_a",
+    "nome": "Extensão com Corda Acima da Cabeça",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "tr_ceps_testa_com_barra",
+    "nome": "Tríceps Testa com Barra",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "tr_ceps_testa_com_ez",
+    "nome": "Tríceps Testa com EZ",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "tr_ceps_testa_com_halteres",
+    "nome": "Tríceps Testa com Halteres",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "tr_ceps_testa_na_polia",
+    "nome": "Tríceps Testa na Polia",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "tr_ceps_franc_s_com_halter",
+    "nome": "Tríceps Francês com Halter",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "tr_ceps_franc_s_com_barra",
+    "nome": "Tríceps Francês com Barra",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "tr_ceps_coice_com_halter",
+    "nome": "Tríceps Coice com Halter",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "tr_ceps_coice_na_polia",
+    "nome": "Tríceps Coice na Polia",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "mergulho_nas_paralelas_tr_ceps",
+    "nome": "Mergulho nas Paralelas (Tríceps)",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "tr_ceps_no_banco",
+    "nome": "Tríceps no Banco",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "supino_fechado",
+    "nome": "Supino Fechado",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "tr_ceps_mergulho_na_barra",
+    "nome": "Tríceps Mergulho na Barra",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "extens_o_de_tr_ceps_na_m_quina",
+    "nome": "Extensão de Tríceps na Máquina",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "tr_ceps_prensa",
+    "nome": "Tríceps Prensa",
+    "grupoMuscular": "Tríceps",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_pulso_com_barra_pronada",
+    "nome": "Rosca Pulso com Barra (Pronada)",
+    "grupoMuscular": "Antebraço",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_pulso_com_barra_supinada",
+    "nome": "Rosca Pulso com Barra (Supinada)",
+    "grupoMuscular": "Antebraço",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_pulso_com_haltere",
+    "nome": "Rosca Pulso com Haltere",
+    "grupoMuscular": "Antebraço",
+    "equipamento": null
+  },
+  {
+    "id": "rosca_pulso_invertida",
+    "nome": "Rosca Pulso Invertida",
+    "grupoMuscular": "Antebraço",
+    "equipamento": null
+  },
+  {
+    "id": "s_walk",
+    "nome": "s Walk\",",
+    "grupoMuscular": "Antebraço",
+    "equipamento": null
+  },
+  {
+    "id": "",
+    "nome": ",\n    ",
+    "grupoMuscular": "Antebraço",
+    "equipamento": null
+  },
+  {
+    "id": "_2",
+    "nome": ",",
+    "grupoMuscular": "Antebraço",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_com_barra_livre",
+    "nome": "Agachamento com Barra (Livre)",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_com_barra_guia_smith",
+    "nome": "Agachamento com Barra (Guia/Smith)",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_frontal_com_barra",
+    "nome": "Agachamento Frontal com Barra",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_sum_com_barra",
+    "nome": "Agachamento Sumô com Barra",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_com_halter",
+    "nome": "Agachamento com Halter",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_b_lgaro",
+    "nome": "Agachamento Búlgaro",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "b_lgaro_no_smith",
+    "nome": "Búlgaro no Smith",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "leg_press_45",
+    "nome": "Leg Press 45°",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "leg_press_horizontal",
+    "nome": "Leg Press Horizontal",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "leg_press_horizontal_unilateral",
+    "nome": "Leg Press Horizontal Unilateral",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "leg_press_1_perna",
+    "nome": "Leg Press (1 Perna)",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_hack",
+    "nome": "Agachamento Hack",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "hack_machine",
+    "nome": "Hack Machine",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "extensora_de_joelho",
+    "nome": "Extensora de Joelho",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "extens_o_de_joelho_em_p",
+    "nome": "Extensão de Joelho em Pé",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_sum_no_leg_press_horizontal",
+    "nome": "Agachamento Sumô no Leg Press Horizontal",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "avan_o_com_barra",
+    "nome": "Avanço com Barra",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "avan_o_com_halteres",
+    "nome": "Avanço com Halteres",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "avan_o_no_smith",
+    "nome": "Avanço no Smith",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "subida_no_banco",
+    "nome": "Subida no Banco",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "step_up_com_caneleira",
+    "nome": "Step Up com Caneleira",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_com_salto",
+    "nome": "Agachamento com Salto",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_com_salto_sentado",
+    "nome": "Agachamento com Salto Sentado",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_halteres_com_salto",
+    "nome": "Agachamento Halteres com Salto",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_m_quina",
+    "nome": "Agachamento Máquina",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "cadeira_na_parede",
+    "nome": "Cadeira na Parede",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_sissy",
+    "nome": "Agachamento Sissy",
+    "grupoMuscular": "Quadríceps",
+    "equipamento": null
+  },
+  {
+    "id": "flexora_de_joelho_deitado",
+    "nome": "Flexora de Joelho (Deitado)",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "flexora_de_joelho_sentado",
+    "nome": "Flexora de Joelho (Sentado)",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "flexora_de_joelho_em_p_unilateral",
+    "nome": "Flexora de Joelho (Em Pé / Unilateral)",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "mesa_flexora",
+    "nome": "Mesa Flexora",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "flexora_unilateral_na_polia",
+    "nome": "Flexora Unilateral na Polia",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "flex_o_de_joelho_vertical",
+    "nome": "Flexão de Joelho Vertical",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "levantamento_terra_convencional",
+    "nome": "Levantamento Terra Convencional",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "levantamento_terra_sum",
+    "nome": "Levantamento Terra Sumô",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "terra_romeno_com_barra",
+    "nome": "Terra Romeno com Barra",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "terra_romeno_com_halteres",
+    "nome": "Terra Romeno com Halteres",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "terra_romeno_unilateral_com_halter",
+    "nome": "Terra Romeno Unilateral com Halter",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "stiff_no_ground",
+    "nome": "Stiff no Ground",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "bom_dia_com_barra",
+    "nome": "Bom Dia com Barra",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "flex_o_de_joelho_na_polia",
+    "nome": "Flexão de Joelho na Polia",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "flex_o_n_rdica",
+    "nome": "Flexão Nórdica",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_isquiotibial",
+    "nome": "Elevação Isquiotibial",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_de_quadril_com_barra",
+    "nome": "Elevação de Quadril com Barra",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_de_quadril_com_halter",
+    "nome": "Elevação de Quadril com Halter",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_de_quadril_no_smith",
+    "nome": "Elevação de Quadril no Smith",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_p_lvica_na_m_quina",
+    "nome": "Elevação Pélvica na Máquina",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_p_lvica_no_solo",
+    "nome": "Elevação Pélvica no Solo",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_p_lvica_solo_unilateral",
+    "nome": "Elevação Pélvica Solo Unilateral",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "extens_o_de_quadril_na_polia",
+    "nome": "Extensão de Quadril na Polia",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "extens_o_de_quadril_na_m_quina",
+    "nome": "Extensão de Quadril na Máquina",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "extens_o_de_quadril_cruzado",
+    "nome": "Extensão de Quadril Cruzado",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "abdu_o_de_quadril_na_m_quina",
+    "nome": "Abdução de Quadril na Máquina",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "abdu_o_de_quadril_m_quina_45",
+    "nome": "Abdução de Quadril Máquina 45°",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "cadeira_abdutora_articulada",
+    "nome": "Cadeira Abdutora Articulada",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "adu_o_de_quadril_na_m_quina",
+    "nome": "Adução de Quadril na Máquina",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "abdu_o_de_quadril_na_polia",
+    "nome": "Abdução de Quadril na Polia",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "abdu_o_quadril_com_faixa_el_stica",
+    "nome": "Abdução Quadril com Faixa Elástica",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "abdu_o_de_tornozelo",
+    "nome": "Abdução de Tornozelo",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "extens_o_quadril_com_band",
+    "nome": "Extensão Quadril com Band",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "flex_o_de_quadril_com_band",
+    "nome": "Flexão de Quadril com Band",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_sum_nfase_gl_teo",
+    "nome": "Agachamento Sumô Ênfase Glúteo",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "passada_reversa",
+    "nome": "Passada Reversa",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "passada_lateral",
+    "nome": "Passada Lateral",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "subida_no_banco_com_nfase_gl_teo",
+    "nome": "Subida no Banco com Ênfase Glúteo",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "frog_pump",
+    "nome": "Frog Pump",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "coice_de_gl_teo",
+    "nome": "Coice de Glúteo",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "abdu_o_quadr_pede",
+    "nome": "Abdução Quadrúpede",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "ponte_de_gl_teo_no_solo",
+    "nome": "Ponte de Glúteo no Solo",
+    "grupoMuscular": "Isquios / Glúteos",
+    "equipamento": null
+  },
+  {
+    "id": "panturrilha_em_p_na_m_quina",
+    "nome": "Panturrilha Em Pé na Máquina",
+    "grupoMuscular": "Panturrilha",
+    "equipamento": null
+  },
+  {
+    "id": "panturrilha_sentado_na_m_quina",
+    "nome": "Panturrilha Sentado na Máquina",
+    "grupoMuscular": "Panturrilha",
+    "equipamento": null
+  },
+  {
+    "id": "panturrilha_no_leg_press",
+    "nome": "Panturrilha no Leg Press",
+    "grupoMuscular": "Panturrilha",
+    "equipamento": null
+  },
+  {
+    "id": "panturrilha_unilateral_no_leg_press",
+    "nome": "Panturrilha Unilateral no Leg Press",
+    "grupoMuscular": "Panturrilha",
+    "equipamento": null
+  },
+  {
+    "id": "panturrilha_com_halter_unilateral",
+    "nome": "Panturrilha com Halter (Unilateral)",
+    "grupoMuscular": "Panturrilha",
+    "equipamento": null
+  },
+  {
+    "id": "panturrilha_no_degrau",
+    "nome": "Panturrilha no Degrau",
+    "grupoMuscular": "Panturrilha",
+    "equipamento": null
+  },
+  {
+    "id": "g_meos_em_p",
+    "nome": "Gêmeos Em Pé",
+    "grupoMuscular": "Panturrilha",
+    "equipamento": null
+  },
+  {
+    "id": "panturrilha_na_smith",
+    "nome": "Panturrilha na Smith",
+    "grupoMuscular": "Panturrilha",
+    "equipamento": null
+  },
+  {
+    "id": "tibial_anterior_na_m_quina",
+    "nome": "Tibial Anterior na Máquina",
+    "grupoMuscular": "Panturrilha",
+    "equipamento": null
+  },
+  {
+    "id": "tibial_anterior_com_caneleira",
+    "nome": "Tibial Anterior com Caneleira",
+    "grupoMuscular": "Panturrilha",
+    "equipamento": null
+  },
+  {
+    "id": "tibial_posterior_com_band",
+    "nome": "Tibial Posterior com Band",
+    "grupoMuscular": "Panturrilha",
+    "equipamento": null
+  },
+  {
+    "id": "abdominal_crunch",
+    "nome": "Abdominal Crunch",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "abdominal_na_polia",
+    "nome": "Abdominal na Polia",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "abdominal_na_m_quina",
+    "nome": "Abdominal na Máquina",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "abdominal_m_quina_total",
+    "nome": "Abdominal Máquina Total",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "abdominal_obl_quo_m_quina",
+    "nome": "Abdominal Oblíquo Máquina",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_de_pernas_deitado",
+    "nome": "Elevação de Pernas Deitado",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "eleva_o_de_pernas_na_barra",
+    "nome": "Elevação de Pernas na Barra",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "abdominal_obl_quo",
+    "nome": "Abdominal Oblíquo",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "abdominal_bicicleta",
+    "nome": "Abdominal Bicicleta",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "abdominal_canivete",
+    "nome": "Abdominal Canivete",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "prancha_frontal",
+    "nome": "Prancha Frontal",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "prancha_lateral",
+    "nome": "Prancha Lateral",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "prancha_com_eleva_o_de_quadril",
+    "nome": "Prancha com Elevação de Quadril",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "russian_twist",
+    "nome": "Russian Twist",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "dead_bug",
+    "nome": "Dead Bug",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "roda_abdominal",
+    "nome": "Roda Abdominal",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "dragon_flag",
+    "nome": "Dragon Flag",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "mountain_climber",
+    "nome": "Mountain Climber",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "hollow_body",
+    "nome": "Hollow Body",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "v_cuo_abdominal",
+    "nome": "Vácuo Abdominal",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "rota_o_de_tronco_com_polia",
+    "nome": "Rotação de Tronco com Polia",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "resist_ncia_antirotacional_polia",
+    "nome": "Resistência Antirotacional (Polia)",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "pallof_press",
+    "nome": "Pallof Press",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "abdominal_com_tor_o",
+    "nome": "Abdominal com Torção",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "abdominal_supra",
+    "nome": "Abdominal Supra",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "v_up",
+    "nome": "V-up",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "rota_o_com_barra_ancorada",
+    "nome": "Rotação com Barra Ancorada",
+    "grupoMuscular": "Abdômen / Core",
+    "equipamento": null
+  },
+  {
+    "id": "hiperextens_o_lombar_banco_romano",
+    "nome": "Hiperextensão Lombar (Banco Romano)",
+    "grupoMuscular": "Lombar",
+    "equipamento": null
+  },
+  {
+    "id": "hiperextens_o_inversa",
+    "nome": "Hiperextensão Inversa",
+    "grupoMuscular": "Lombar",
+    "equipamento": null
+  },
+  {
+    "id": "extens_o_dorsal_no_solo",
+    "nome": "Extensão Dorsal no Solo",
+    "grupoMuscular": "Lombar",
+    "equipamento": null
+  },
+  {
+    "id": "bird_dog",
+    "nome": "Bird-dog",
+    "grupoMuscular": "Lombar",
+    "equipamento": null
+  },
+  {
+    "id": "extens_o_de_tronco_na_m_quina",
+    "nome": "Extensão de Tronco na Máquina",
+    "grupoMuscular": "Lombar",
+    "equipamento": null
+  },
+  {
+    "id": "encolhimento_com_barra",
+    "nome": "Encolhimento com Barra",
+    "grupoMuscular": "Trapézio",
+    "equipamento": null
+  },
+  {
+    "id": "encolhimento_com_halteres",
+    "nome": "Encolhimento com Halteres",
+    "grupoMuscular": "Trapézio",
+    "equipamento": null
+  },
+  {
+    "id": "encolhimento_na_m_quina",
+    "nome": "Encolhimento na Máquina",
+    "grupoMuscular": "Trapézio",
+    "equipamento": null
+  },
+  {
+    "id": "encolhimento_com_barra_por_tr_s",
+    "nome": "Encolhimento com Barra por Trás",
+    "grupoMuscular": "Trapézio",
+    "equipamento": null
+  },
+  {
+    "id": "encolhimento_no_smith",
+    "nome": "Encolhimento no Smith",
+    "grupoMuscular": "Trapézio",
+    "equipamento": null
+  },
+  {
+    "id": "encolhimento_unilateral_com_halter",
+    "nome": "Encolhimento Unilateral com Halter",
+    "grupoMuscular": "Trapézio",
+    "equipamento": null
+  },
+  {
+    "id": "encolhimento_explosivo",
+    "nome": "Encolhimento Explosivo",
+    "grupoMuscular": "Trapézio",
+    "equipamento": null
+  },
+  {
+    "id": "power_clean",
+    "nome": "Power Clean",
+    "grupoMuscular": "Trapézio",
+    "equipamento": null
+  },
+  {
+    "id": "esteira",
+    "nome": "Esteira",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "corrida_em_tiros",
+    "nome": "Corrida em Tiros",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "bicicleta_ergom_trica",
+    "nome": "Bicicleta Ergométrica",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "bike_horizontal",
+    "nome": "Bike Horizontal",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "escada",
+    "nome": "Escada",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "el_ptico",
+    "nome": "Elíptico",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "remo_ergom_trico",
+    "nome": "Remo Ergométrico",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "corda_naval",
+    "nome": "Corda Naval",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "burpee",
+    "nome": "Burpee",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "salto_na_caixa",
+    "nome": "Salto na Caixa",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_com_salto_2",
+    "nome": "Agachamento com Salto",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "polichinelo",
+    "nome": "Polichinelo",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "corrida_estacion_ria",
+    "nome": "Corrida Estacionária",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "corrida_com_joelhos_altos",
+    "nome": "Corrida com Joelhos Altos",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "corda_pular",
+    "nome": "Corda (Pular)",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "empurr_o_de_tren",
+    "nome": "Empurrão de Trenó",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "arrasto_de_tren",
+    "nome": "Arrasto de Trenó",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "balan_o_com_kettlebell",
+    "nome": "Balanço com Kettlebell",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "clean_e_jerk",
+    "nome": "Clean e Jerk",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "snatch",
+    "nome": "Snatch",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "dumbell_snatch_alternado",
+    "nome": "Dumbell Snatch Alternado",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "transport",
+    "nome": "Transport",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_com_desenvolvimento",
+    "nome": "Agachamento com Desenvolvimento",
+    "grupoMuscular": "Cardio / Funcional",
+    "equipamento": null
+  },
+  {
+    "id": "rota_o_de_ombros",
+    "nome": "Rotação de Ombros",
+    "grupoMuscular": "Mobilidade / Aquec.",
+    "equipamento": null
+  },
+  {
+    "id": "mobiliza_o_tor_cica",
+    "nome": "Mobilização Torácica",
+    "grupoMuscular": "Mobilidade / Aquec.",
+    "equipamento": null
+  },
+  {
+    "id": "alongamento_de_quadril_90_90",
+    "nome": "Alongamento de Quadril (90/90)",
+    "grupoMuscular": "Mobilidade / Aquec.",
+    "equipamento": null
+  },
+  {
+    "id": "c_rculos_de_quadril",
+    "nome": "Círculos de Quadril",
+    "grupoMuscular": "Mobilidade / Aquec.",
+    "equipamento": null
+  },
+  {
+    "id": "balan_o_de_perna",
+    "nome": "Balanço de Perna",
+    "grupoMuscular": "Mobilidade / Aquec.",
+    "equipamento": null
+  },
+  {
+    "id": "balan_o_de_bra_o",
+    "nome": "Balanço de Braço",
+    "grupoMuscular": "Mobilidade / Aquec.",
+    "equipamento": null
+  },
+  {
+    "id": "alongamento_global",
+    "nome": "Alongamento Global",
+    "grupoMuscular": "Mobilidade / Aquec.",
+    "equipamento": null
+  },
+  {
+    "id": "rota_o_interna_de_quadril",
+    "nome": "Rotação Interna de Quadril",
+    "grupoMuscular": "Mobilidade / Aquec.",
+    "equipamento": null
+  },
+  {
+    "id": "mobiliza_o_de_tornozelo",
+    "nome": "Mobilização de Tornozelo",
+    "grupoMuscular": "Mobilidade / Aquec.",
+    "equipamento": null
+  },
+  {
+    "id": "cat_cow",
+    "nome": "Cat-Cow",
+    "grupoMuscular": "Mobilidade / Aquec.",
+    "equipamento": null
+  },
+  {
+    "id": "mobiliza_o_de_coluna",
+    "nome": "Mobilização de Coluna",
+    "grupoMuscular": "Mobilidade / Aquec.",
+    "equipamento": null
+  },
+  {
+    "id": "agachamento_profundo_pausa",
+    "nome": "Agachamento Profundo (Pausa)",
+    "grupoMuscular": "Mobilidade / Aquec.",
+    "equipamento": null
+  },
+  {
+    "id": "bird_dog_aquecimento",
+    "nome": "Bird-dog (Aquecimento)",
+    "grupoMuscular": "Mobilidade / Aquec.",
+    "equipamento": null
+  },
+  {
+    "id": "propriocep_o_unilateral_no_bosu",
+    "nome": "Propriocepção Unilateral no Bosu",
+    "grupoMuscular": "Mobilidade / Aquec.",
+    "equipamento": null
+  }
+]
