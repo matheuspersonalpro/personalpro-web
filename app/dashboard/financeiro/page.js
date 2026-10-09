@@ -855,7 +855,7 @@ export default function FinanceiroPage() {
                         <p className="text-[11px] text-white/35">{a.tipoServico === 'online' ? 'Online' : 'Presencial'} · {a.plano || a.tipo || '—'}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[13px] font-bold text-accent">{fmtvalorNum(a.valor)}</p>
+                        <p className="text-[13px] font-bold text-accent">{fmt(valorNum(a.valor))}</p>
                         {a.vencimento && (
                           <p className={`text-[11px] ${status==='vencido' ? 'text-red-400' : status==='urgente' ? 'text-amber-400' : 'text-white/35'}`}>
                             {status==='vencido' ? `venceu ${a.vencimento}` : `vence ${a.vencimento}`}
