@@ -11,6 +11,7 @@ import { calcStatus } from '@/lib/statusAluno';
 import { alunosDeFeriasNoDia } from '@/lib/presencaAgenda';
 
 const DIAS_ABREV = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const DIAS_MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 // Alerta de aluno sumido (mesmos limiares do Início do app).
 const LIMIAR_SUMIDO_DIAS = 7;
 const JANELA_SUMIDO_DIAS = 45;
@@ -169,7 +170,11 @@ export default function DashboardPage() {
   // casava, deixando a receita do mês sempre zerada no painel).
   // "Recebido" = dinheiro que JÁ caiu na conta no mês; é o mesmo número do Financeiro
   // e do Início do app (antes aqui somava por data de registro e divergia dos dois).
-  const receitaMes = resumoFinanceiro(pagamentos, hoje).recebido;
+  const resumoMes = resumoFinanceiro(pagamentos, hoje);
+  const receitaMes = resumoMes.recebido;
+  const faturadoMes = resumoMes.faturado;
+  const pctRecebido = faturadoMes > 0 ? Math.max(0, Math.min(1, receitaMes / faturadoMes)) : 0;
+  const iniciais = (n) => String(n || '?').trim().split(/\s+/).slice(0, 2).map(x => x[0]).join('').toUpperCase();
 
   // hoje.toISOString() é UTC: depois das 21h no Brasil já vira o dia seguinte.
   const hojeISO = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}-${String(hoje.getDate()).padStart(2,'0')}`;
@@ -440,14 +445,63 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
-        <KpiCard icon={Users}         label="Alunos ativos"    value={ativos.length}       accent="blue"  href="/dashboard/alunos" />
-        <KpiCard icon={TrendingUp}    label="Recebido no mês"
-          value={`R$ ${receitaMes.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} accent="green" href="/dashboard/financeiro" />
-        <KpiCard icon={Clock}         label="Vencem em 7 dias" value={vencendo.length}
-          sub={vencendo.map(a => a.nome?.split(' ')[0]).join(', ') || undefined} accent="amber" href="/dashboard/alunos?filtro=vencendo" />
-        <KpiCard icon={AlertTriangle} label="Inadimplentes"    value={inadimplentes.length} accent="red"   href="/dashboard/alunos?filtro=inadimplentes" />
+      {/* Hoje + números: mesma composição do Início do app */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6 md:mb-8">
+        <div className="lg:col-span-2 rounded-[22px] ring-1 ring-white/[0.06] p-5 relative overflow-hidden"
+          style={{ background: 'radial-gradient(120% 90% at 100% 0%, rgba(198,244,50,0.10) 0%, rgba(20,22,25,0) 60%), #141619' }}>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">Hoje</span>
+            <div className="flex items-center gap-3">
+              <span className="text-[12px] text-white/45">{sessoesHoje.length} {sessoesHoje.length === 1 ? 'sessão' : 'sessões'}</span>
+              <Link href="/dashboard/agenda" className="text-[11px] text-white/30 hover:text-white/60 transition-colors">ver agenda →</Link>
+            </div>
+          </div>
+          {sessoesHoje.length === 0 ? (
+            <p className="text-[13px] text-white/30 py-6">Nenhuma sessão presencial hoje.</p>
+          ) : (
+            <div className="divide-y divide-white/[0.04]">
+              {sessoesHoje.slice(0, 8).map(sx => {
+                const aluno = alunosMap[sx.alunoId];
+                const ehProx = sx.id === proximaId;
+                return (
+                  <div key={sx.id} className="flex items-center gap-4 py-2.5">
+                    <span className={`text-[15px] font-semibold w-14 shrink-0 ${ehProx ? 'text-accent' : 'text-white/45'}`}>{sx.horario || '—'}</span>
+                    <div className="w-9 h-9 rounded-full bg-surface-2 flex items-center justify-center text-[12px] font-display font-semibold text-ink shrink-0">{iniciais(aluno?.nome)}</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[14px] font-semibold text-white/85 truncate">{aluno?.nome || '—'}</p>
+                      {aluno?.objetivo && <p className="text-[12px] text-white/35 truncate">{aluno.objetivo}</p>}
+                    </div>
+                    {ehProx && <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-accent/12 text-accent">Próxima</span>}
+                    {!ehProx && sx.status && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-white/[0.06] text-white/50">{sx.status}</span>}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <div className="grid grid-cols-2 gap-4 content-start">
+          <Link href="/dashboard/financeiro" className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-4 hover:ring-white/15 transition-all">
+            <p className="text-[10px] font-semibold text-white/35 uppercase tracking-wider mb-2">Recebido</p>
+            <p className="text-[20px] font-semibold text-white leading-none font-display">R$ {receitaMes.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}</p>
+            <div className="h-1.5 rounded-full bg-white/[0.06] mt-3 overflow-hidden"><div className="h-full rounded-full bg-accent" style={{ width: `${pctRecebido * 100}%` }} /></div>
+            <p className="text-[10px] text-white/35 mt-2 truncate">de R$ {faturadoMes.toLocaleString('pt-BR', { maximumFractionDigits: 0 })} faturado em {DIAS_MESES[hoje.getMonth()]}</p>
+          </Link>
+          <Link href="/dashboard/alunos" className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-4 hover:ring-white/15 transition-all">
+            <p className="text-[10px] font-semibold text-white/35 uppercase tracking-wider mb-2">Alunos</p>
+            <p className="text-[20px] font-semibold text-white leading-none font-display">{ativos.length}</p>
+            <p className="text-[10px] text-white/35 mt-3">{ativos.length === 1 ? 'ativo' : 'ativos'}</p>
+          </Link>
+          <Link href="/dashboard/alunos?filtro=vencendo" className="rounded-[22px] bg-[#141619] ring-1 ring-amber-500/15 p-4 hover:ring-amber-500/30 transition-all">
+            <p className="text-[10px] font-semibold text-white/35 uppercase tracking-wider mb-2">Vencem em 7 dias</p>
+            <p className="text-[20px] font-semibold text-amber-400 leading-none font-display">{vencendo.length}</p>
+            <p className="text-[10px] text-white/35 mt-3 truncate">{vencendo.map(a => a.nome?.split(' ')[0]).join(', ') || ' '}</p>
+          </Link>
+          <Link href="/dashboard/alunos?filtro=inadimplentes" className="rounded-[22px] bg-[#141619] ring-1 ring-red-500/15 p-4 hover:ring-red-500/30 transition-all">
+            <p className="text-[10px] font-semibold text-white/35 uppercase tracking-wider mb-2">Atrasados</p>
+            <p className="text-[20px] font-semibold text-red-400 leading-none font-display">{inadimplentes.length}</p>
+            <p className="text-[10px] text-white/35 mt-3">{inadimplentes.length === 0 ? 'tudo em dia' : 'mensalidade atrasada'}</p>
+          </Link>
+        </div>
       </div>
 
       {/* Corpo */}
@@ -505,39 +559,6 @@ export default function DashboardPage() {
 
         {/* Painéis laterais */}
         <div className="space-y-4">
-          {/* Agenda de hoje */}
-          <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
-            <div className="px-5 py-4 border-b border-white/[0.05] flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <CalendarDays size={13} className="text-accent" />
-                <span className="text-[12px] font-semibold text-white/60 uppercase tracking-wider">Agenda de hoje</span>
-              </div>
-              <Link href="/dashboard/agenda" className="text-[10px] text-white/25 hover:text-white/50 transition-colors">ver agenda →</Link>
-            </div>
-            <div className="p-3">
-              {sessoesHoje.length === 0 ? (
-                <div className="px-2 py-3 text-center"><p className="text-[12px] text-white/20">Nenhuma sessão hoje</p></div>
-              ) : sessoesHoje.slice(0, 8).map(s => {
-                const aluno = alunosMap[s.alunoId];
-                const statusCls = { agendado:'bg-white/[0.08] text-white/70', realizado:'bg-accent/12 text-accent', faltou:'bg-red-500/12 text-red-400', cancelado:'bg-white/[0.06] text-white/30' };
-                return (
-                  <div key={s.id} className="flex items-center gap-2.5 px-2 py-2.5 rounded-lg hover:bg-white/[0.03] transition-colors">
-                    <span className="text-[11px] font-semibold text-white/40 w-11 shrink-0">{s.horario || '—'}</span>
-                    <div className="w-6 h-6 rounded-full bg-surface-2 flex items-center justify-center text-[10px] font-display font-semibold text-ink shrink-0">
-                      {(aluno?.nome || s.alunoId || '?')[0]}
-                    </div>
-                    <span className="text-[12px] text-white/65 flex-1 truncate">{aluno?.nome?.split(' ')[0] || '—'}</span>
-                    {s.id === proximaId
-                      ? <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-accent/12 text-accent">Próxima</span>
-                      : s.status
-                        ? <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${statusCls[s.status] || statusCls.agendado}`}>{s.status}</span>
-                        : null}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Alunos sumidos */}
           {alunosSumidos.length > 0 && (
             <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
