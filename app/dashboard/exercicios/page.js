@@ -39,7 +39,7 @@ function PlayerModal({ video, onFechar }) {
               allowFullScreen
             />
           ) : (
-            <video src={video.videoUrl} controls autoPlay playsInline className="w-full h-full bg-black" />
+            <video src={video.videoUrl} controls autoPlay loop playsInline className="w-full h-full bg-black" />
           )}
         </div>
       </div>
