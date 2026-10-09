@@ -1,7 +1,7 @@
 ﻿'use client';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { buscarPagamentos, buscarAlunos, registrarPagamento, excluirPagamento, atualizarAluno, buscarConfigApp, salvarConfigApp, renovarPlanoPorPagamentoAsaas } from '@/lib/firestore';
-import { valorNum, proximoVencimento, diaAncoraDe, ultimaPagaAsaas } from '@/lib/financeiro';
+import { valorNum, proximoVencimento, diaAncoraDe, ultimaPagaAsaas, resumoFinanceiro, montarAReceber, previstosManuais, agruparPorMes, somaBruto, somaLiquido, liquidoAsaas } from '@/lib/financeiro';
 import { planoCanonico } from '@/lib/planos';
 import { buscarCobrancasAssinatura } from '@/lib/asaas';
 import { gerarPixEMV } from '@/lib/pix';
@@ -9,6 +9,7 @@ import { TrendingUp, Plus, X, ChevronLeft, ChevronRight, Trash2, DollarSign, Use
 import { useToast } from '@/components/Toast';
 import ConfirmModal from '@/components/ConfirmModal';
 
+const FATOR_PLANO = { Mensal: 1, Trimestral: 3, Semestral: 6, Anual: 12 };
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const TIPOS = ['Mensal','Trimestral','Semestral','Anual','Avulso'];
 const FORMAS = ['PIX','Dinheiro','Cartão de Crédito','Cartão de Débito','Transferência','Asaas'];
@@ -417,6 +418,33 @@ export default function FinanceiroPage() {
   const mesSel = new Date(agora.getFullYear(), agora.getMonth() + mesOffset, 1);
   const mesAtual = mesSel.getMonth(); const anoAtual = mesSel.getFullYear();
 
+  // Faturado / Recebido / A receber: o mesmo cálculo do app (utils/financeiro).
+  // Recebido = o que JÁ caiu na conta no mês (cartão cai D+32), por isso nem
+  // sempre bate com o Faturado.
+  const fin = resumoFinanceiro(pagamentos, mesSel);
+  const proximosRecebimentos = alunos
+    .filter(a => a.cobrancaAutomatica)
+    .map(a => {
+      const pr = a.proximoRecebimento;
+      if (pr && pr.dataCredito) {
+        const data = parseDataFlex(pr.dataCredito);
+        if (!data) return null;
+        const bruto = valorNum(pr.valor || a.valor);
+        return { alunoId: a.id, nome: a.nome, data, bruto, liquido: liquidoAsaas(bruto, pr.netValue), estimado: false };
+      }
+      const venc = parseDataFlex(a.vencimento);
+      if (!venc) return null;
+      const bruto = valorNum(a.valor) / (FATOR_PLANO[a.plano] || 1);
+      const d = new Date(venc); d.setDate(d.getDate() + 32);
+      return { alunoId: a.id, nome: a.nome, data: d, bruto, liquido: liquidoAsaas(bruto, null), estimado: true };
+    })
+    .filter(Boolean)
+    .sort((x, y) => x.data - y.data);
+  const aReceberFuturo = montarAReceber(fin.listaAReceber, proximosRecebimentos, agora, previstosManuais(alunos, agora));
+  const aReceberPorMes = agruparPorMes(aReceberFuturo);
+  const totalBrutoFuturo = somaBruto(aReceberFuturo);
+  const totalLiquidoFuturo = somaLiquido(aReceberFuturo);
+
   function somaMes(m, y) {
     return pagamentos.filter(p => {
       const [d, mo, a] = (p.data || '').split('/').map(Number);
@@ -424,9 +452,9 @@ export default function FinanceiroPage() {
     }).reduce((s, p) => s + valorNum(p.valor), 0);
   }
 
-  const receitaMes    = somaMes(mesAtual, anoAtual);
+  const receitaMes    = fin.recebido;
   const receitaAno    = Array.from({length:12}, (_,i) => somaMes(i, anoAtual)).reduce((s,v) => s+v, 0);
-  const mesAnteriorV  = somaMes(mesAtual > 0 ? mesAtual-1 : 11, mesAtual > 0 ? anoAtual : anoAtual-1);
+  const mesAnteriorV  = resumoFinanceiro(pagamentos, new Date(anoAtual, mesAtual - 1, 1)).recebido;
   const variacaoMes   = mesAnteriorV > 0 ? ((receitaMes - mesAnteriorV) / mesAnteriorV * 100) : 0;
   // Dividia sempre por 12 meses fixos, mesmo quando só o mês atual tinha
   // pagamento registrado (achado pelo dono: julho com R$15.766 virava média
@@ -640,10 +668,10 @@ export default function FinanceiroPage() {
           {/* KPIs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label:'Receita do mês', value: fmt(receitaMes), sub: `${variacaoMes >= 0 ? '+' : ''}${variacaoMes.toFixed(1)}% vs. mês anterior`, subColor: variacaoMes >= 0 ? 'text-accent' : 'text-red-400' },
-              { label:'Receita no ano', value: fmt(receitaAno), sub:`${pagamentos.filter(p => { const [,mo,a] = (p.data||'').split('/').map(Number); return a === anoAtual; }).length} pagamentos`, subColor:'text-white/35' },
+              { label:'Recebido no mês', value: fmt(fin.recebido), sub: `${variacaoMes >= 0 ? '+' : ''}${variacaoMes.toFixed(1)}% vs. mês anterior`, subColor: variacaoMes >= 0 ? 'text-accent' : 'text-red-400' },
+              { label:'Faturado no mês', value: fmt(fin.faturado), sub: `${fin.qtdFaturado} cobrança${fin.qtdFaturado === 1 ? '' : 's'}`, subColor:'text-white/35' },
+              { label:'A receber', value: fmt(totalLiquidoFuturo), sub: `bruto ${fmt(totalBrutoFuturo)} · líquido do Asaas`, subColor:'text-white/35' },
               { label:'Média mensal', value: fmt(mediaMensal), sub:'Baseado no ano atual', subColor:'text-white/35' },
-              { label:'Projeção mês seguinte', value: fmt(projecao), sub:'Média dos últimos 3 meses', subColor:'text-white/35' },
             ].map((k,i) => (
               <div key={i} className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-4">
                 <p className="text-[10px] font-semibold text-white/35 uppercase tracking-wider mb-2">{k.label}</p>
@@ -652,6 +680,31 @@ export default function FinanceiroPage() {
               </div>
             ))}
           </div>
+
+          {/* A receber por mês */}
+          {aReceberPorMes.length > 0 && (
+            <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5">
+              <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-3">A receber</p>
+              <div className="space-y-4">
+                {aReceberPorMes.map(g => (
+                  <div key={`${g.ano}-${g.mes}`}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <p className="text-[12px] font-semibold text-white">{MESES[g.mes]} {g.ano}</p>
+                      <p className="text-[12px] text-white/50">{fmt(g.liquido)} <span className="text-white/25">líquido</span></p>
+                    </div>
+                    <div className="divide-y divide-white/[0.05]">
+                      {g.itens.map((it, i) => (
+                        <div key={i} className="flex items-center justify-between py-1.5 text-[12px]">
+                          <span className="text-white/70 truncate pr-3">{it.nome}{it.estimado ? ' · estimado' : it.manual ? ' · PIX/dinheiro' : ''}</span>
+                          <span className="text-white/40 shrink-0">{String(it.data.getDate()).padStart(2,'0')}/{String(it.data.getMonth()+1).padStart(2,'0')} · {fmt(it.liquido)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Meta + Gráfico */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -802,7 +855,7 @@ export default function FinanceiroPage() {
                         <p className="text-[11px] text-white/35">{a.tipoServico === 'online' ? 'Online' : 'Presencial'} · {a.plano || a.tipo || '—'}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[13px] font-bold text-accent">{fmtvalorNum(a.valor)}</p>
+                        <p className="text-[13px] font-bold text-accent">{fmt(valorNum(a.valor))}</p>
                         {a.vencimento && (
                           <p className={`text-[11px] ${status==='vencido' ? 'text-red-400' : status==='urgente' ? 'text-amber-400' : 'text-white/35'}`}>
                             {status==='vencido' ? `venceu ${a.vencimento}` : `vence ${a.vencimento}`}
