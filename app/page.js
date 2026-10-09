@@ -7,7 +7,7 @@ import { usePersonal } from '@/lib/AuthContext';
 import {
   Users, Dumbbell, DollarSign, CalendarDays, Activity,
   ChevronDown, ChevronRight, Check, Star, ArrowRight,
-  Smartphone, BarChart2, BookOpen, Bell,
+  Smartphone, BarChart2, BookOpen, Bell, LayoutDashboard, Wallet,
 } from 'lucide-react';
 
 const FEATURES = [
@@ -15,37 +15,31 @@ const FEATURES = [
     icon: Users,
     title: 'Gestão de alunos',
     desc: 'Cadastre alunos, controle vencimentos, planos e histórico completo em um só lugar.',
-    color: 'blue',
   },
   {
     icon: Dumbbell,
     title: 'Treinos personalizados',
     desc: 'Monte programas com biblioteca de exercícios, vídeos e periodização automática de 12 meses.',
-    color: 'sky',
   },
   {
     icon: DollarSign,
     title: 'Controle financeiro',
     desc: 'Acompanhe receitas, inadimplentes e vencimentos. Integração com Asaas para cobrança automática.',
-    color: 'green',
   },
   {
     icon: CalendarDays,
     title: 'Agenda inteligente',
     desc: 'Gerencie sessões, trocas de horário, férias e reposições sem conflitos.',
-    color: 'blue',
   },
   {
     icon: Activity,
     title: 'Avaliação física',
     desc: 'Pollock 7 dobras, IMC, % gordura e histórico de evolução com gráficos.',
-    color: 'amber',
   },
   {
     icon: Smartphone,
     title: 'App para alunos',
     desc: 'Seus alunos veem treinos, vídeos e evoluções direto no celular. iOS e Android.',
-    color: 'pink',
   },
 ];
 
@@ -120,13 +114,13 @@ const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.matheusperso
 const IOS_URL  = 'https://apps.apple.com/br/app/personal-pro/id6782193425';
 
 function BotoesLoja({ className = '' }) {
-  const base = 'flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-white/[0.06] ring-1 ring-white/[0.12] hover:bg-white/[0.10] hover:ring-white/25 transition-all';
+  const base = 'flex items-center justify-center gap-2.5 px-5 py-3 rounded-[22px] bg-white/[0.06] ring-1 ring-white/[0.12] hover:bg-white/[0.10] hover:ring-white/25 transition-all';
   return (
     <div className={`flex flex-col sm:flex-row gap-3 ${className}`}>
       <a href={PLAY_URL} target="_blank" rel="noopener noreferrer" className={base}>
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
           <path fill="#34d399" d="M3.6 1.8 13.5 12 3.6 22.2A2 2 0 0 1 3 20.8V3.2c0-.53.23-1.02.6-1.4Z" />
-          <path fill="#60a5fa" d="M16.4 8.9 5.6 2.6 4.9 2.2l10 10Z" />
+          <path fill="#C6F432" d="M16.4 8.9 5.6 2.6 4.9 2.2l10 10Z" />
           <path fill="#fbbf24" d="M16.4 15.1 14.9 12l5.4-3.1c1 .6 1 2.6 0 3.2Z" />
           <path fill="#fb7185" d="M4.9 21.8 14.9 12l1.5 3.1-10.8 6.3Z" />
         </svg>
@@ -147,14 +141,6 @@ function BotoesLoja({ className = '' }) {
     </div>
   );
 }
-
-const ACCENT = {
-  blue:  { bg: 'bg-blue-500/10',  text: 'text-blue-400',  ring: 'ring-blue-500/20' },
-  sky:   { bg: 'bg-sky-500/10',   text: 'text-sky-400',   ring: 'ring-sky-500/20' },
-  green: { bg: 'bg-green-500/10', text: 'text-green-400', ring: 'ring-green-500/20' },
-  amber: { bg: 'bg-amber-500/10', text: 'text-amber-400', ring: 'ring-amber-500/20' },
-  pink:  { bg: 'bg-pink-500/10',  text: 'text-pink-400',  ring: 'ring-pink-500/20' },
-};
 
 function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false);
@@ -181,11 +167,11 @@ export default function LandingPage() {
   }, [personal, router]);
 
   return (
-    <div className="min-h-full bg-[#060c1a] text-white">
+    <div className="min-h-full bg-bg text-white">
 
       {/* NAV */}
       <nav className="sticky top-0 z-50 border-b border-white/[0.05]"
-        style={{ background: 'rgba(6,12,26,0.85)', backdropFilter: 'blur(16px)' }}>
+        style={{ background: 'rgba(10,11,13,0.85)', backdropFilter: 'blur(16px)' }}>
         <div className="max-w-6xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <Image src="/logo.png" alt="PersonalPro" width={130} height={36} style={{ objectFit: 'contain', height: 32, width: 'auto' }} priority />
           <div className="flex items-center gap-3">
@@ -197,7 +183,7 @@ export default function LandingPage() {
                 visível da página e mandava pro login web, contradizendo o
                 produto, que é um app de celular. */}
             <a href="#baixar"
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
+              className="flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent transition-all shadow-lg shadow-black/30">
               Baixar app <ArrowRight size={13} />
             </a>
           </div>
@@ -208,15 +194,15 @@ export default function LandingPage() {
       <section className="max-w-6xl mx-auto px-4 md:px-8 pt-20 pb-24 md:pt-28 md:pb-32">
         <div className="flex flex-col md:flex-row items-center gap-12 md:gap-16">
           <div className="flex-1 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 ring-1 ring-blue-500/20 text-[12px] font-semibold text-blue-400 mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 ring-1 ring-accent/20 text-[12px] font-semibold text-accent mb-6">
               <Star size={11} fill="currentColor" /> O app mais completo para personal trainers
             </div>
-            <h1 className="text-[40px] md:text-[56px] font-black tracking-tight leading-[1.1] mb-6">
-              <span style={{ background: 'linear-gradient(135deg, #fff 30%, rgba(255,255,255,0.6))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <h1 className="text-[40px] md:text-[56px] font-semibold tracking-tight leading-[1.1] mb-6 font-display">
+              <span>
                 Gerencie seus alunos
               </span>
               <br />
-              <span className="text-blue-400">do jeito certo.</span>
+              <span className="text-accent">do jeito certo.</span>
             </h1>
             <p className="text-[16px] text-white/45 leading-relaxed mb-8 max-w-md mx-auto md:mx-0">
               Treinos, agenda, financeiro e avaliações em um único app. Para você focar no que importa — transformar vidas.
@@ -230,54 +216,90 @@ export default function LandingPage() {
               <p className="text-[12px] text-white/30">Grátis até 3 alunos · Sem cartão</p>
               <span className="hidden sm:block text-white/15">·</span>
               <Link href="/login"
-                className="text-[12px] font-medium text-blue-400 hover:text-blue-300 transition-colors">
+                className="text-[12px] font-medium text-accent hover:text-accent-pale transition-colors">
                 ou acesse pelo computador
               </Link>
             </div>
           </div>
 
-          {/* Phone mockup */}
+          {/* Celular: o Inicio do personal, como esta no app depois do redesign
+              Grafite & Lima (proxima sessao em destaque, recebido x previsto e a
+              lista de acao). Antes mostrava a grade de 4 blocos coloridos do app
+              antigo -- a pagina prometia uma tela que o app nao tem mais. */}
           <div className="shrink-0 relative">
-            <div className="w-[240px] md:w-[280px] rounded-[44px] overflow-hidden ring-1 ring-white/10 shadow-2xl shadow-blue-900/30"
-              style={{ background: 'linear-gradient(145deg, #0d1b2e, #080f1d)', border: '8px solid #1a2a42' }}>
-              <div className="h-7 flex items-center justify-center">
-                <div className="w-20 h-1.5 rounded-full bg-white/10" />
-              </div>
-              <div className="px-4 pb-6 space-y-3">
-                <div className="flex items-center justify-between py-3 border-b border-white/[0.06]">
-                  <div>
-                    <p className="text-[10px] text-white/30 uppercase tracking-wider">Boa tarde</p>
-                    <p className="text-[15px] font-black text-white">Matheus</p>
-                  </div>
-                  <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-[11px] font-bold text-blue-400">M</div>
+            <div className="w-[250px] md:w-[290px] rounded-[44px] bg-black p-2 ring-1 ring-white/10 shadow-2xl shadow-black/50">
+              <div className="rounded-[36px] overflow-hidden bg-bg">
+                <div className="h-7 flex items-center justify-center">
+                  <div className="w-16 h-1.5 rounded-full bg-white/10" />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { label: 'Alunos', value: '12', color: 'text-blue-400', bg: 'bg-blue-500/10' },
-                    { label: 'Receita', value: 'R$2.4k', color: 'text-green-400', bg: 'bg-green-500/10' },
-                    { label: 'Vencendo', value: '3', color: 'text-amber-400', bg: 'bg-amber-500/10' },
-                    { label: 'Em dia', value: '9', color: 'text-blue-400', bg: 'bg-blue-500/10' },
-                  ].map(c => (
-                    <div key={c.label} className={`${c.bg} rounded-2xl p-3`}>
-                      <p className={`text-[18px] font-black ${c.color}`}>{c.value}</p>
-                      <p className="text-[10px] text-white/30 uppercase tracking-wider mt-0.5">{c.label}</p>
+                <div className="px-4 pb-4 space-y-3.5">
+                  <div className="flex items-center justify-between pt-1">
+                    <div>
+                      <p className="text-[10px] text-ink-3 uppercase tracking-[0.12em] font-semibold">Boa tarde</p>
+                      <p className="text-[19px] text-ink font-display font-semibold leading-tight">Matheus</p>
                     </div>
-                  ))}
+                    <div className="w-9 h-9 rounded-full bg-surface-2 flex items-center justify-center text-[12px] font-display font-semibold text-ink">M</div>
+                  </div>
+
+                  <div className="rounded-[22px] p-4 space-y-2.5"
+                    style={{ background: 'radial-gradient(120% 90% at 100% 0%, rgba(198,244,50,0.16), transparent 60%), #141619' }}>
+                    <p className="text-[9.5px] text-ink-3 uppercase tracking-[0.12em] font-semibold">Próxima sessão</p>
+                    <div className="flex items-end justify-between">
+                      <p className="text-[34px] leading-none font-display font-semibold text-accent">09:30</p>
+                      <span className="text-[10.5px] font-semibold px-2.5 py-1.5 rounded-full bg-accent/15 text-accent">em 25 min</span>
+                    </div>
+                    <p className="text-[12px] text-ink-2">João Pedro · Hipertrofia</p>
+                  </div>
+
+                  <div className="rounded-[18px] bg-surface p-3.5 space-y-2">
+                    <div className="flex items-baseline justify-between">
+                      <p className="text-[9.5px] text-ink-3 uppercase tracking-[0.12em] font-semibold">Recebido no mês</p>
+                      <p className="text-[10.5px] text-ink-3">de R$ 3.100</p>
+                    </div>
+                    <p className="text-[24px] leading-none font-display font-semibold text-ink">R$ 2.400</p>
+                    <div className="h-1 rounded-full bg-surface-2 overflow-hidden">
+                      <div className="h-full w-[77%] rounded-full bg-accent" />
+                    </div>
+                  </div>
+
+                  <div className="divide-y divide-white/[0.06]">
+                    {[
+                      { nome: 'Carla M.', info: 'atrasada há 3 dias', chip: 'Cobrar', tom: 'text-danger bg-danger/15' },
+                      { nome: 'Ana Silva', info: 'vence amanhã', chip: 'Lembrar', tom: 'text-warn bg-warn/15' },
+                    ].map(l => (
+                      <div key={l.nome} className="flex items-center gap-3 py-2.5">
+                        <div className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center text-[10px] font-display font-semibold text-ink shrink-0">
+                          {l.nome.split(' ').map(x => x[0]).join('')}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[12px] font-semibold text-ink leading-tight">{l.nome}</p>
+                          <p className="text-[10.5px] text-ink-3">{l.info}</p>
+                        </div>
+                        <span className={`text-[10px] font-semibold px-2.5 py-1.5 rounded-full ${l.tom}`}>{l.chip}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="rounded-2xl bg-white/[0.04] p-3 space-y-2">
-                  <p className="text-[10px] font-semibold text-white/30 uppercase tracking-wider">Hoje</p>
-                  {['08:00 · Ana Silva', '09:30 · João Pedro', '11:00 · Carla M.'].map(s => (
-                    <div key={s} className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-                      <p className="text-[11px] text-white/60">{s}</p>
+
+                <div className="flex justify-around border-t border-white/[0.06] px-2 pt-2.5 pb-3.5">
+                  {[
+                    { icone: LayoutDashboard, nome: 'Início', ativo: true },
+                    { icone: CalendarDays, nome: 'Agenda' },
+                    { icone: BookOpen, nome: 'Treinos' },
+                    { icone: Users, nome: 'Alunos' },
+                    { icone: Wallet, nome: 'Finanças' },
+                  ].map(t => (
+                    <div key={t.nome} className={`flex flex-col items-center gap-1 text-[9px] font-semibold ${t.ativo ? 'text-accent' : 'text-ink-3'}`}>
+                      <t.icone size={17} />
+                      {t.nome}
                     </div>
                   ))}
                 </div>
               </div>
             </div>
-            {/* Glow */}
-            <div className="absolute -inset-8 -z-10 rounded-full opacity-20"
-              style={{ background: 'radial-gradient(circle, #3b82f6 0%, transparent 70%)' }} />
+            {/* Brilho */}
+            <div className="absolute -inset-8 -z-10 rounded-full opacity-[0.10]"
+              style={{ background: 'radial-gradient(circle, #C6F432 0%, transparent 70%)' }} />
           </div>
         </div>
       </section>
@@ -285,9 +307,9 @@ export default function LandingPage() {
       {/* FEATURES */}
       <section className="max-w-6xl mx-auto px-4 md:px-8 py-20 md:py-24">
         <div className="text-center mb-14">
-          <p className="text-[12px] font-semibold text-blue-400 uppercase tracking-widest mb-3">Funcionalidades</p>
-          <h2 className="text-[32px] md:text-[40px] font-black tracking-tight">
-            <span style={{ background: 'linear-gradient(135deg, #fff, rgba(255,255,255,0.6))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          <p className="text-[12px] font-semibold text-accent uppercase tracking-widest mb-3">Funcionalidades</p>
+          <h2 className="text-[32px] md:text-[40px] font-semibold tracking-tight font-display">
+            <span>
               Tudo que você precisa
             </span>
           </h2>
@@ -295,12 +317,9 @@ export default function LandingPage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {FEATURES.map(f => {
-            const a = ACCENT[f.color];
             return (
-              <div key={f.title} className="rounded-2xl bg-[#0a1628] ring-1 ring-white/[0.06] p-6 hover:ring-white/[0.12] transition-all">
-                <div className={`w-10 h-10 rounded-xl ${a.bg} ring-1 ${a.ring} flex items-center justify-center mb-4`}>
-                  <f.icon size={18} className={a.text} strokeWidth={1.8} />
-                </div>
+              <div key={f.title} className="rounded-[22px] bg-surface ring-1 ring-white/[0.04] p-6 hover:ring-white/[0.10] transition-all">
+                <f.icon size={22} className="text-accent mb-4" />
                 <h3 className="text-[15px] font-bold text-white mb-2">{f.title}</h3>
                 <p className="text-[13px] text-white/40 leading-relaxed">{f.desc}</p>
               </div>
@@ -312,9 +331,9 @@ export default function LandingPage() {
       {/* PRICING */}
       <section className="max-w-6xl mx-auto px-4 md:px-8 py-20 md:py-24">
         <div className="text-center mb-14">
-          <p className="text-[12px] font-semibold text-blue-400 uppercase tracking-widest mb-3">Planos</p>
-          <h2 className="text-[32px] md:text-[40px] font-black tracking-tight">
-            <span style={{ background: 'linear-gradient(135deg, #fff, rgba(255,255,255,0.6))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          <p className="text-[12px] font-semibold text-accent uppercase tracking-widest mb-3">Planos</p>
+          <h2 className="text-[32px] md:text-[40px] font-semibold tracking-tight font-display">
+            <span>
               Invista na sua carreira
             </span>
           </h2>
@@ -322,9 +341,9 @@ export default function LandingPage() {
         </div>
 
         {/* Grátis */}
-        <div className="rounded-2xl bg-[#0a1628] ring-1 ring-white/[0.06] p-6 flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+        <div className="rounded-[22px] bg-surface ring-1 ring-white/[0.04] p-6 flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-white/[0.05] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-[14px] bg-white/[0.05] flex items-center justify-center">
               <Users size={18} className="text-white/40" strokeWidth={1.8} />
             </div>
             <div>
@@ -333,9 +352,9 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <p className="text-[22px] font-black text-white/50">R$ 0</p>
+            <p className="text-[22px] font-semibold text-white/50 font-display">R$ 0</p>
             <Link href="/login"
-              className="px-5 py-2.5 rounded-xl border border-white/[0.12] text-[13px] font-semibold text-white/60 hover:text-white hover:border-white/25 transition-all">
+              className="px-5 py-2.5 rounded-[14px] border border-white/[0.12] text-[13px] font-semibold text-white/60 hover:text-white hover:border-white/25 transition-all">
               Começar grátis
             </Link>
           </div>
@@ -343,23 +362,23 @@ export default function LandingPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {PLANOS.map(p => (
-            <div key={p.id} className={`relative rounded-2xl p-6 flex flex-col transition-all ${p.popular ? 'bg-blue-600 ring-2 ring-blue-400/50 shadow-2xl shadow-blue-900/40 pt-8' : 'bg-[#0a1628] ring-1 ring-white/[0.06] hover:ring-white/[0.12]'}`}>
+            <div key={p.id} className={`relative rounded-[22px] p-6 flex flex-col transition-all ${p.popular ? 'bg-accent shadow-2xl shadow-black/40 pt-8' : 'bg-surface ring-1 ring-white/[0.04] hover:ring-white/[0.12]'}`}>
               {p.badge && (
-                <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${p.popular ? 'bg-white text-blue-600' : 'bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/30'}`}>
+                <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${p.popular ? 'bg-on-accent text-accent' : 'bg-accent/15 text-accent ring-1 ring-accent/25'}`}>
                   {p.badge}
                 </div>
               )}
-              <p className={`text-[13px] font-semibold mb-1 ${p.popular ? 'text-blue-100' : 'text-white/50'}`}>{p.nome}</p>
+              <p className={`text-[13px] font-semibold mb-1 ${p.popular ? 'text-on-accent/70' : 'text-white/50'}`}>{p.nome}</p>
               <div className="flex items-end gap-1 mb-1">
-                <p className={`text-[32px] font-black leading-none ${p.popular ? 'text-white' : 'text-white'}`}>
+                <p className={`text-[32px] font-black leading-none ${p.popular ? 'text-on-accent' : 'text-white'}`}>
                   R$ {p.porMes.toFixed(2).replace('.', ',')}
                 </p>
               </div>
-              <p className={`text-[11px] mb-1 ${p.popular ? 'text-blue-200' : 'text-white/30'}`}>/mês</p>
-              {p.de && <p className={`text-[11px] line-through mb-3 ${p.popular ? 'text-blue-200/60' : 'text-white/20'}`}>de R$ {p.de.toFixed(2).replace('.', ',')}</p>}
-              <p className={`text-[12px] leading-relaxed mb-5 flex-1 ${p.popular ? 'text-blue-100/80' : 'text-white/35'}`}>{p.desc}</p>
+              <p className={`text-[11px] mb-1 ${p.popular ? 'text-on-accent/60' : 'text-white/30'}`}>/mês</p>
+              {p.de && <p className={`text-[11px] line-through mb-3 ${p.popular ? 'text-on-accent/50' : 'text-white/20'}`}>de R$ {p.de.toFixed(2).replace('.', ',')}</p>}
+              <p className={`text-[12px] leading-relaxed mb-5 flex-1 ${p.popular ? 'text-on-accent/70' : 'text-white/35'}`}>{p.desc}</p>
               <Link href="/login"
-                className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[13px] font-bold transition-all ${p.popular ? 'bg-white text-blue-600 hover:bg-blue-50' : 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 ring-1 ring-blue-500/30'}`}>
+                className={`flex items-center justify-center gap-1.5 py-2.5 rounded-[14px] text-[13px] font-bold transition-all ${p.popular ? 'bg-on-accent text-accent hover:bg-black' : 'bg-surface-2 text-ink hover:bg-white/[0.12]'}`}>
                 Assinar <ChevronRight size={13} />
               </Link>
             </div>
@@ -371,11 +390,9 @@ export default function LandingPage() {
       {/* CTA BANNER */}
       <section id="baixar" className="max-w-6xl mx-auto px-4 md:px-8 py-10 scroll-mt-20">
         <div className="rounded-3xl overflow-hidden relative px-8 py-12 md:px-14 md:py-16 text-center"
-          style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #0f1f3d 50%, #1a1040 100%)' }}>
-          <div className="absolute inset-0 opacity-30"
-            style={{ background: 'radial-gradient(ellipse at 50% 0%, #3b82f6 0%, transparent 60%)' }} />
+          style={{ background: 'radial-gradient(120% 90% at 100% 0%, rgba(198,244,50,0.16), transparent 60%), #141619' }}>
           <div className="relative z-10">
-            <h2 className="text-[28px] md:text-[38px] font-black tracking-tight mb-4">
+            <h2 className="text-[28px] md:text-[38px] font-semibold tracking-tight mb-4 font-display">
               Pronto para ser o melhor<br />personal do Brasil?
             </h2>
             <p className="text-[15px] text-white/45 mb-8 max-w-md mx-auto">
@@ -393,14 +410,14 @@ export default function LandingPage() {
       {/* FAQ */}
       <section className="max-w-3xl mx-auto px-4 md:px-8 py-20 md:py-24">
         <div className="text-center mb-12">
-          <p className="text-[12px] font-semibold text-blue-400 uppercase tracking-widest mb-3">Dúvidas</p>
-          <h2 className="text-[32px] md:text-[38px] font-black tracking-tight">
-            <span style={{ background: 'linear-gradient(135deg, #fff, rgba(255,255,255,0.6))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          <p className="text-[12px] font-semibold text-accent uppercase tracking-widest mb-3">Dúvidas</p>
+          <h2 className="text-[32px] md:text-[38px] font-semibold tracking-tight font-display">
+            <span>
               Perguntas frequentes
             </span>
           </h2>
         </div>
-        <div className="rounded-2xl bg-[#0a1628] ring-1 ring-white/[0.06] px-6 divide-y divide-white/[0.06]">
+        <div className="rounded-[22px] bg-surface ring-1 ring-white/[0.04] px-6 divide-y divide-white/[0.06]">
           {FAQS.map(f => <FaqItem key={f.q} q={f.q} a={f.a} />)}
         </div>
       </section>

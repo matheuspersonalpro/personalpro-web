@@ -11,11 +11,11 @@ import { useToast } from '@/components/Toast';
 
 const ESTADO_UI = {
   sem:       { cor: 'text-white/50',    bg: 'bg-white/[0.04]',    ring: 'ring-white/[0.06]',    icone: Zap,          label: 'Sem assinatura' },
-  trial:     { cor: 'text-blue-400',    bg: 'bg-blue-500/10',     ring: 'ring-blue-500/20',     icone: Clock,        label: 'Período de trial' },
-  ativa:     { cor: 'text-emerald-400', bg: 'bg-emerald-500/10',  ring: 'ring-emerald-500/20',  icone: ShieldCheck,  label: 'Assinatura ativa' },
+  trial:     { cor: 'text-accent',    bg: 'bg-accent/10',     ring: 'ring-accent/20',     icone: Clock,        label: 'Período de trial' },
+  ativa:     { cor: 'text-accent', bg: 'bg-accent/10',  ring: 'ring-accent/20',  icone: ShieldCheck,  label: 'Assinatura ativa' },
   pendente:  { cor: 'text-amber-400',   bg: 'bg-amber-500/10',    ring: 'ring-amber-500/20',    icone: AlertCircle,  label: 'Pagamento pendente' },
   bloqueada: { cor: 'text-red-400',     bg: 'bg-red-500/10',      ring: 'ring-red-500/20',      icone: AlertCircle,  label: 'Assinatura bloqueada' },
-  admin:     { cor: 'text-emerald-400', bg: 'bg-emerald-500/10',  ring: 'ring-emerald-500/20',  icone: ShieldCheck,  label: 'Acesso completo' },
+  admin:     { cor: 'text-accent', bg: 'bg-accent/10',  ring: 'ring-accent/20',  icone: ShieldCheck,  label: 'Acesso completo' },
 };
 
 const LABEL_PLANO = {
@@ -30,8 +30,8 @@ function StatusCard({ avaliacao, alunosAtivos, planoLabel, admin }) {
 
   if (admin) {
     return (
-      <div className={`rounded-2xl ring-1 p-6 flex items-start gap-4 ${ui.bg} ${ui.ring}`}>
-        <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${ui.bg} ring-1 ${ui.ring}`}>
+      <div className={`rounded-[22px] ring-1 p-6 flex items-start gap-4 ${ui.bg} ${ui.ring}`}>
+        <div className={`w-11 h-11 rounded-[14px] flex items-center justify-center shrink-0 ${ui.bg} ring-1 ${ui.ring}`}>
           <Icone size={20} className={ui.cor} />
         </div>
         <div className="flex-1 min-w-0">
@@ -43,8 +43,8 @@ function StatusCard({ avaliacao, alunosAtivos, planoLabel, admin }) {
   }
 
   return (
-    <div className={`rounded-2xl ring-1 p-6 flex items-start gap-4 ${ui.bg} ${ui.ring}`}>
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${ui.bg} ring-1 ${ui.ring}`}>
+    <div className={`rounded-[22px] ring-1 p-6 flex items-start gap-4 ${ui.bg} ${ui.ring}`}>
+      <div className={`w-11 h-11 rounded-[14px] flex items-center justify-center shrink-0 ${ui.bg} ring-1 ${ui.ring}`}>
         <Icone size={20} className={ui.cor} />
       </div>
       <div className="flex-1 min-w-0">
@@ -95,15 +95,15 @@ function CardPlano({ plano, selecionado, onSelecionar, processando }) {
     <button
       onClick={() => onSelecionar(plano.id)}
       disabled={processando}
-      className={`relative rounded-2xl p-5 text-left transition-all w-full ${
+      className={`relative rounded-[22px] p-5 text-left transition-all w-full ${
         ativo
-          ? 'bg-blue-600/15 ring-2 ring-blue-500/60'
-          : 'bg-[#0d1b2e] ring-1 ring-white/[0.06] hover:ring-blue-500/20 hover:bg-blue-900/10'
-      } ${plano.popular ? 'shadow-xl shadow-blue-900/20 pt-8' : ''}`}
+          ? 'bg-accent/15 ring-2 ring-accent/60'
+          : 'bg-[#141619] ring-1 ring-white/[0.06] hover:ring-accent/20 hover:bg-accent/10'
+      } ${plano.popular ? 'shadow-xl shadow-black/20 pt-8' : ''}`}
     >
       {plano.popular && (
         <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
-          <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-blue-600 text-white shadow-lg shadow-blue-900/40">
+          <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-accent text-on-accent shadow-lg shadow-black/40">
             MAIS POPULAR
           </span>
         </div>
@@ -112,19 +112,19 @@ function CardPlano({ plano, selecionado, onSelecionar, processando }) {
         <div>
           <p className="text-[14px] font-bold text-white/85">{LABEL_PLANO[plano.id] || plano.id}</p>
           {plano.desconto && (
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent/15 text-accent ring-1 ring-accent/20">
               {plano.desconto}
             </span>
           )}
         </div>
         <div className={`w-5 h-5 rounded-full ring-2 flex items-center justify-center transition-all shrink-0 mt-0.5 ${
-          ativo ? 'ring-blue-500 bg-blue-500' : 'ring-white/20 bg-transparent'
+          ativo ? 'ring-accent bg-accent' : 'ring-white/20 bg-transparent'
         }`}>
-          {ativo && <Check size={11} className="text-white" strokeWidth={3} />}
+          {ativo && <Check size={11} className="text-on-accent" strokeWidth={3} />}
         </div>
       </div>
       <div className="mb-1 flex items-end gap-1">
-        <span className="text-[26px] font-bold text-white">{fmtBRL(plano.porMes)}</span>
+        <span className="text-[26px] font-semibold text-white font-display">{fmtBRL(plano.porMes)}</span>
         <span className="text-[12px] text-white/40 mb-0.5">/mês</span>
       </div>
       <p className="text-[11px] text-white/35">
@@ -219,7 +219,7 @@ export default function AssinaturaPage() {
 
   if (!personal || loadingAlunos) return (
     <div className="flex items-center justify-center h-full">
-      <div className="w-7 h-7 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-7 h-7 border-2 border-accent border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
@@ -227,8 +227,8 @@ export default function AssinaturaPage() {
     <div className="px-4 pt-5 pb-6 md:p-8 max-w-4xl mx-auto w-full">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-[22px] font-bold text-white tracking-tight flex items-center gap-2.5">
-          <CreditCard size={20} className="text-blue-400" />
+        <h1 className="text-[22px] font-semibold text-white tracking-tight flex items-center gap-2.5 font-display">
+          <CreditCard size={20} className="text-accent" />
           Assinatura
         </h1>
         <p className="text-[12px] text-white/35 mt-1">Gerencie seu plano PersonalPro</p>
@@ -260,7 +260,7 @@ export default function AssinaturaPage() {
           </div>
 
           {/* O que está incluso */}
-          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5 mb-6">
+          <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5 mb-6">
             <p className="text-[11px] font-semibold text-white/30 uppercase tracking-wider mb-3">Incluído em todos os planos</p>
             <div className="grid grid-cols-2 gap-2">
               {[
@@ -274,7 +274,7 @@ export default function AssinaturaPage() {
                 'Suporte via WhatsApp',
               ].map(item => (
                 <div key={item} className="flex items-center gap-2 text-[12px] text-white/50">
-                  <Check size={12} className="text-emerald-400 shrink-0" />
+                  <Check size={12} className="text-accent shrink-0" />
                   {item}
                 </div>
               ))}
@@ -291,7 +291,7 @@ export default function AssinaturaPage() {
               onChange={e => setCpf(formatCpfCnpj(e.target.value))}
               inputMode="numeric"
               placeholder="000.000.000-00"
-              className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder-white/20 text-[14px] focus:outline-none focus:border-blue-500/60 transition-all"
+              className="w-full px-4 py-3 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white placeholder-white/20 text-[14px] focus:outline-none focus:border-accent/60 transition-all"
             />
             <p className="text-[11px] text-white/25 mt-1.5">Necessário para gerar a cobrança no Asaas.</p>
           </div>
@@ -300,11 +300,11 @@ export default function AssinaturaPage() {
           <button
             onClick={assinar}
             disabled={processando || !planoSel}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-[14px] font-bold text-white transition-all shadow-xl shadow-blue-900/30"
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-[22px] bg-accent hover:bg-accent-hover disabled:opacity-40 text-[14px] font-bold text-on-accent transition-all shadow-xl shadow-black/30"
           >
             {processando ? (
               <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-black/20 border-t-on-accent rounded-full animate-spin" />
                 Abrindo checkout...
               </>
             ) : (
@@ -336,7 +336,7 @@ export default function AssinaturaPage() {
           <button
             onClick={iniciarTrial}
             disabled={processando}
-            className="px-6 py-2.5 rounded-xl border border-white/[0.10] text-[13px] text-white/50 hover:text-white hover:border-white/20 disabled:opacity-40 transition-all"
+            className="px-6 py-2.5 rounded-[14px] border border-white/[0.10] text-[13px] text-white/50 hover:text-white hover:border-white/20 disabled:opacity-40 transition-all"
           >
             Iniciar trial grátis (14 dias)
           </button>
@@ -345,7 +345,7 @@ export default function AssinaturaPage() {
 
       {/* Plano gratuito */}
       {alunosGratis && (
-        <div className="mt-6 rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-6 text-center">
+        <div className="mt-6 rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-6 text-center">
           <Zap size={24} className="text-white/20 mx-auto mb-3" strokeWidth={1.5} />
           <p className="text-[13px] text-white/50 mb-1">
             Você está no <strong className="text-white/80">plano gratuito</strong> — até {ALUNOS_GRATIS} alunos ativos sem custo.

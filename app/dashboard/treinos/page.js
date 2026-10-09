@@ -70,7 +70,7 @@ export default function TreinosPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <div className="w-7 h-7 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-7 h-7 border-2 border-accent border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
@@ -87,24 +87,24 @@ export default function TreinosPage() {
       )}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-[22px] font-bold text-white tracking-tight">Treinos</h1>
+          <h1 className="text-[22px] font-semibold text-white tracking-tight font-display">Treinos</h1>
           <p className="text-[12px] text-white/35 mt-0.5">{treinos.length} treino{treinos.length !== 1 ? 's' : ''} na biblioteca</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="relative flex-1 sm:flex-none">
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25" />
             <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar..."
-              className="pl-8 pr-4 py-2 rounded-xl bg-white/[0.05] border border-white/[0.07] text-white placeholder-white/25 text-[13px] focus:outline-none focus:border-blue-500/50 transition-all w-full sm:w-44" />
+              className="pl-8 pr-4 py-2 rounded-[14px] bg-white/[0.05] border border-white/[0.07] text-white placeholder-white/25 text-[13px] focus:outline-none focus:border-accent/50 transition-all w-full sm:w-44" />
           </div>
           <Link href="/dashboard/treinos?id=novo"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30 shrink-0">
+            className="flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[12px] font-semibold text-on-accent transition-all shadow-lg shadow-black/30 shrink-0">
             <Plus size={13} /> Novo treino
           </Link>
         </div>
       </div>
 
       {filtrados.length === 0 ? (
-        <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-16 text-center">
+        <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-16 text-center">
           <Dumbbell size={32} className="text-white/15 mx-auto mb-3" strokeWidth={1.5} />
           <p className="text-[13px] text-white/25">Nenhum treino encontrado.</p>
         </div>
@@ -114,18 +114,18 @@ export default function TreinosPage() {
             const nome = alunoId === '__sem_aluno__' ? null : nomeAluno(alunoId);
             const isCollapsed = collapsed === null ? true : !!collapsed[alunoId];
             return (
-              <div key={alunoId} className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+              <div key={alunoId} className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
                 <button
                   onClick={() => setCollapsed(c => ({ ...c, [alunoId]: !c[alunoId] }))}
                   className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-white/[0.03] transition-all">
                   {nome ? (
                     <>
-                      <div className="w-7 h-7 rounded-full bg-blue-500/15 flex items-center justify-center text-[11px] font-bold text-blue-400 shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-surface-2 flex items-center justify-center text-[11px] font-display font-semibold text-ink shrink-0">
                         {nome[0]}
                       </div>
                       <span className="text-[13px] font-semibold text-white/80">{nome}</span>
                       <Link href={`/dashboard/alunos?id=${alunoId}`} onClick={e => e.stopPropagation()}
-                        className="text-white/20 hover:text-blue-400 transition-colors">
+                        className="text-white/20 hover:text-accent transition-colors">
                         <ArrowUpRight size={12} />
                       </Link>
                     </>
@@ -145,10 +145,10 @@ export default function TreinosPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 px-4 pb-4">
                     {lista.map(t => (
                       <Link key={t.id} href={`/dashboard/treinos?id=${t.id}`}
-                        className="group relative rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] hover:ring-blue-500/25 hover:bg-[#101f38] p-4 transition-all">
+                        className="group relative rounded-[14px] bg-white/[0.03] ring-1 ring-white/[0.06] hover:ring-accent/25 hover:bg-[#101f38] p-4 transition-all">
                         <div className="flex items-start justify-between mb-4">
-                          <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                            <Dumbbell size={16} className="text-blue-400" strokeWidth={1.8} />
+                          <div className="w-9 h-9 rounded-[14px] bg-accent/10 flex items-center justify-center">
+                            <Dumbbell size={16} className="text-accent" strokeWidth={1.8} />
                           </div>
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button onClick={e => deletar(t.id, e)}

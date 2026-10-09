@@ -9,18 +9,18 @@ import { useConfirm } from '@/components/Confirm';
 
 function KpiCard({ icon: Icon, label, value, sub, accent, href }) {
   const theme = {
-    blue:  { wrap: 'ring-blue-500/12',  icon: 'bg-blue-500/12 text-blue-400' },
-    green: { wrap: 'ring-green-500/12', icon: 'bg-green-500/12 text-green-400' },
+    blue:  { wrap: 'ring-white/[0.06]',  icon: 'bg-white/[0.07] text-white/70' },
+    green: { wrap: 'ring-accent/12', icon: 'bg-accent/12 text-accent' },
     amber: { wrap: 'ring-amber-500/12', icon: 'bg-amber-500/12 text-amber-400' },
     red:   { wrap: 'ring-red-500/12',   icon: 'bg-red-500/12 text-red-400' },
   };
   const t = theme[accent] || theme.blue;
   const conteudo = (
     <>
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-5 ${t.icon}`}>
+      <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center mb-5 ${t.icon}`}>
         <Icon size={18} strokeWidth={1.8} />
       </div>
-      <p className="text-[32px] font-bold text-white tracking-tight leading-none mb-2">{value}</p>
+      <p className="text-[32px] font-semibold text-white tracking-tight leading-none mb-2 font-display">{value}</p>
       <p className="text-[11px] font-semibold text-white/35 uppercase tracking-widest">{label}</p>
       {sub && <p className="text-[11px] text-white/25 mt-1.5 truncate">{sub}</p>}
     </>
@@ -30,13 +30,13 @@ function KpiCard({ icon: Icon, label, value, sub, accent, href }) {
   // navega pra tela de alunos já com o filtro certo aplicado.
   if (href) {
     return (
-      <Link href={href} className={`block rounded-2xl bg-[#0d1b2e] ring-1 ${t.wrap} p-6 transition-colors hover:bg-[#102238]`}>
+      <Link href={href} className={`block rounded-[22px] bg-[#141619] ring-1 ${t.wrap} p-6 transition-colors hover:bg-[#1B1E23]`}>
         {conteudo}
       </Link>
     );
   }
   return (
-    <div className={`rounded-2xl bg-[#0d1b2e] ring-1 ${t.wrap} p-6`}>
+    <div className={`rounded-[22px] bg-[#141619] ring-1 ${t.wrap} p-6`}>
       {conteudo}
     </div>
   );
@@ -242,7 +242,7 @@ export default function DashboardPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <div className="w-7 h-7 border-2 border-blue-500/60 border-t-transparent rounded-full animate-spin" />
+      <div className="w-7 h-7 border-2 border-accent/60 border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
@@ -256,17 +256,17 @@ export default function DashboardPage() {
       {/* Modal Aviso */}
       {showAviso && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-          <div className="w-full max-w-sm rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] p-6">
+          <div className="w-full max-w-sm rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[15px] font-bold text-white flex items-center gap-2"><Megaphone size={15} className="text-blue-400" /> Aviso para alunos</h2>
+              <h2 className="text-[15px] font-bold text-white flex items-center gap-2"><Megaphone size={15} className="text-accent" /> Aviso para alunos</h2>
               <button onClick={() => setShowAviso(false)} className="p-1.5 text-white/40 hover:text-white"><X size={16} /></button>
             </div>
             <p className="text-[12px] text-white/40 mb-3">Aparece na tela inicial dos alunos no app.</p>
             <textarea value={tempAviso} onChange={e => setTempAviso(e.target.value)} rows={4} placeholder="Ex: Aulas suspensas na semana do carnaval. Retomaremos na segunda-feira após o feriado."
-              className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all resize-none mb-3" />
+              className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all resize-none mb-3" />
             <div className="flex gap-2">
-              <button onClick={() => setShowAviso(false)} className="flex-1 py-2.5 rounded-xl border border-white/[0.08] text-[13px] text-white/40 hover:text-white transition-all">Cancelar</button>
-              <button onClick={publicarAviso} disabled={salvandoAv} className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all">
+              <button onClick={() => setShowAviso(false)} className="flex-1 py-2.5 rounded-[14px] border border-white/[0.08] text-[13px] text-white/40 hover:text-white transition-all">Cancelar</button>
+              <button onClick={publicarAviso} disabled={salvandoAv} className="flex-1 py-2.5 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent disabled:opacity-40 transition-all">
                 {salvandoAv ? 'Publicando...' : (tempAviso ? 'Publicar' : 'Remover aviso')}
               </button>
             </div>
@@ -277,7 +277,7 @@ export default function DashboardPage() {
       {/* Modal Reajuste Anual (Dezembro) */}
       {showReajuste && !reajusteDone && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-          <div className="w-full max-w-sm rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] p-6">
+          <div className="w-full max-w-sm rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] p-6">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-[15px] font-bold text-white flex items-center gap-2"><Percent size={15} className="text-amber-400" /> Reajuste Anual</h2>
               <button onClick={() => setShowReajuste(false)} className="p-1.5 text-white/40 hover:text-white"><X size={16} /></button>
@@ -286,10 +286,10 @@ export default function DashboardPage() {
             <div className="relative mb-4">
               <input type="text" value={pctReajuste} onChange={e => setPctReajuste(e.target.value)} placeholder="Ex: 10"
                 onKeyDown={e => { if (e.key === 'Enter' && pctReajuste && !aplicandoR) aplicarReajuste(); }}
-                className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[20px] font-bold text-center focus:outline-none focus:border-blue-500/60 transition-all" />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[18px] text-white/40 font-bold">%</span>
+                className="w-full px-4 py-3 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[20px] font-semibold text-center focus:outline-none focus:border-accent/60 transition-all font-display" />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[18px] text-white/40 font-semibold font-display">%</span>
             </div>
-            <button onClick={aplicarReajuste} disabled={aplicandoR || !pctReajuste} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-bold text-white disabled:opacity-40 transition-all mb-2">
+            <button onClick={aplicarReajuste} disabled={aplicandoR || !pctReajuste} className="w-full py-3 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-bold text-on-accent disabled:opacity-40 transition-all mb-2">
               {aplicandoR ? 'Aplicando...' : `Aplicar a ${alunos.filter(a => a.status !== 'inativo' && a.valor).length} alunos`}
             </button>
             <button onClick={() => { const ano = new Date().getFullYear(); localStorage.setItem(`reajuste_aviso_${ano}`,'1'); setShowReajuste(false); setReajusteDone(true); }}
@@ -304,21 +304,21 @@ export default function DashboardPage() {
           <p className="text-[11px] font-medium text-white/25 uppercase tracking-widest mb-2">
             {hoje.toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}
           </p>
-          <h1 className="text-[32px] md:text-[40px] font-black tracking-tight leading-[1.1]">
+          <h1 className="text-[32px] md:text-[40px] font-semibold tracking-tight leading-[1.1] font-display">
             <span style={{ background:'linear-gradient(135deg,#fff 20%,rgba(255,255,255,0.55) 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
               {saudacao}{nome ? `, ${nome}` : ''}
             </span>
-            <span className="text-blue-400">.</span>
+            <span className="text-accent">.</span>
           </h1>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <button onClick={() => { setTempAviso(textoAviso); setShowAviso(true); }}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold transition-all ${textoAviso ? 'bg-blue-500/15 text-blue-400 ring-1 ring-blue-500/25' : 'text-white/35 hover:text-white ring-1 ring-white/[0.08]'}`}>
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-[14px] text-[12px] font-semibold transition-all ${textoAviso ? 'bg-accent/15 text-accent ring-1 ring-accent/25' : 'text-white/35 hover:text-white ring-1 ring-white/[0.08]'}`}>
             <Megaphone size={13} /> {textoAviso ? 'Aviso ativo' : 'Avisar alunos'}
           </button>
           {new Date().getMonth() === 11 && !reajusteDone && (
             <button onClick={() => setShowReajuste(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold text-amber-400 ring-1 ring-amber-500/25 bg-amber-500/[0.08] transition-all">
+              className="flex items-center gap-1.5 px-3 py-2 rounded-[14px] text-[12px] font-semibold text-amber-400 ring-1 ring-amber-500/25 bg-amber-500/[0.08] transition-all">
               <Percent size={13} /> Reajuste anual
             </button>
           )}
@@ -330,13 +330,13 @@ export default function DashboardPage() {
 
       {/* Aviso ativo banner */}
       {textoAviso && (
-        <div className="flex items-start gap-3 px-4 py-3 mb-6 rounded-2xl bg-blue-500/[0.07] ring-1 ring-blue-500/15">
-          <Megaphone size={14} className="text-blue-400 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 px-4 py-3 mb-6 rounded-[22px] bg-accent/[0.07] ring-1 ring-accent/15">
+          <Megaphone size={14} className="text-accent shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-[11px] font-semibold text-blue-400 uppercase tracking-wider mb-0.5">Aviso ativo</p>
+            <p className="text-[11px] font-semibold text-accent uppercase tracking-wider mb-0.5">Aviso ativo</p>
             <p className="text-[12px] text-white/50">{textoAviso}</p>
           </div>
-          <button onClick={() => { setTempAviso(textoAviso); setShowAviso(true); }} className="text-[11px] text-blue-400/60 hover:text-blue-400 transition-colors shrink-0">Editar</button>
+          <button onClick={() => { setTempAviso(textoAviso); setShowAviso(true); }} className="text-[11px] text-accent/60 hover:text-accent transition-colors shrink-0">Editar</button>
         </div>
       )}
 
@@ -353,7 +353,7 @@ export default function DashboardPage() {
       {/* Corpo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Tabela alunos — 2 colunas */}
-        <div className="md:col-span-2 rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+        <div className="md:col-span-2 rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.05]">
             <span className="text-[12px] font-semibold text-white/60 uppercase tracking-wider">Alunos</span>
             <Link href="/dashboard/alunos" className="flex items-center gap-1 text-[11px] text-white/30 hover:text-white/60 transition-colors">
@@ -380,7 +380,7 @@ export default function DashboardPage() {
                   <tr key={a.id} className="border-b border-white/[0.03] last:border-0 hover:bg-white/[0.025] transition-colors group">
                     <td className="px-5 py-3.5">
                       <Link href={`/dashboard/alunos?id=${a.id}`} className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-full bg-blue-500/15 flex items-center justify-center text-[11px] font-bold text-blue-400 shrink-0">
+                        <div className="w-7 h-7 rounded-full bg-surface-2 flex items-center justify-center text-[11px] font-display font-semibold text-ink shrink-0">
                           {a.nome?.[0]}
                         </div>
                         <span className="text-[13px] font-medium text-white/75 group-hover:text-white transition-colors">{a.nome}</span>
@@ -388,7 +388,7 @@ export default function DashboardPage() {
                     </td>
                     <td className="px-4 py-3.5 text-[12px] text-white/35 hidden sm:table-cell">{a.plano || '—'}</td>
                     <td className="px-4 py-3.5">
-                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ${a.tipoServico === 'online' ? 'bg-blue-500/12 text-blue-400 ring-blue-500/20' : 'bg-blue-500/12 text-blue-400 ring-blue-500/20'}`}>
+                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ${a.tipoServico === 'online' ? 'bg-accent/12 text-accent ring-accent/20' : 'bg-accent/12 text-accent ring-accent/20'}`}>
                         {a.tipoServico === 'online' ? 'Online' : 'Presencial'}
                       </span>
                     </td>
@@ -406,10 +406,10 @@ export default function DashboardPage() {
         {/* Painéis laterais */}
         <div className="space-y-4">
           {/* Agenda de hoje */}
-          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+          <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
             <div className="px-5 py-4 border-b border-white/[0.05] flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <CalendarDays size={13} className="text-blue-400" />
+                <CalendarDays size={13} className="text-accent" />
                 <span className="text-[12px] font-semibold text-white/60 uppercase tracking-wider">Agenda de hoje</span>
               </div>
               <Link href="/dashboard/agenda" className="text-[10px] text-white/25 hover:text-white/50 transition-colors">ver agenda →</Link>
@@ -419,11 +419,11 @@ export default function DashboardPage() {
                 <div className="px-2 py-3 text-center"><p className="text-[12px] text-white/20">Nenhuma sessão hoje</p></div>
               ) : sessoesHoje.slice(0, 5).map(s => {
                 const aluno = alunosMap[s.alunoId];
-                const statusCls = { agendado:'bg-blue-500/12 text-blue-400', realizado:'bg-green-500/12 text-green-400', faltou:'bg-red-500/12 text-red-400', cancelado:'bg-white/[0.06] text-white/30' };
+                const statusCls = { agendado:'bg-white/[0.08] text-white/70', realizado:'bg-accent/12 text-accent', faltou:'bg-red-500/12 text-red-400', cancelado:'bg-white/[0.06] text-white/30' };
                 return (
                   <div key={s.id} className="flex items-center gap-2.5 px-2 py-2.5 rounded-lg hover:bg-white/[0.03] transition-colors">
                     <span className="text-[11px] font-semibold text-white/40 w-11 shrink-0">{s.horario || '—'}</span>
-                    <div className="w-6 h-6 rounded-full bg-blue-500/12 flex items-center justify-center text-[10px] font-bold text-blue-400 shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-surface-2 flex items-center justify-center text-[10px] font-display font-semibold text-ink shrink-0">
                       {(aluno?.nome || s.alunoId || '?')[0]}
                     </div>
                     <span className="text-[12px] text-white/65 flex-1 truncate">{aluno?.nome?.split(' ')[0] || '—'}</span>
@@ -436,7 +436,7 @@ export default function DashboardPage() {
 
           {/* Aniversariantes 7 dias */}
           {aniversariantes.length > 0 && (
-            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-amber-500/15 overflow-hidden">
+            <div className="rounded-[22px] bg-[#141619] ring-1 ring-amber-500/15 overflow-hidden">
               <div className="px-5 py-4 border-b border-white/[0.05] flex items-center gap-2">
                 <Cake size={13} className="text-amber-400" />
                 <span className="text-[12px] font-semibold text-amber-400/70 uppercase tracking-wider">
@@ -459,7 +459,7 @@ export default function DashboardPage() {
                       </div>
                       {wpp && (
                         <a href={wpp} target="_blank" rel="noopener noreferrer"
-                          className="p-1.5 rounded-lg bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-all shrink-0"
+                          className="p-1.5 rounded-lg bg-accent/10 text-accent hover:bg-accent/20 transition-all shrink-0"
                           title="Enviar parabéns">
                           <MessageCircle size={13} />
                         </a>
@@ -473,7 +473,7 @@ export default function DashboardPage() {
 
           {/* Férias pendentes */}
           {ferias.length > 0 && (
-            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-amber-500/15 overflow-hidden">
+            <div className="rounded-[22px] bg-[#141619] ring-1 ring-amber-500/15 overflow-hidden">
               <div className="px-5 py-4 border-b border-white/[0.05] flex items-center gap-2">
                 <Umbrella size={13} className="text-amber-400" />
                 <span className="text-[12px] font-semibold text-amber-400/70 uppercase tracking-wider">Férias pendentes</span>
@@ -497,7 +497,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex gap-2">
                         <button onClick={() => aprovarFerias(feria)} disabled={ocupado}
-                          className="flex-1 py-1.5 rounded-lg bg-green-500/12 text-green-400 text-[11px] font-semibold hover:bg-green-500/20 disabled:opacity-40 transition-all">
+                          className="flex-1 py-1.5 rounded-lg bg-accent/12 text-accent text-[11px] font-semibold hover:bg-accent/20 disabled:opacity-40 transition-all">
                           {ocupado ? '...' : 'Aprovar'}
                         </button>
                         <button onClick={() => recusarFerias(feria)} disabled={ocupado}
@@ -513,14 +513,14 @@ export default function DashboardPage() {
           )}
 
           {/* Vencimentos */}
-          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+          <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
             <div className="px-5 py-4 border-b border-white/[0.05]">
               <span className="text-[12px] font-semibold text-white/60 uppercase tracking-wider">Vencendo em breve</span>
             </div>
             <div className="p-3">
               {vencendo.length === 0 ? (
                 <div className="flex items-center gap-2 px-2 py-3">
-                  <CheckCircle2 size={13} className="text-green-500/40 shrink-0" />
+                  <CheckCircle2 size={13} className="text-accent/40 shrink-0" />
                   <span className="text-[12px] text-white/25">Nenhum vencimento próximo</span>
                 </div>
               ) : vencendo.map(a => {
@@ -541,7 +541,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Inadimplentes */}
-          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+          <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
             <div className="px-5 py-4 border-b border-white/[0.05] flex items-center gap-2">
               {inadimplentes.length > 0 && <div className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />}
               <span className="text-[12px] font-semibold text-white/60 uppercase tracking-wider">Inadimplentes</span>
@@ -549,7 +549,7 @@ export default function DashboardPage() {
             <div className="p-3">
               {inadimplentes.length === 0 ? (
                 <div className="flex items-center gap-2 px-2 py-3">
-                  <CheckCircle2 size={13} className="text-green-500/40 shrink-0" />
+                  <CheckCircle2 size={13} className="text-accent/40 shrink-0" />
                   <span className="text-[12px] text-white/25">Nenhum inadimplente</span>
                 </div>
               ) : inadimplentes.slice(0, 5).map(a => (

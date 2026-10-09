@@ -1,3 +1,11 @@
+import { Outfit } from 'next/font/google';
+
+// O site passou pra Sora + Manrope no redesign Grafite & Lima (10/2026), mas ESTA
+// pagina nao: ela e a consultoria pessoal do Matheus, com identidade propria. Mantem
+// o Outfit e o fundo navy que sempre teve. As regras de isolamento estao no
+// globals.css, sob a classe .treine-escopo.
+const outfit = Outfit({ subsets: ['latin'], display: 'swap' });
+
 // Metadata da página de consultoria.
 //
 // Fica no layout, e não na page, porque `page.js` é componente de cliente (tem
@@ -41,5 +49,9 @@ export const metadata = {
 };
 
 export default function TreineLayout({ children }) {
-  return children;
+  return (
+    <div className={`treine-escopo ${outfit.className}`} style={{ background: '#080f1d', color: '#f1f5f9', minHeight: '100%' }}>
+      {children}
+    </div>
+  );
 }

@@ -41,7 +41,7 @@ function ModalGerarPrograma({ programa, alunos, onFechar, onConcluido }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}>
-      <div className="w-full max-w-md rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
+      <div className="w-full max-w-md rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
           <div>
             <h2 className="text-[15px] font-bold text-white">Gerar programa</h2>
@@ -55,7 +55,7 @@ function ModalGerarPrograma({ programa, alunos, onFechar, onConcluido }) {
           <div>
             <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">Aluno</label>
             <select value={alunoId} onChange={e => setAlunoId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+              className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all">
               <option value="">Selecione um aluno...</option>
               {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
             </select>
@@ -70,7 +70,7 @@ function ModalGerarPrograma({ programa, alunos, onFechar, onConcluido }) {
                 <ChevronLeft size={14} />
               </button>
               <div className="flex-1 h-2 bg-white/[0.06] rounded-full overflow-hidden">
-                <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${(mes / 12) * 100}%` }} />
+                <div className="h-full bg-accent rounded-full transition-all" style={{ width: `${(mes / 12) * 100}%` }} />
               </div>
               <button onClick={() => setMes(m => Math.min(12, m + 1))}
                 className="p-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.10] text-white/60 hover:text-white transition-all">
@@ -84,11 +84,11 @@ function ModalGerarPrograma({ programa, alunos, onFechar, onConcluido }) {
         </div>
         <div className="px-6 py-4 border-t border-white/[0.06] flex justify-end gap-2">
           <button onClick={onFechar}
-            className="px-4 py-2 rounded-xl border border-white/[0.08] text-[13px] text-white/50 hover:text-white hover:border-white/15 transition-all">
+            className="px-4 py-2 rounded-[14px] border border-white/[0.08] text-[13px] text-white/50 hover:text-white hover:border-white/15 transition-all">
             Cancelar
           </button>
           <button onClick={gerar} disabled={gerando || !alunoId}
-            className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-blue-900/30">
+            className="px-5 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent disabled:opacity-40 transition-all shadow-lg shadow-black/30">
             {gerando ? 'Gerando...' : 'Gerar programa'}
           </button>
         </div>
@@ -120,7 +120,7 @@ function ModalUsarTemplate({ template, alunos, onFechar, onConfirmar }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}>
-      <div className="w-full max-w-md rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden flex flex-col max-h-[80vh]">
+      <div className="w-full max-w-md rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] overflow-hidden flex flex-col max-h-[80vh]">
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
           <div>
             <h2 className="text-[15px] font-bold text-white">Aplicar template</h2>
@@ -137,15 +137,15 @@ function ModalUsarTemplate({ template, alunos, onFechar, onConfirmar }) {
           )}
           {alunos.map(a => (
             <button key={a.id} onClick={() => toggle(a.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-[14px] transition-all ${
                 selecionados.includes(a.id)
-                  ? 'bg-blue-600/20 ring-1 ring-blue-500/40'
+                  ? 'bg-accent/20 ring-1 ring-accent/40'
                   : 'bg-white/[0.03] ring-1 ring-white/[0.05] hover:bg-white/[0.06]'
               }`}>
               <div className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 transition-all ${
-                selecionados.includes(a.id) ? 'bg-blue-600' : 'bg-white/[0.08]'
+                selecionados.includes(a.id) ? 'bg-accent' : 'bg-white/[0.08]'
               }`}>
-                {selecionados.includes(a.id) && <Check size={11} className="text-white" />}
+                {selecionados.includes(a.id) && <Check size={11} className="text-on-accent" />}
               </div>
               <span className="text-[13px] text-white/75">{a.nome}</span>
             </button>
@@ -153,11 +153,11 @@ function ModalUsarTemplate({ template, alunos, onFechar, onConfirmar }) {
         </div>
         <div className="px-6 py-4 border-t border-white/[0.06] flex justify-end gap-2">
           <button onClick={onFechar}
-            className="px-4 py-2 rounded-xl border border-white/[0.08] text-[13px] text-white/50 hover:text-white hover:border-white/15 transition-all">
+            className="px-4 py-2 rounded-[14px] border border-white/[0.08] text-[13px] text-white/50 hover:text-white hover:border-white/15 transition-all">
             Cancelar
           </button>
           <button onClick={confirmar} disabled={salvando || selecionados.length === 0}
-            className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-blue-900/30">
+            className="px-5 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent disabled:opacity-40 transition-all shadow-lg shadow-black/30">
             {salvando ? 'Aplicando...' : `Aplicar (${selecionados.length})`}
           </button>
         </div>
@@ -171,11 +171,11 @@ function CardTemplate({ template, tipo, onUsar, onSalvar, onExcluir }) {
   const qtd = template.exercicios?.length || 0;
 
   return (
-    <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5 flex flex-col gap-4 hover:ring-white/[0.10] transition-all">
+    <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5 flex flex-col gap-4 hover:ring-white/[0.10] transition-all">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
-            <BookOpen size={17} className="text-blue-400" strokeWidth={1.8} />
+          <div className="w-10 h-10 rounded-[14px] bg-accent/10 flex items-center justify-center shrink-0">
+            <BookOpen size={17} className="text-accent" strokeWidth={1.8} />
           </div>
           <div className="min-w-0">
             <p className="text-[14px] font-semibold text-white/85 truncate">{template.nome}</p>
@@ -199,17 +199,17 @@ function CardTemplate({ template, tipo, onUsar, onSalvar, onExcluir }) {
         {tipo === 'global' ? (
           <>
             <button onClick={() => onUsar(template)}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[12px] font-semibold text-on-accent transition-all shadow-lg shadow-black/30">
               <Users size={12} /> Usar template
             </button>
             <button onClick={() => onSalvar(template)}
-              className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-white/[0.08] text-[12px] text-white/50 hover:text-white hover:border-white/15 transition-all">
+              className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-[14px] border border-white/[0.08] text-[12px] text-white/50 hover:text-white hover:border-white/15 transition-all">
               <Copy size={12} /> Salvar
             </button>
           </>
         ) : (
           <Link href={`/dashboard/treinos?id=${template.id}`}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-white/[0.08] text-[12px] text-white/50 hover:text-white hover:border-white/15 transition-all">
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-[14px] border border-white/[0.08] text-[12px] text-white/50 hover:text-white hover:border-white/15 transition-all">
             Editar
           </Link>
         )}
@@ -296,18 +296,18 @@ export default function BibliotecaPage() {
 
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Biblioteca</h1>
+          <h1 className="text-2xl font-semibold text-white tracking-tight font-display">Biblioteca</h1>
           <p className="text-[13px] text-white/35 mt-1">Templates de treino prontos para usar</p>
         </div>
         <Link href="/dashboard/treinos?id=novo&template=true"
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
+          className="flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent transition-all shadow-lg shadow-black/30">
           <Plus size={14} /> Novo modelo
         </Link>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <div className="w-7 h-7 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-7 h-7 border-2 border-accent border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
         <div className="space-y-10">
@@ -315,7 +315,7 @@ export default function BibliotecaPage() {
           <section>
             <div className="flex items-center gap-2 mb-4">
               <h2 className="text-[15px] font-bold text-white">Programas Automáticos</h2>
-              <span className="bg-emerald-500/15 text-emerald-400 text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ring-emerald-500/20">
+              <span className="bg-accent/15 text-accent text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ring-accent/20">
                 {programas.length} programas · 12 meses
               </span>
             </div>
@@ -325,9 +325,9 @@ export default function BibliotecaPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {programas.map(p => (
                 <button key={p.id} onClick={() => setModalPrograma(p)}
-                  className="group rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5 text-left hover:ring-emerald-500/30 hover:bg-emerald-900/10 transition-all">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3 group-hover:bg-emerald-500/20 transition-all">
-                    <Zap size={16} className="text-emerald-400" strokeWidth={1.8} />
+                  className="group rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5 text-left hover:ring-accent/30 hover:bg-accent/10 transition-all">
+                  <div className="w-9 h-9 rounded-[14px] bg-accent/10 flex items-center justify-center mb-3 group-hover:bg-accent/20 transition-all">
+                    <Zap size={16} className="text-accent" strokeWidth={1.8} />
                   </div>
                   <p className="text-[13px] font-semibold text-white/85 leading-snug">{p.nome}</p>
                   <p className="text-[11px] text-white/35 mt-1 line-clamp-2">{p.desc || ''}</p>
@@ -335,7 +335,7 @@ export default function BibliotecaPage() {
                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/[0.05] text-white/40">
                       {p.freq}×/semana
                     </span>
-                    <span className="text-[10px] text-emerald-400/60 ml-auto">Gerar →</span>
+                    <span className="text-[10px] text-accent/60 ml-auto">Gerar →</span>
                   </div>
                 </button>
               ))}
@@ -347,7 +347,7 @@ export default function BibliotecaPage() {
             <section>
               <div className="flex items-center gap-2 mb-4">
                 <h2 className="text-[15px] font-bold text-white">Biblioteca Personal Pro</h2>
-                <span className="bg-blue-500/15 text-blue-400 text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ring-blue-500/20">
+                <span className="bg-accent/15 text-accent text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ring-accent/20">
                   {globais.length} templates
                 </span>
               </div>
@@ -375,7 +375,7 @@ export default function BibliotecaPage() {
               </span>
             </div>
             {pessoais.length === 0 ? (
-              <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-12 text-center">
+              <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-12 text-center">
                 <Dumbbell size={28} className="text-white/15 mx-auto mb-3" strokeWidth={1.5} />
                 <p className="text-[13px] text-white/30">Nenhum modelo criado ainda.</p>
                 <p className="text-[11px] text-white/20 mt-1">Crie um novo modelo ou salve um template da biblioteca global.</p>

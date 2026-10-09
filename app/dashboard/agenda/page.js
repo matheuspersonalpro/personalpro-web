@@ -21,8 +21,8 @@ const DIAS_CURTO  = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
 const HORARIOS    = Array.from({ length: 17 }, (_, i) => `${String(i + 5).padStart(2,'0')}:00`);
 const DIAS_OPCOES = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
 const STATUS_MAP  = {
-  agendado:  { label:'Agendado',  cls:'bg-blue-500/15 text-blue-400 ring-blue-500/20',   icon:Clock },
-  realizado: { label:'Realizado', cls:'bg-green-500/15 text-green-400 ring-green-500/20', icon:CheckCircle2 },
+  agendado:  { label:'Agendado',  cls:'bg-white/[0.08] text-white/70 ring-white/10',   icon:Clock },
+  realizado: { label:'Realizado', cls:'bg-accent/15 text-accent ring-accent/20', icon:CheckCircle2 },
   faltou:    { label:'Faltou',    cls:'bg-red-500/15 text-red-400 ring-red-500/20',       icon:XCircle },
   cancelado: { label:'Cancelado', cls:'bg-white/[0.05] text-white/30 ring-white/[0.08]', icon:AlertCircle },
 };
@@ -73,7 +73,7 @@ function SessaoModal({ sessao, alunos, onSalvo, onFechar }) {
   }
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-      <div className="w-full max-w-md rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
+      <div className="w-full max-w-md rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
           <h2 className="text-[15px] font-bold text-white">{sessao?.id ? 'Editar sessão' : 'Nova sessão'}</h2>
           <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all"><X size={16} /></button>
@@ -82,7 +82,7 @@ function SessaoModal({ sessao, alunos, onSalvo, onFechar }) {
           <div>
             <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Aluno *</label>
             <select value={form.alunoId} onChange={e => set('alunoId', e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+              className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all">
               <option value="">Selecione...</option>
               {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
             </select>
@@ -91,19 +91,19 @@ function SessaoModal({ sessao, alunos, onSalvo, onFechar }) {
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Data *</label>
               <input type="date" value={form.data} onChange={e => set('data', e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all" />
             </div>
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Horário</label>
               <input type="time" value={form.horario} onChange={e => set('horario', e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Tipo</label>
               <select value={form.tipo} onChange={e => set('tipo', e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all">
                 <option value="normal">Normal</option>
                 <option value="avaliacao">Avaliação</option>
                 <option value="reposicao">Reposição</option>
@@ -113,7 +113,7 @@ function SessaoModal({ sessao, alunos, onSalvo, onFechar }) {
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Status</label>
               <select value={form.status} onChange={e => set('status', e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all">
                 {Object.entries(STATUS_MAP).map(([v, { label }]) => <option key={v} value={v}>{label}</option>)}
               </select>
             </div>
@@ -121,11 +121,11 @@ function SessaoModal({ sessao, alunos, onSalvo, onFechar }) {
           <div>
             <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Observações</label>
             <textarea value={form.observacoes} onChange={e => set('observacoes', e.target.value)} rows={2}
-              className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all resize-none" />
+              className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all resize-none" />
           </div>
           <div className="flex justify-end gap-2 pt-1">
-            <button type="button" onClick={onFechar} className="px-4 py-2 rounded-xl border border-white/[0.08] text-[13px] text-white/50 hover:text-white transition-all">Cancelar</button>
-            <button type="submit" disabled={saving} className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all">
+            <button type="button" onClick={onFechar} className="px-4 py-2 rounded-[14px] border border-white/[0.08] text-[13px] text-white/50 hover:text-white transition-all">Cancelar</button>
+            <button type="submit" disabled={saving} className="px-5 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent disabled:opacity-40 transition-all">
               {saving ? 'Salvando...' : (sessao?.id ? 'Atualizar' : 'Agendar')}
             </button>
           </div>
@@ -386,7 +386,7 @@ export default function AgendaPage() {
       {/* Modal Slot Livre */}
       {modalSlot && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-          <div className="w-full max-w-sm rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] p-6">
+          <div className="w-full max-w-sm rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[15px] font-bold text-white">Novo horário livre</h2>
               <button onClick={() => setModalSlot(false)} className="p-1.5 text-white/40 hover:text-white transition-all"><X size={16} /></button>
@@ -394,7 +394,7 @@ export default function AgendaPage() {
             <p className="text-[12px] text-white/40 mb-4">Disponível para alunos solicitarem reposição</p>
             <div className="flex gap-2 mb-4">
               {[['recorrente','Recorrente'],['especifico','Data específica']].map(([v,l]) => (
-                <button key={v} onClick={() => setSlotTipo(v)} className={`flex-1 py-2 rounded-xl text-[12px] font-semibold transition-all ${slotTipo===v ? 'bg-blue-600/20 text-blue-400 ring-1 ring-blue-500/30' : 'bg-white/[0.04] text-white/40 hover:text-white'}`}>{l}</button>
+                <button key={v} onClick={() => setSlotTipo(v)} className={`flex-1 py-2 rounded-[14px] text-[12px] font-semibold transition-all ${slotTipo===v ? 'bg-accent/20 text-accent ring-1 ring-accent/30' : 'bg-white/[0.04] text-white/40 hover:text-white'}`}>{l}</button>
               ))}
             </div>
             {slotTipo === 'recorrente' ? (
@@ -402,7 +402,7 @@ export default function AgendaPage() {
                 <p className="text-[11px] text-white/40 mb-2">Dia da semana</p>
                 <div className="flex flex-wrap gap-2">
                   {DIAS_OPCOES.map(d => (
-                    <button key={d} onClick={() => setSlotDia(d)} className={`px-3 py-1.5 rounded-xl text-[12px] font-semibold transition-all ${slotDia===d ? 'bg-blue-600/20 text-blue-400 ring-1 ring-blue-500/30' : 'bg-white/[0.04] text-white/40 hover:text-white'}`}>{d}</button>
+                    <button key={d} onClick={() => setSlotDia(d)} className={`px-3 py-1.5 rounded-[14px] text-[12px] font-semibold transition-all ${slotDia===d ? 'bg-accent/20 text-accent ring-1 ring-accent/30' : 'bg-white/[0.04] text-white/40 hover:text-white'}`}>{d}</button>
                   ))}
                 </div>
               </div>
@@ -410,18 +410,18 @@ export default function AgendaPage() {
               <div className="mb-4">
                 <p className="text-[11px] text-white/40 mb-2">Data</p>
                 <input type="date" value={slotData} onChange={e => setSlotData(e.target.value)} min={new Date().toISOString().split('T')[0]}
-                  className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                  className="w-full px-3 py-2 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all" />
               </div>
             )}
             <p className="text-[11px] text-white/40 mb-2">Horário</p>
-            <div className="max-h-40 overflow-y-auto rounded-xl ring-1 ring-white/[0.06] mb-4">
+            <div className="max-h-40 overflow-y-auto rounded-[14px] ring-1 ring-white/[0.06] mb-4">
               {HORARIOS.map(h => (
-                <button key={h} onClick={() => setSlotHorario(h)} className={`w-full flex items-center justify-between px-4 py-2.5 text-[13px] transition-all ${slotHorario===h ? 'bg-blue-600/20 text-blue-400' : 'text-white/60 hover:bg-white/[0.04]'}`}>
+                <button key={h} onClick={() => setSlotHorario(h)} className={`w-full flex items-center justify-between px-4 py-2.5 text-[13px] transition-all ${slotHorario===h ? 'bg-accent/20 text-accent' : 'text-white/60 hover:bg-white/[0.04]'}`}>
                   {h} {slotHorario===h && <Check size={13} />}
                 </button>
               ))}
             </div>
-            <button onClick={adicionarSlot} disabled={salvandoSlot} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-bold text-white disabled:opacity-40 transition-all">
+            <button onClick={adicionarSlot} disabled={salvandoSlot} className="w-full py-3 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-bold text-on-accent disabled:opacity-40 transition-all">
               {salvandoSlot ? 'Salvando...' : 'Salvar horário'}
             </button>
           </div>
@@ -431,9 +431,9 @@ export default function AgendaPage() {
       {/* Modal Troca de Horários */}
       {modalTroca && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-          <div className="w-full max-w-md rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden max-h-[85vh] flex flex-col">
+          <div className="w-full max-w-md rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] overflow-hidden max-h-[85vh] flex flex-col">
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
-              <h2 className="text-[15px] font-bold text-white flex items-center gap-2"><ArrowLeftRight size={16} className="text-blue-400" /> Troca de Horário</h2>
+              <h2 className="text-[15px] font-bold text-white flex items-center gap-2"><ArrowLeftRight size={16} className="text-accent" /> Troca de Horário</h2>
               <button onClick={() => setModalTroca(false)} className="p-1.5 text-white/40 hover:text-white transition-all"><X size={16} /></button>
             </div>
             <div className="overflow-y-auto p-6 space-y-4">
@@ -442,16 +442,16 @@ export default function AgendaPage() {
                 <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2">Semana</p>
                 <div className="flex gap-2 flex-wrap">
                   {semanas4.map(s => (
-                    <button key={s.iso} onClick={() => setTrocaSemanaIso(s.iso)} className={`px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all ${trocaSemanaIso===s.iso ? 'bg-blue-600/20 text-blue-400 ring-1 ring-blue-500/30' : 'bg-white/[0.04] text-white/40 hover:text-white'}`}>{s.label}</button>
+                    <button key={s.iso} onClick={() => setTrocaSemanaIso(s.iso)} className={`px-3 py-1.5 rounded-[14px] text-[11px] font-semibold transition-all ${trocaSemanaIso===s.iso ? 'bg-accent/20 text-accent ring-1 ring-accent/30' : 'bg-white/[0.04] text-white/40 hover:text-white'}`}>{s.label}</button>
                   ))}
                 </div>
               </div>
               {[['A',trocaAlunoA,setTrocaAlunoA],['B',trocaAlunoB,setTrocaAlunoB]].map(([letra,sel,setSel]) => (
                 <div key={letra}>
                   <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2">Aluno {letra}</p>
-                  <div className="max-h-32 overflow-y-auto rounded-xl ring-1 ring-white/[0.06]">
+                  <div className="max-h-32 overflow-y-auto rounded-[14px] ring-1 ring-white/[0.06]">
                     {alunos.filter(a => a.tipoServico !== 'online' && a.dias?.length && a.id !== (letra==='B' ? trocaAlunoA?.id : null)).map(a => (
-                      <button key={a.id} onClick={() => setSel(a)} className={`w-full flex items-center justify-between px-4 py-2.5 text-left transition-all ${sel?.id===a.id ? 'bg-blue-600/20 text-blue-400' : 'text-white/70 hover:bg-white/[0.04]'}`}>
+                      <button key={a.id} onClick={() => setSel(a)} className={`w-full flex items-center justify-between px-4 py-2.5 text-left transition-all ${sel?.id===a.id ? 'bg-accent/20 text-accent' : 'text-white/70 hover:bg-white/[0.04]'}`}>
                         <span className="text-[12px] font-semibold">{a.nome}</span>
                         <span className="text-[11px] text-white/35">{(a.dias||[]).join(', ')} · {a.horario}</span>
                       </button>
@@ -460,15 +460,15 @@ export default function AgendaPage() {
                 </div>
               ))}
               {trocaAlunoA && trocaAlunoB && (
-                <div className="rounded-xl bg-blue-500/[0.08] ring-1 ring-blue-500/20 p-3">
-                  <p className="text-[11px] font-semibold text-blue-400 mb-2">Prévia:</p>
+                <div className="rounded-[14px] bg-accent/[0.08] ring-1 ring-accent/20 p-3">
+                  <p className="text-[11px] font-semibold text-accent mb-2">Prévia:</p>
                   <p className="text-[12px] text-white/70">{trocaAlunoA.nome} → {(trocaAlunoB.dias||[]).join(', ')} às {trocaAlunoB.horario}</p>
                   <p className="text-[12px] text-white/70 mt-1">{trocaAlunoB.nome} → {(trocaAlunoA.dias||[]).join(', ')} às {trocaAlunoA.horario}</p>
                 </div>
               )}
             </div>
             <div className="px-6 py-4 border-t border-white/[0.06]">
-              <button onClick={confirmarTroca} disabled={salvandoTroca || !trocaAlunoA || !trocaAlunoB} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-bold text-white disabled:opacity-40 transition-all">
+              <button onClick={confirmarTroca} disabled={salvandoTroca || !trocaAlunoA || !trocaAlunoB} className="w-full py-3 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-bold text-on-accent disabled:opacity-40 transition-all">
                 {salvandoTroca ? 'Criando...' : 'Confirmar troca'}
               </button>
             </div>
@@ -479,9 +479,9 @@ export default function AgendaPage() {
       {/* Modal Férias Personal */}
       {modalFerias && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-          <div className="w-full max-w-sm rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] p-6">
+          <div className="w-full max-w-sm rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[15px] font-bold text-white flex items-center gap-2"><Umbrella size={16} className="text-blue-400" /> Minhas Férias</h2>
+              <h2 className="text-[15px] font-bold text-white flex items-center gap-2"><Umbrella size={16} className="text-accent" /> Minhas Férias</h2>
               <button onClick={() => setModalFerias(false)} className="p-1.5 text-white/40 hover:text-white"><X size={16} /></button>
             </div>
             <p className="text-[12px] text-white/40 mb-4">Os planos de todos os alunos presenciais serão estendidos automaticamente.</p>
@@ -490,21 +490,21 @@ export default function AgendaPage() {
               <div className="flex-1">
                 <p className="text-[10px] text-white/30 mb-1">Início</p>
                 <input type="date" value={feriasInicio} onChange={e => setFeriasInicio(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                  className="w-full px-3 py-2 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all" />
               </div>
               <div className="flex-1">
                 <p className="text-[10px] text-white/30 mb-1">Fim</p>
                 <input type="date" value={feriasFim} onChange={e => setFeriasFim(e.target.value)} min={feriasInicio}
-                  className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                  className="w-full px-3 py-2 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all" />
               </div>
             </div>
             {feriasInicio && feriasFim && (
-              <div className="mb-4 p-3 rounded-xl bg-white/[0.04] ring-1 ring-white/[0.06]">
+              <div className="mb-4 p-3 rounded-[14px] bg-white/[0.04] ring-1 ring-white/[0.06]">
                 <p className="text-[12px] text-white/60">{feriasInicio} → {feriasFim} · {Math.round((new Date(feriasFim)-new Date(feriasInicio))/86400000)+1} dias</p>
               </div>
             )}
             <button onClick={aplicarFeriasPersonal} disabled={!feriasInicio || !feriasFim || aplicandoF}
-              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-bold text-white disabled:opacity-40 transition-all">
+              className="w-full py-3 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-bold text-on-accent disabled:opacity-40 transition-all">
               {aplicandoF ? 'Aplicando...' : 'Aplicar a todos os alunos'}
             </button>
           </div>
@@ -514,9 +514,9 @@ export default function AgendaPage() {
       {/* Modal Google Agenda */}
       {modalGoogle && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-          <div className="w-full max-w-sm rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] p-6 max-h-[80vh] flex flex-col">
+          <div className="w-full max-w-sm rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] p-6 max-h-[80vh] flex flex-col">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[15px] font-bold text-white flex items-center gap-2"><Calendar size={16} className="text-blue-400" /> Google Agenda</h2>
+              <h2 className="text-[15px] font-bold text-white flex items-center gap-2"><Calendar size={16} className="text-accent" /> Google Agenda</h2>
               <button onClick={() => setModalGoogle(false)} className="p-1.5 text-white/40 hover:text-white"><X size={16} /></button>
             </div>
             <p className="text-[12px] text-white/40 mb-4">Clique num aluno para criar o evento recorrente no Google Calendar.</p>
@@ -525,12 +525,12 @@ export default function AgendaPage() {
                 const url = gerarURLGoogleAgenda(a);
                 return (
                   <a key={a.id} href={url || '#'} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-white/[0.04] transition-all group">
+                    className="flex items-center justify-between px-4 py-3 rounded-[14px] hover:bg-white/[0.04] transition-all group">
                     <div>
                       <p className="text-[13px] font-semibold text-white/80 group-hover:text-white">{a.nome}</p>
                       <p className="text-[11px] text-white/35">{(a.dias||[]).join(', ')} · {a.horario}</p>
                     </div>
-                    <ExternalLink size={14} className="text-blue-400/60 group-hover:text-blue-400" />
+                    <ExternalLink size={14} className="text-accent/60 group-hover:text-accent" />
                   </a>
                 );
               })}
@@ -545,26 +545,26 @@ export default function AgendaPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h1 className="text-[22px] font-bold text-white">Agenda</h1>
+          <h1 className="text-[22px] font-semibold text-white font-display">Agenda</h1>
           <p className="text-[12px] text-white/35 mt-0.5">
             Semana {semanaLabel(seg)} · agenda recorrente dos alunos
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setModalGoogle(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold text-blue-400 ring-1 ring-blue-500/20 bg-blue-500/[0.08] hover:bg-blue-500/[0.15] transition-all">
+          <button onClick={() => setModalGoogle(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-[14px] text-[12px] font-semibold text-ink ring-1 ring-white/10 bg-white/[0.06] hover:bg-white/[0.10] transition-all">
             <Calendar size={13} /> Agenda
           </button>
-          <button onClick={() => setModalTroca(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold text-blue-400 ring-1 ring-blue-500/20 bg-blue-500/[0.08] hover:bg-blue-500/[0.15] transition-all">
+          <button onClick={() => setModalTroca(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-[14px] text-[12px] font-semibold text-ink ring-1 ring-white/10 bg-white/[0.06] hover:bg-white/[0.10] transition-all">
             <ArrowLeftRight size={13} /> Trocar
           </button>
-          <button onClick={() => setModalFerias(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold text-blue-400 ring-1 ring-blue-500/20 bg-blue-500/[0.08] hover:bg-blue-500/[0.15] transition-all">
+          <button onClick={() => setModalFerias(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-[14px] text-[12px] font-semibold text-ink ring-1 ring-white/10 bg-white/[0.06] hover:bg-white/[0.10] transition-all">
             <Umbrella size={13} /> Férias
           </button>
           {/* O SessaoModal já sabia criar sessão nova, mas só abria clicando
               numa sessão JÁ existente — não havia como agendar uma sessão
               avulsa. Abre com o dia selecionado já preenchido. */}
           <button onClick={() => setModal({ sessao: { data: diaAtualISO } })}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
+            className="flex items-center gap-1.5 px-3 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[12px] font-semibold text-on-accent transition-all shadow-lg shadow-black/30">
             <Plus size={13} /> Nova sessão
           </button>
         </div>
@@ -574,9 +574,9 @@ export default function AgendaPage() {
       {trocasSemanaAtual.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">
           {trocasSemanaAtual.map(t => (
-            <div key={t.id} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-blue-500/[0.08] ring-1 ring-blue-500/20">
-              <ArrowLeftRight size={12} className="text-blue-400" />
-              <span className="text-[12px] text-blue-400 font-semibold">{t.alunoA_nome} ↔ {t.alunoB_nome}</span>
+            <div key={t.id} className="flex items-center gap-2 px-3 py-2 rounded-[14px] bg-accent/[0.08] ring-1 ring-accent/20">
+              <ArrowLeftRight size={12} className="text-accent" />
+              <span className="text-[12px] text-accent font-semibold">{t.alunoA_nome} ↔ {t.alunoB_nome}</span>
               <button onClick={() => cancelarTroca(t)} className="ml-1 text-white/25 hover:text-red-400 transition-colors"><X size={12} /></button>
             </div>
           ))}
@@ -584,7 +584,7 @@ export default function AgendaPage() {
       )}
 
       {/* Nav semana + dias horizontais */}
-      <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-3 mb-5">
+      <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-3 mb-5">
         <div className="flex items-center gap-1 mb-3 px-1">
           <button onClick={() => setWeekOffset(o => o - 1)} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all"><ChevronLeft size={15} /></button>
           <button onClick={() => setWeekOffset(0)} className={`px-4 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${weekOffset===0 ? 'bg-white/[0.08] text-white' : 'text-white/40 hover:text-white/70'}`}>Hoje</button>
@@ -600,11 +600,11 @@ export default function AgendaPage() {
             const total = sels.length + sesNoDia.length;
             return (
               <button key={iso} onClick={() => setDiaSel(i)}
-                className={`flex flex-col items-center gap-1 py-2.5 px-1 rounded-xl transition-all ${diaSel===i ? 'bg-blue-600 shadow-lg shadow-blue-900/40' : ehH ? 'ring-1 ring-blue-500/30 hover:bg-white/[0.04]' : 'hover:bg-white/[0.04]'}`}>
-                <span className={`text-[10px] font-bold uppercase tracking-widest ${diaSel===i ? 'text-blue-100' : ehH ? 'text-blue-400' : 'text-white/35'}`}>{DIAS_CURTO[dia.getDay()]}</span>
-                <span className={`text-[22px] font-black leading-none ${diaSel===i ? 'text-white' : ehH ? 'text-blue-400' : 'text-white/80'}`}>{dia.getDate()}</span>
+                className={`flex flex-col items-center gap-1 py-2.5 px-1 rounded-[14px] transition-all ${diaSel===i ? 'bg-accent shadow-lg shadow-black/40' : ehH ? 'ring-1 ring-accent/30 hover:bg-white/[0.04]' : 'hover:bg-white/[0.04]'}`}>
+                <span className={`text-[10px] font-bold uppercase tracking-widest ${diaSel===i ? 'text-on-accent/60' : ehH ? 'text-accent' : 'text-white/35'}`}>{DIAS_CURTO[dia.getDay()]}</span>
+                <span className={`text-[22px] font-black leading-none ${diaSel===i ? 'text-on-accent' : ehH ? 'text-accent' : 'text-white/80'}`}>{dia.getDate()}</span>
                 <div className="h-1.5 flex items-center justify-center">
-                  {total > 0 && <div className={`w-1.5 h-1.5 rounded-full ${diaSel===i ? 'bg-white/60' : 'bg-blue-400/60'}`} />}
+                  {total > 0 && <div className={`w-1.5 h-1.5 rounded-full ${diaSel===i ? 'bg-on-accent/50' : 'bg-accent/60'}`} />}
                 </div>
               </button>
             );
@@ -628,10 +628,10 @@ export default function AgendaPage() {
 
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
             </div>
           ) : sessoesNoDia.length === 0 ? (
-            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-8 text-center">
+            <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-8 text-center">
               <p className="text-[13px] text-white/25">Nenhuma sessão neste dia</p>
             </div>
           ) : (
@@ -639,18 +639,18 @@ export default function AgendaPage() {
               {sessoesNoDia.map(s => {
                 const presente = presencas[s.alunoId];
                 return (
-                  <div key={s.alunoId} className={`flex items-center gap-4 p-4 rounded-2xl ring-1 transition-all ${s.isTroca ? 'ring-blue-500/30 bg-blue-500/[0.04]' : 'ring-white/[0.06] bg-[#0d1b2e]'}`}>
-                    <div className={`w-1 self-stretch rounded-full ${presente ? 'bg-green-400' : s.isTroca ? 'bg-blue-500' : 'bg-blue-600'}`} />
+                  <div key={s.alunoId} className={`flex items-center gap-4 p-4 rounded-[22px] ring-1 transition-all ${s.isTroca ? 'ring-accent/30 bg-accent/[0.04]' : 'ring-white/[0.06] bg-[#141619]'}`}>
+                    <div className={`w-1 self-stretch rounded-full ${presente ? 'bg-accent' : 'bg-white/20'}`} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="text-[13px] font-semibold text-white">{s.aluno}</p>
-                        {s.isTroca && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400">Troca</span>}
+                        {s.isTroca && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-accent/15 text-accent">Troca</span>}
                       </div>
                       <p className="text-[11px] text-white/35 mt-0.5">{s.objetivo || 'Presencial'}</p>
                     </div>
-                    <span className="text-[15px] font-bold text-blue-400">{s.horario}</span>
+                    <span className="text-[15px] font-bold text-accent">{s.horario}</span>
                     <button onClick={() => togglePresenca(s.alunoId, s.aluno)} disabled={!ehHoje}
-                      className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${!ehHoje ? 'opacity-40 cursor-not-allowed' : 'hover:scale-105'} ${presente ? 'bg-green-500/15 ring-1 ring-green-500/30 text-green-400' : 'text-white/25 hover:text-white/60'}`}>
+                      className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${!ehHoje ? 'opacity-40 cursor-not-allowed' : 'hover:scale-105'} ${presente ? 'bg-accent/15 ring-1 ring-accent/30 text-accent' : 'text-white/25 hover:text-white/60'}`}>
                       {presente ? <CheckCircle2 size={20} /> : <div className="w-5 h-5 rounded-full border-2 border-white/20" />}
                     </button>
                   </div>
@@ -669,7 +669,7 @@ export default function AgendaPage() {
                   const Icon = st.icon;
                   const nomeAluno = alunos.find(a => a.id === s.alunoId)?.nome || s.alunoId;
                   return (
-                    <div key={s.id} className={`flex items-center gap-3 px-4 py-3 rounded-xl ring-1 group cursor-pointer hover:brightness-110 transition-all ${st.cls}`} onClick={() => setModal({ sessao: s })}>
+                    <div key={s.id} className={`flex items-center gap-3 px-4 py-3 rounded-[14px] ring-1 group cursor-pointer hover:brightness-110 transition-all ${st.cls}`} onClick={() => setModal({ sessao: s })}>
                       <Icon size={14} />
                       <span className="text-[12px] font-semibold">{s.horario || '—'}</span>
                       <span className="text-[12px] flex-1">{nomeAluno}</span>
@@ -685,10 +685,10 @@ export default function AgendaPage() {
       {/* Seções inferiores */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Horários para reposição */}
-        <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+        <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05]">
             <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">Horários livres ({slots.length})</p>
-            <button onClick={() => setModalSlot(true)} className="w-6 h-6 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 hover:bg-blue-500/20 transition-all">
+            <button onClick={() => setModalSlot(true)} className="w-6 h-6 rounded-lg bg-accent/10 flex items-center justify-center text-accent hover:bg-accent/20 transition-all">
               <Plus size={12} />
             </button>
           </div>
@@ -697,7 +697,7 @@ export default function AgendaPage() {
           ) : (
             <div className="p-3 space-y-1.5">
               {slots.map(sl => (
-                <div key={sl.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06]">
+                <div key={sl.id} className="flex items-center gap-3 px-3 py-2.5 rounded-[14px] bg-white/[0.03] ring-1 ring-white/[0.06]">
                   <div className="flex-1">
                     <p className="text-[12px] font-semibold text-white">{sl.tipo==='especifico' ? sl.data : sl.diaSemana} · {sl.horario}</p>
                     <p className="text-[10px] text-white/35">{sl.tipo==='especifico' ? 'Único' : 'Recorrente'}</p>
@@ -710,7 +710,7 @@ export default function AgendaPage() {
         </div>
 
         {/* Férias pendentes */}
-        <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+        <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
           <div className="px-4 py-3 border-b border-white/[0.05]">
             <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">Férias pendentes ({ferias.length})</p>
           </div>
@@ -721,11 +721,11 @@ export default function AgendaPage() {
               {ferias.map(f => {
                 const aluno = alunos.find(a => a.id === f.alunoId);
                 return (
-                  <div key={f.id} className="rounded-xl bg-blue-500/[0.06] ring-1 ring-blue-500/15 p-3">
+                  <div key={f.id} className="rounded-[14px] bg-accent/[0.06] ring-1 ring-accent/15 p-3">
                     <p className="text-[12px] font-semibold text-white">{aluno?.nome || 'Aluno'}</p>
                     <p className="text-[11px] text-white/40">{f.dataInicio} – {f.dataFim} · {f.dias} dias</p>
                     <div className="flex gap-2 mt-2">
-                      <button onClick={() => aprovarFerias(f)} className="flex-1 py-1.5 rounded-lg bg-green-500/15 text-[11px] font-semibold text-green-400 hover:bg-green-500/25 transition-all">Aprovar</button>
+                      <button onClick={() => aprovarFerias(f)} className="flex-1 py-1.5 rounded-lg bg-accent/15 text-[11px] font-semibold text-accent hover:bg-accent/25 transition-all">Aprovar</button>
                       <button onClick={() => recusarFerias(f)} className="flex-1 py-1.5 rounded-lg bg-white/[0.05] text-[11px] font-semibold text-white/50 hover:text-white transition-all">Recusar</button>
                     </div>
                   </div>
@@ -736,7 +736,7 @@ export default function AgendaPage() {
         </div>
 
         {/* Reposições confirmadas */}
-        <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+        <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
           <div className="px-4 py-3 border-b border-white/[0.05]">
             <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">Reposições ({solicitacoes.length})</p>
           </div>
@@ -745,12 +745,12 @@ export default function AgendaPage() {
           ) : (
             <div className="p-3 space-y-2">
               {solicitacoes.map(sol => (
-                <div key={sol.id} className="rounded-xl bg-blue-500/[0.06] ring-1 ring-blue-500/15 p-3">
+                <div key={sol.id} className="rounded-[14px] bg-accent/[0.06] ring-1 ring-accent/15 p-3">
                   <div className="flex items-center gap-1.5 mb-1.5">
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-green-500/15 text-green-400">Confirmado</span>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-accent/15 text-accent">Confirmado</span>
                   </div>
                   <p className="text-[12px] font-semibold text-white">{sol.alunoNome}</p>
-                  <p className="text-[11px] text-blue-400">{sol.diaSemana} às {sol.horario}</p>
+                  <p className="text-[11px] text-accent">{sol.diaSemana} às {sol.horario}</p>
                 </div>
               ))}
             </div>

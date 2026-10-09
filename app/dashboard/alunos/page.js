@@ -11,8 +11,8 @@ import { ALUNOS_GRATIS, avaliarAssinatura } from '@/lib/assinatura';
 
 function Badge({ tipo }) {
   const map = {
-    online:     'bg-blue-500/15 text-blue-400 ring-blue-500/20',
-    presencial: 'bg-blue-500/15 text-blue-400 ring-blue-500/20',
+    online:     'bg-accent/15 text-accent ring-accent/20',
+    presencial: 'bg-accent/15 text-accent ring-accent/20',
   };
   const cls = map[tipo] || map.presencial;
   return (
@@ -65,7 +65,7 @@ function NovoAlunoModal({ onSalvo, onFechar }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}>
-      <div className="w-full max-w-xl rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="w-full max-w-xl rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] overflow-hidden flex flex-col max-h-[90vh]">
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
           <h2 className="text-[15px] font-bold text-white">Novo Aluno</h2>
           <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all">
@@ -85,13 +85,13 @@ function NovoAlunoModal({ onSalvo, onFechar }) {
                 <div key={k} className={col === 2 ? 'col-span-2' : ''}>
                   <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">{label}</label>
                   <input type={type} value={form[k]} onChange={e => set(k, e.target.value)} placeholder={placeholder}
-                    className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all placeholder-white/20" />
+                    className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all placeholder-white/20" />
                 </div>
               ))}
               <div>
                 <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Tipo de serviço</label>
                 <select value={form.tipoServico} onChange={e => set('tipoServico', e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                  className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all">
                   <option value="presencial">Presencial</option>
                   <option value="online">Online</option>
                 </select>
@@ -108,16 +108,16 @@ function NovoAlunoModal({ onSalvo, onFechar }) {
                 <div key={k} className={col === 2 ? 'col-span-2' : ''}>
                   <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">{label}</label>
                   <input type={type} value={form[k]} onChange={e => set(k, e.target.value)} placeholder={placeholder}
-                    className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all placeholder-white/20" />
+                    className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all placeholder-white/20" />
                 </div>
               ))}
             </div>
           </div>
           <div className="px-6 py-4 border-t border-white/[0.06] flex justify-end gap-2">
-            <button type="button" onClick={onFechar} className="px-4 py-2 rounded-xl border border-white/[0.08] text-[13px] text-white/50 hover:text-white hover:border-white/15 transition-all">
+            <button type="button" onClick={onFechar} className="px-4 py-2 rounded-[14px] border border-white/[0.08] text-[13px] text-white/50 hover:text-white hover:border-white/15 transition-all">
               Cancelar
             </button>
-            <button type="submit" disabled={saving} className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-blue-900/30">
+            <button type="submit" disabled={saving} className="px-5 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent disabled:opacity-40 transition-all shadow-lg shadow-black/30">
               {saving ? 'Salvando...' : 'Cadastrar aluno'}
             </button>
           </div>
@@ -196,7 +196,7 @@ export default function AlunosPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <div className="w-7 h-7 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-7 h-7 border-2 border-accent border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
@@ -211,17 +211,17 @@ export default function AlunosPage() {
 
       <div className="flex items-end justify-between mb-6">
         <div>
-          <h1 className="text-[22px] font-bold text-white tracking-tight">Alunos</h1>
+          <h1 className="text-[22px] font-semibold text-white tracking-tight font-display">Alunos</h1>
           <p className="text-[12px] text-white/35 mt-0.5">{alunos.length} aluno{alunos.length !== 1 ? 's' : ''} cadastrado{alunos.length !== 1 ? 's' : ''}</p>
         </div>
         <button onClick={novoAluno}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
+          className="flex items-center gap-2 px-4 py-2.5 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent transition-all shadow-lg shadow-black/30">
           <Plus size={14} /> Novo aluno
         </button>
       </div>
 
       <div className="flex items-center gap-3 mb-5">
-        <div className="flex items-center gap-1 bg-white/[0.04] rounded-xl p-1">
+        <div className="flex items-center gap-1 bg-white/[0.04] rounded-[14px] p-1">
           {[
             { key: 'todos',        label: 'Todos' },
             { key: 'ativos',       label: 'Ativos' },
@@ -240,11 +240,11 @@ export default function AlunosPage() {
         <div className="relative ml-auto">
           <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25" />
           <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar aluno..."
-            className="pl-8 pr-4 py-2 rounded-xl bg-white/[0.05] border border-white/[0.07] text-white placeholder-white/25 text-[13px] focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.07] transition-all w-52" />
+            className="pl-8 pr-4 py-2 rounded-[14px] bg-white/[0.05] border border-white/[0.07] text-white placeholder-white/25 text-[13px] focus:outline-none focus:border-accent/50 focus:bg-white/[0.07] transition-all w-52" />
         </div>
       </div>
 
-      <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+      <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/[0.05] bg-white/[0.01]">
@@ -262,7 +262,7 @@ export default function AlunosPage() {
                 className={`border-b border-white/[0.03] last:border-0 hover:bg-white/[0.025] transition-colors group ${i % 2 === 1 ? 'bg-white/[0.01]' : ''}`}>
                 <td className="px-6 py-3.5">
                   <Link href={`/dashboard/alunos?id=${a.id}`} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-sky-500/20 flex items-center justify-center text-[11px] font-bold text-blue-400 shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center text-[11px] font-display font-semibold text-ink shrink-0">
                       {a.nome?.[0]}
                     </div>
                     <div>
@@ -295,7 +295,7 @@ export default function AlunosPage() {
                       modal direto) pra respeitar o limite do plano grátis. */}
                   {!busca && (
                     <button onClick={novoAluno}
-                      className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
+                      className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[12px] font-semibold text-on-accent transition-all shadow-lg shadow-black/30">
                       <Plus size={13} /> Novo aluno
                     </button>
                   )}

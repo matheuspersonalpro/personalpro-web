@@ -1,5 +1,27 @@
 @import "tailwindcss";
 
+/* ── TOKENS: redesign "Grafite & Lima" (o mesmo do app, 07/10/2026) ──────────
+   Fonte: theme.js do app. Os nomes seguem os de la (bg/surface/surface2/accent).
+   Tailwind v4 gera bg-accent, text-accent, ring-accent/20, etc. a partir daqui. */
+@theme {
+  --color-bg: #0A0B0D;
+  --color-surface: #141619;
+  --color-surface-2: #1E2126;
+  --color-surface-hi: #1B1E23;
+  --color-accent: #C6F432;
+  --color-accent-hover: #D6FA5E;
+  --color-accent-pale: #DDF98A;
+  --color-on-accent: #0A0B0D;
+  --color-ink: #F4F5F6;
+  --color-ink-2: #A3A8B0;
+  --color-ink-3: #7C828B;
+  --color-warn: #F5B544;
+  --color-danger: #FF6B6B;
+
+  --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+}
+
 @layer base {
   *, *::before, *::after {
     box-sizing: border-box;
@@ -18,14 +40,14 @@ html {
 
 /* Fallback explícito para o dropdown do <select> (fundo escuro nas opções) */
 select option {
-  background-color: #0d1b2e;
-  color: #f1f5f9;
+  background-color: #141619;
+  color: #F4F5F6;
 }
 
 body {
-  background: #080f1d;
-  color: #f1f5f9;
-  font-family: var(--font-outfit), 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: #0A0B0D;
+  color: #F4F5F6;
+  font-family: var(--font-manrope), 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 14px;
@@ -45,12 +67,12 @@ body {
 input, select, textarea, button { font-family: inherit; }
 
 /* Seleção de texto */
-::selection { background: rgba(59, 130, 246, 0.30); color: #fff; }
+::selection { background: rgba(198, 244, 50, 0.30); color: #fff; }
 
 /* Focus global — remove o outline padrão (temos estilos customizados nos inputs) */
 :focus { outline: none; }
 :focus-visible {
-  outline: 2px solid rgba(59, 130, 246, 0.6);
+  outline: 2px solid rgba(198, 244, 50, 0.7);
   outline-offset: 2px;
   border-radius: 6px;
 }
@@ -71,3 +93,33 @@ a, button { transition-property: color, background-color, border-color, opacity,
 
 /* Tabelas */
 table { border-collapse: collapse; width: 100%; }
+
+
+/* Titulos e numeros em Sora, o resto em Manrope -- como no app. O peso e 600:
+   la o Outfit 700 virou Sora 600, que e mais leve que o negrito cheio. */
+@layer base {
+  h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.02em; }
+}
+.font-display { letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+
+/* Icones Lucide com o mesmo traco do app (1.75). CSS vence o atributo, entao nao
+   precisa mexer em nenhum <Icone strokeWidth=...>. */
+.lucide { stroke-width: 1.75; }
+
+/* ── /treine fica IDENTICO ao que era ──────────────────────────────────────────
+   A pagina de consultoria do Matheus tem identidade propria (o vermelho dele, e
+   nao a lima do app) e e o que ele manda no Instagram. O redesign do app NAO se
+   aplica a ela. Como ela herda o CSS global, este escopo (aplicado pelo layout
+   dela) devolve o que ela tinha: Outfit, titulos sem regra propria, icones com
+   traco 2, e o azul de foco e selecao de antes. */
+/* Na camada base, de proposito: assim os utilitarios da propria pagina (font-bold,
+   tracking-tight...) continuam vencendo. Fora de camada, esta regra os apagaria. */
+@layer base {
+  .treine-escopo :is(h1, h2, h3, h4) { font-family: inherit; font-weight: inherit; letter-spacing: inherit; }
+}
+/* O fundo e a cor de texto do documento tambem eram os de antes nesta pagina. */
+body:has(.treine-escopo) { background: #080f1d; color: #f1f5f9; }
+.treine-escopo .lucide { stroke-width: 2; }
+.treine-escopo ::selection { background: rgba(59, 130, 246, 0.30); color: #fff; }
+.treine-escopo :focus-visible { outline-color: rgba(59, 130, 246, 0.6); }
+.treine-escopo select option { background-color: #0d1b2e; color: #f1f5f9; }

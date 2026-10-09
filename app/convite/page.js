@@ -46,7 +46,7 @@ export default function Convite() {
       <div className="w-full max-w-md">
         <div className="text-center">
           <img src="/logo.png" alt="Personal Pro" className="h-14 mx-auto mb-8" />
-          <h1 className="text-3xl font-semibold tracking-tight">
+          <h1 className="text-3xl font-semibold tracking-tight font-display">
             Seu personal te convidou
           </h1>
           <p className="mt-3 text-white/60 leading-relaxed">
@@ -58,12 +58,12 @@ export default function Convite() {
         {codigo ? (
           <button
             onClick={copiar}
-            className="mt-8 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-5 text-center transition hover:bg-white/[0.07]"
+            className="mt-8 w-full rounded-[22px] border border-white/10 bg-white/[0.04] px-6 py-5 text-center transition hover:bg-white/[0.07]"
           >
             <span className="block text-[11px] font-medium tracking-[0.18em] text-white/40">
               CÓDIGO DE CONVITE
             </span>
-            <span className="mt-1 block font-mono text-3xl tracking-[0.28em] text-emerald-400">
+            <span className="mt-1 block font-mono text-3xl tracking-[0.28em] text-accent font-display">
               {codigo}
             </span>
             <span className="mt-2 block text-xs text-white/40">
@@ -73,7 +73,7 @@ export default function Convite() {
         ) : (
           // Sem código na URL a página ainda serve: leva pra loja e explica onde
           // conseguir o código. Melhor que uma tela de erro.
-          <p className="mt-8 rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-5 text-center text-sm text-white/50">
+          <p className="mt-8 rounded-[22px] border border-white/10 bg-white/[0.04] px-6 py-5 text-center text-sm text-white/50">
             Peça o código de convite ao seu personal — são 6 caracteres.
           </p>
         )}
@@ -81,13 +81,13 @@ export default function Convite() {
         <div className="mt-8 space-y-3">
           <a
             href={PLAY}
-            className="block rounded-xl bg-[#3B82F6] px-6 py-4 text-center font-medium transition hover:bg-[#2f74e0]"
+            className="block rounded-[14px] bg-accent px-6 py-4 text-center font-semibold text-on-accent transition hover:bg-accent-hover"
           >
             Baixar no Android
           </a>
           <a
             href={APPLE}
-            className="block rounded-xl border border-white/15 px-6 py-4 text-center font-medium transition hover:bg-white/5"
+            className="block rounded-[14px] border border-white/15 px-6 py-4 text-center font-medium transition hover:bg-white/5"
           >
             Baixar no iPhone
           </a>

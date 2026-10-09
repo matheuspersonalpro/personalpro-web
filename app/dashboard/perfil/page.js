@@ -19,7 +19,7 @@ function Field({ label, field, form, setForm, type = 'text', placeholder, icon: 
             onChange={e => setForm(f => ({ ...f, [field]: e.target.value }))}
             rows={3}
             placeholder={placeholder}
-            className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 focus:bg-white/[0.07] transition-all resize-none placeholder-white/20"
+            className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 focus:bg-white/[0.07] transition-all resize-none placeholder-white/20"
           />
         ) : (
           <input
@@ -27,7 +27,7 @@ function Field({ label, field, form, setForm, type = 'text', placeholder, icon: 
             value={form[field] || ''}
             onChange={e => setForm(f => ({ ...f, [field]: e.target.value }))}
             placeholder={placeholder}
-            className={`w-full py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 focus:bg-white/[0.07] transition-all placeholder-white/20 ${Icon ? 'pl-9 pr-3' : 'px-3'}`}
+            className={`w-full py-2.5 rounded-[14px] bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 focus:bg-white/[0.07] transition-all placeholder-white/20 ${Icon ? 'pl-9 pr-3' : 'px-3'}`}
           />
         )}
       </div>
@@ -44,7 +44,7 @@ function Toggle({ label, sub, field, form, setForm }) {
       </div>
       <button
         onClick={() => setForm(f => ({ ...f, [field]: !f[field] }))}
-        className={`w-10 h-5.5 rounded-full relative transition-all ${form[field] ? 'bg-blue-600' : 'bg-white/[0.12]'}`}
+        className={`w-10 h-5.5 rounded-full relative transition-all ${form[field] ? 'bg-accent' : 'bg-white/[0.12]'}`}
         style={{ height: '22px', minWidth: '40px' }}
       >
         <span className={`absolute top-0.5 w-4.5 h-4.5 rounded-full bg-white shadow transition-all ${form[field] ? 'left-[18px]' : 'left-0.5'}`}
@@ -100,21 +100,21 @@ export default function PerfilPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <div className="w-7 h-7 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-7 h-7 border-2 border-accent border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
   return (
     <div className="px-4 pt-5 pb-6 md:p-8 max-w-3xl mx-auto w-full">
       <div className="mb-6">
-        <h1 className="text-[22px] font-bold text-white tracking-tight">Meu Perfil</h1>
+        <h1 className="text-[22px] font-semibold text-white tracking-tight font-display">Meu Perfil</h1>
         <p className="text-[12px] text-white/35 mt-0.5">{personal?.email}</p>
       </div>
 
       <form onSubmit={salvar} className="space-y-4">
 
         {/* Informações profissionais */}
-        <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-6">
+        <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-6">
           <h2 className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-4">Informações profissionais</h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
@@ -128,7 +128,7 @@ export default function PerfilPage() {
         </div>
 
         {/* Modalidades */}
-        <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-6">
+        <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-6">
           <h2 className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-2">Modalidades ativas</h2>
           <p className="text-[12px] text-white/30 mb-4">As modalidades habilitadas aparecem para os seus alunos no app.</p>
           {[
@@ -148,7 +148,7 @@ export default function PerfilPage() {
         </div>
 
         {/* Aviso */}
-        <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-6">
+        <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-6">
           <h2 className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-1">Aviso para alunos</h2>
           <p className="text-[12px] text-white/30 mb-4">Aparece em destaque no dashboard do aluno. Deixe em branco para não exibir.</p>
           <Field label="" field="avisoTexto" form={form} setForm={setForm} multiline
@@ -157,7 +157,7 @@ export default function PerfilPage() {
 
         <div className="flex justify-end">
           <button type="submit" disabled={saving}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-blue-900/30">
+            className="flex items-center gap-2 px-6 py-2.5 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent disabled:opacity-40 transition-all shadow-lg shadow-black/30">
             <Save size={14} /> {saving ? 'Salvando...' : 'Salvar perfil'}
           </button>
         </div>
