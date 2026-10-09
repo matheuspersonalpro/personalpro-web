@@ -18,7 +18,7 @@ import { modelosProntos, modelosSugeridos, semanaSugerida, nivelDoPerfil } from 
 import {
   calcularVDOT, zonasCorridaPorVDOT,
   calcularFTP, calcularFTPRampa, zonasCiclismoPorFTP,
-  fcMaxTanaka, zonasFCPorFCMax, zonasFCKarvonen,
+  fcMaxTanaka, zonasFCPorFCMax, zonasFCKarvonen, zonasFCPorLTHR, limiarPorTeste, limiarPorFCMax,
 } from '@/lib/enduranceZonas';
 import {
   ChevronLeft, ChevronRight, Activity, BookOpen, Calendar,
@@ -26,6 +26,18 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import { useConfirm } from '@/components/Confirm';
+
+// "DD/MM/AAAA" -> idade em anos (ou null), como utils/idadePorNascimento do app.
+function idadePorNascimento(txt) {
+  const [d, m, a] = String(txt || '').split('/').map(Number);
+  if (!d || !m || !a) return null;
+  const hoje = new Date();
+  let idade = hoje.getFullYear() - a;
+  if (hoje.getMonth() + 1 < m || (hoje.getMonth() + 1 === m && hoje.getDate() < d)) idade--;
+  return idade > 0 && idade < 110 ? idade : null;
+}
+
+const idxSemana = (d) => Math.round(new Date(d).getTime() / 604800000);
 
 const DIST_OPCOES_CORRIDA = [
   { valor: '5km',  label: '5 km',      sub: 'VO₂máx',       cor: '#34d399' },
@@ -64,6 +76,10 @@ export default function EndurancePage() {
   const [idadeTeste,  setIdadeTeste]  = useState('');
   const [fcMaxManual, setFcMaxManual] = useState('');
   const [fcRepouso,   setFcRepouso]   = useState('');
+  // FC média sustentada DURANTE o teste = FC de limiar: liga as zonas de FC ao resultado do teste
+  // (Z3 de FC = mesmo esforço que Z3 de pace/potência).
+  const [fcTeste,     setFcTeste]     = useState('');
+  const [pesoKg,      setPesoKg]      = useState('');
   const [resultado,   setResultado]   = useState(null);
   const [salvandoT,   setSalvandoT]   = useState(false);
 
@@ -80,6 +96,9 @@ export default function EndurancePage() {
 
   // Modais
   const [modalProva,  setModalProva]  = useState(false);
+  // Treinos por semana (null = padrão da fase). O app mantém o longão e os treinos de qualidade e
+  // corta primeiro os regenerativos.
+  const [frequencia, setFrequencia] = useState(null);
   const [distTemp,    setDistTemp]    = useState(null);
   const [dataTemp,    setDataTemp]    = useState('');
   const [modalPlano,  setModalPlano]  = useState(false);
@@ -95,7 +114,8 @@ export default function EndurancePage() {
   // Nível do aluno (iniciante|intermediario|avancado) a partir do teste salvo —
   // escala o VOLUME das semanas sugeridas. Sem teste, cai em 'intermediario'.
   // Antes o site não calculava isso: TODO aluno recebia plano intermediário fixo.
-  const nivelAluno = nivelDoPerfil(modalidade, perfil);
+  const pesoAluno = aluno?.peso ? parseFloat(String(aluno.peso).replace(',', '.')) : null;
+  const nivelAluno = nivelDoPerfil(modalidade, perfil, Number.isFinite(pesoAluno) ? pesoAluno : null);
   const dias    = diasDaSemana(semanaIni);
   const iniKey  = chaveData(dias[0]);
   const fimKey  = chaveData(dias[6]);
@@ -125,10 +145,12 @@ export default function EndurancePage() {
 
   // ── Ao trocar aluno/modalidade ─────────────────────────────────────────────
   useEffect(() => {
-    if (!aluno) { setResultado(null); setDataProva(null); setDistProva(null); return; }
+    if (!aluno) { setResultado(null); setDataProva(null); setDistProva(null); setFrequencia(null); return; }
     const p = aluno?.enduranceProfile?.[modalidade];
     setDataProva(p?.dataProva || null);
     setDistProva(p?.distanciaProva || null);
+    // A frequência também é do aluno: sem resetar, trocar de aluno levava o "5x" do anterior.
+    setFrequencia(p?.frequencia || null);
     // carrega zonas salvas
     if (p?.zonas) {
       setResultado(p.zonas);
@@ -136,10 +158,15 @@ export default function EndurancePage() {
       setIdadeTeste(dt.idade || '');
       setFcMaxManual(dt.fcMaxManual || '');
       setFcRepouso(dt.fcRepouso || '');
+      setFcTeste(dt.fcTeste || '');
+      setPesoKg(dt.peso || '');
       if (modalidade === 'corrida') { setDistanciaM(dt.distanciaM || 5000); setMinTeste(dt.min || ''); setSegTeste(dt.seg || ''); }
       else { setPotencia(dt.potencia || ''); setTesteCic(dt.testeCic || '20min'); }
     } else {
-      setResultado(null); setMinTeste(''); setSegTeste(''); setPotencia('');
+      setResultado(null); setMinTeste(''); setSegTeste(''); setPotencia(''); setFcTeste(''); setPesoKg('');
+      // Idade do cadastro (nascimento) vale quando ainda não há teste salvo.
+      const ia = idadePorNascimento(aluno?.dataNascimento);
+      setIdadeTeste(ia != null ? String(ia) : '');
     }
   }, [alunoId, modalidade]);
 
@@ -147,25 +174,46 @@ export default function EndurancePage() {
   // ZONAS
   // ─────────────────────────────────────────────────────────────────────────
   function calcularZonas() {
-    const idadeN = parseInt(idadeTeste, 10);
+    const idadeAuto = idadePorNascimento(aluno?.dataNascimento);
+    const idadeN = idadeAuto != null ? idadeAuto : parseInt(idadeTeste, 10);
     const fcMaxN = parseInt(fcMaxManual, 10);
     const fcRepN = parseInt(fcRepouso, 10);
+    // Duração do esforço do teste: corrida = o tempo digitado; ciclismo = 20 min (protocolo de FTP).
+    // No teste de rampa não dá pra derivar (esforço progressivo).
+    const duracaoTesteMin = modalidade === 'corrida'
+      ? ((parseInt(minTeste, 10) || 0) + (parseInt(segTeste, 10) || 0) / 60)
+      : (testeCic === '20min' ? 20 : 0);
+    const fcTesteN = limiarPorTeste(parseInt(fcTeste, 10), duracaoTesteMin);
     const fcMax  = fcMaxN > 0 ? fcMaxN : (idadeN > 0 ? fcMaxTanaka(idadeN) : null);
     const fcEstimada = !(fcMaxN > 0) && idadeN > 0;
-    const zonasFC = fcMax ? (fcRepN > 0 ? zonasFCKarvonen(fcMax, fcRepN) : zonasFCPorFCMax(fcMax)) : null;
+
+    // As zonas de FC saem SEMPRE do limiar (Coggan/Friel): é o que faz Z3 de FC ser o mesmo esforço
+    // que Z3 de pace/potência. 1) FC média do teste (medido); 2) limiar estimado da FC máx; 3) Karvonen
+    // ou % FCmáx só quando não há FCmáx nenhuma.
+    const limiarEstimado = limiarPorFCMax(fcMax, modalidade);
+    let zonasFC = null, metodoFC = null;
+    if (fcTesteN > 0) { zonasFC = zonasFCPorLTHR(fcTesteN, modalidade); metodoFC = 'limiar medido no teste'; }
+    else if (limiarEstimado) { zonasFC = zonasFCPorLTHR(limiarEstimado, modalidade); metodoFC = 'limiar estimado pela FC máx'; }
+    else if (fcMax && fcRepN > 0) { zonasFC = zonasFCKarvonen(fcMax, fcRepN); metodoFC = 'Karvonen'; }
+    else if (fcMax) { zonasFC = zonasFCPorFCMax(fcMax); metodoFC = '% FCmáx'; }
 
     if (modalidade === 'corrida') {
       const tempoSeg = (parseInt(minTeste, 10) || 0) * 60 + (parseInt(segTeste, 10) || 0);
-      if (!distanciaM || tempoSeg <= 0) { toast('Preencha a distância e o tempo do teste.', 'error'); return; }
-      const vdot = calcularVDOT(distanciaM, tempoSeg);
-      setResultado({ tipo:'corrida', destaque:`VDOT ${vdot.toFixed(1)}`, zonas:zonasCorridaPorVDOT(vdot), zonasFC, fcMax, fcEstimada, metodoFC: fcRepN > 0 ? 'Karvonen' : '% FCmáx' });
-      toast(`VDOT ${vdot.toFixed(1)} — zonas calculadas`);
+      const temPace = distanciaM && tempoSeg > 0;
+      // Aluno sem teste de pace ainda treina por FC: não trava o cálculo.
+      if (!temPace && !zonasFC) { toast('Preencha o teste de pace, ou idade/FC máxima.', 'error'); return; }
+      let destaque = null, zonas = null;
+      if (temPace) { const vdot = calcularVDOT(distanciaM, tempoSeg); destaque = `VDOT ${vdot.toFixed(1)}`; zonas = zonasCorridaPorVDOT(vdot); }
+      setResultado({ tipo:'corrida', destaque, zonas, zonasFC, fcMax, fcEstimada, metodoFC });
+      toast(destaque ? `${destaque} — zonas calculadas` : 'Zonas de FC calculadas');
     } else {
       const pot = parseInt(potencia, 10);
-      if (!pot || pot <= 0) { toast('Preencha a potência do teste.', 'error'); return; }
-      const ftp = testeCic === 'rampa' ? calcularFTPRampa(pot) : calcularFTP(pot);
-      setResultado({ tipo:'ciclismo', destaque:`FTP ${ftp} W`, zonas:zonasCiclismoPorFTP(ftp), zonasFC, fcMax, fcEstimada, metodoFC: fcRepN > 0 ? 'Karvonen' : '% FCmáx' });
-      toast(`FTP ${ftp} W — zonas calculadas`);
+      const temPot = pot > 0;
+      if (!temPot && !zonasFC) { toast('Preencha o teste de potência, ou idade/FC máxima.', 'error'); return; }
+      let destaque = null, zonas = null;
+      if (temPot) { const ftp = testeCic === 'rampa' ? calcularFTPRampa(pot) : calcularFTP(pot); destaque = `FTP ${ftp} W`; zonas = zonasCiclismoPorFTP(ftp); }
+      setResultado({ tipo:'ciclismo', destaque, zonas, zonasFC, fcMax, fcEstimada, metodoFC });
+      toast(destaque ? `${destaque} — zonas calculadas` : 'Zonas de FC calculadas');
     }
   }
 
@@ -174,8 +222,8 @@ export default function EndurancePage() {
     setSalvandoT(true);
     try {
       const dadosTeste = modalidade === 'corrida'
-        ? { distanciaM, min:minTeste, seg:segTeste, idade:idadeTeste, fcMaxManual, fcRepouso }
-        : { potencia, testeCic, idade:idadeTeste, fcMaxManual, fcRepouso };
+        ? { distanciaM, min:minTeste, seg:segTeste, idade:idadeTeste, fcMaxManual, fcRepouso, fcTeste }
+        : { potencia, testeCic, peso:pesoKg, idade:idadeTeste, fcMaxManual, fcRepouso, fcTeste };
       await salvarTesteEndurance(alunoId, modalidade, dadosTeste, resultado);
       const lista = await buscarAlunos(); setAlunos(lista);
       toast('Zonas salvas no perfil do aluno.');
@@ -290,7 +338,7 @@ export default function EndurancePage() {
   // ─────────────────────────────────────────────────────────────────────────
   async function montarSemana() {
     if (!alunoId) return;
-    const plano = semanaSugerida(modalidade, focoInfo.chave, distProva, semRest, nivelAluno, null);
+    const plano = semanaSugerida(modalidade, focoInfo.chave, distProva, semRest, nivelAluno, frequencia, idxSemana(semanaIni));
     const livres = dias.filter(d => {
       const k = chaveData(d);
       return sessoesDoDia(k).length === 0 && !(dataProva && k >= dataProva);
@@ -371,7 +419,7 @@ export default function EndurancePage() {
       const sR = semanasAteProva(dataProva, cursor);
       const fase = fasePeriodizacao(sR, distProva);
       const chave = fase?.chave || 'geral';
-      const plano = semanaSugerida(modalidade, chave, distProva, sR, nivelAluno, null);
+      const plano = semanaSugerida(modalidade, chave, distProva, sR, nivelAluno, frequencia, idxSemana(cursor));
       const dS = diasDaSemana(cursor);
       totalSessoes += plano.filter((d, i) => {
         if (d.rest) return false;
@@ -400,7 +448,7 @@ export default function EndurancePage() {
         const sR = semanasAteProva(dataProva, cursor);
         const fase = fasePeriodizacao(sR, distProva);
         const chave = fase?.chave || 'geral';
-        const plano = semanaSugerida(modalidade, chave, distProva, sR, nivelAluno, null);
+        const plano = semanaSugerida(modalidade, chave, distProva, sR, nivelAluno, frequencia, idxSemana(cursor));
         const dS = diasDaSemana(cursor);
         for (let i = 0; i < 7; i++) {
           const item = plano[i]; if (!item || item.rest) continue;
@@ -432,7 +480,7 @@ export default function EndurancePage() {
 
   async function salvarProva() {
     try {
-      await definirProvaEndurance(alunoId, modalidade, dataTemp || null, distTemp || null);
+      await definirProvaEndurance(alunoId, modalidade, dataTemp || null, distTemp || null, frequencia);
       setDataProva(dataTemp || null); setDistProva(distTemp || null);
       setModalProva(false); toast(dataTemp ? 'Prova-alvo definida.' : 'Prova removida.');
       const lista = await buscarAlunos(); setAlunos(lista);
@@ -674,6 +722,16 @@ export default function EndurancePage() {
             <p className="text-[11px] font-semibold text-white/45 uppercase tracking-wider mb-2">Data da prova</p>
             <input type="date" value={dataTemp || ''} onChange={e => setDataTemp(e.target.value)} min={new Date().toISOString().split('T')[0]}
               className="w-full px-4 py-3 rounded-[14px] bg-[#0A0B0D] border border-accent/30 text-white text-[14px] focus:outline-none focus:border-accent/60 transition-all mb-5" />
+            <p className="text-[11px] font-semibold text-white/45 uppercase tracking-wider mb-2">Treinos por semana</p>
+            <div className="flex gap-2 mb-2 flex-wrap">
+              {[null, 1, 2, 3, 4, 5, 6].map(f => (
+                <button key={String(f)} onClick={() => setFrequencia(f)} type="button"
+                  className={`px-3.5 py-2 rounded-[14px] text-[13px] font-semibold ring-1 transition-all ${frequencia === f ? 'bg-accent/15 text-accent ring-accent/30' : 'text-white/50 ring-white/[0.12] hover:text-white/80'}`}>
+                  {f == null ? 'Padrão' : `${f}x`}
+                </button>
+              ))}
+            </div>
+            <p className="text-[11px] text-white/35 mb-5">{frequencia == null ? 'Padrão: usa a frequência ideal de cada fase do treinamento.' : `${frequencia}x por semana: mantém o longão e os treinos de qualidade, cortando primeiro os regenerativos.`}</p>
             <button onClick={salvarProva} disabled={!distTemp || !dataTemp}
               className="w-full py-3.5 rounded-[14px] bg-accent hover:bg-accent-hover text-[14px] font-bold text-on-accent disabled:opacity-40 transition-all mb-2 flex items-center justify-center gap-2">
               <Flag size={15} /> Salvar prova
@@ -833,6 +891,12 @@ export default function EndurancePage() {
                     className="w-36 px-3 py-2.5 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[14px] focus:outline-none focus:border-accent/60 transition-all" />
                   <p className="text-[11px] text-white/30 mt-1.5">{testeCic==='rampa' ? 'FTP = 75% da melhor potência de 1 min (MAP).' : 'FTP = 95% da potência média dos 20 min.'}</p>
                 </div>
+                <div>
+                  <p className="text-[11px] text-white/40 mb-2">Peso do atleta (kg)</p>
+                  <input type="number" value={pesoKg} onChange={e => setPesoKg(e.target.value)} placeholder="Ex.: 72"
+                    className="w-40 px-3 py-2.5 rounded-[14px] bg-white/[0.04] border border-white/[0.06] text-white text-[13px] focus:outline-none focus:border-accent/50 transition-all" />
+                  <p className="text-[11px] text-white/30 mt-1.5">Usado no W/kg (FTP ÷ peso) que classifica o nível do atleta para o plano. Sem o peso, a classificação cai num proxy menos preciso.</p>
+                </div>
               </div>
             )}
 
@@ -853,6 +917,13 @@ export default function EndurancePage() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="mt-4 rounded-[14px] bg-white/[0.03] ring-1 ring-white/[0.06] p-4">
+              <p className="text-[11px] text-white/45 mb-2">FC média do teste (opc.)</p>
+              <input type="number" value={fcTeste} onChange={e => setFcTeste(e.target.value)} placeholder="bpm — o relógio mostra no fim"
+                className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.04] border border-white/[0.06] text-white text-[13px] focus:outline-none focus:border-accent/50 transition-all" />
+              <p className="text-[11px] text-white/30 mt-2 leading-relaxed">Faz as zonas de FC baterem com as de {modalidade === 'corrida' ? 'pace' : 'potência'}: Z3 de FC vira o mesmo esforço que Z3 de {modalidade === 'corrida' ? 'pace' : 'potência'}.</p>
             </div>
 
             <button onClick={calcularZonas}
