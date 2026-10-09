@@ -1,4 +1,5 @@
 'use client';
+import { valorNum, valorMensalAsaas } from '@/lib/financeiro';
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -773,9 +774,23 @@ export default function FichaAluno() {
     try {
       const { id: _, ...dados } = form;
       await atualizarAluno(id, dados);
+      // Valor OU plano mudou e há cobrança recorrente no Asaas: atualiza a assinatura. O Asaas
+      // cobra MENSAL, então vai a mensalidade (preço ÷ meses do plano), não o preço do plano.
+      let avisoAsaas = '';
+      const mensalAntiga = valorMensalAsaas(aluno?.valor || 0, aluno?.plano);
+      const mensalNova   = valorMensalAsaas(form.valor || 0, form.plano);
+      if (valorNum(form.valor) && mensalNova !== mensalAntiga && aluno?.asaasSubscriptionId) {
+        try {
+          const { atualizarValorAssinaturaAsaas } = await import('@/lib/asaas');
+          await atualizarValorAssinaturaAsaas(aluno.asaasSubscriptionId, mensalNova);
+          avisoAsaas = ' A cobrança recorrente no Asaas foi atualizada.';
+        } catch {
+          avisoAsaas = ' ⚠️ O valor foi salvo, mas não consegui atualizar a cobrança no Asaas: ajuste no painel.';
+        }
+      }
       setAluno(form);
       setEditing(false);
-      toast('Dados atualizados com sucesso.');
+      toast(`Dados atualizados com sucesso.${avisoAsaas}`, avisoAsaas.includes('⚠️') ? 'error' : undefined);
     } catch { toast('Erro ao salvar alterações.', 'error'); }
     finally { setSaving(false); }
   }
@@ -947,7 +962,7 @@ export default function FichaAluno() {
             <Field label="Plano" field="plano" form={form} setForm={setForm} editing={editing} />
             <Field label="Frequência semanal" field="frequencia" form={form} setForm={setForm} editing={editing} type="number" />
             <Field label="Vencimento (DD/MM/AAAA)" field="vencimento" form={form} setForm={setForm} editing={editing} />
-            <Field label="Valor mensal (R$)" field="valor" form={form} setForm={setForm} editing={editing} type="number" />
+            <Field label="Valor mensal (R$)" field="valor" form={form} setForm={setForm} editing={editing} type="text" />
           </div>
         </div>
       )}

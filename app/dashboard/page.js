@@ -1,7 +1,7 @@
 ﻿'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { buscarAlunos, buscarPagamentos, buscarSessoes, buscarConfigApp, salvarConfigApp, buscarFeriasPorStatus, atualizarStatusFerias, aprovarFeriasEEstenderPlano } from '@/lib/firestore';
+import { buscarAlunos, buscarPagamentos, buscarSessoes, buscarConfigApp, salvarConfigApp, buscarFeriasPorStatus, buscarTreinosBiblioteca, buscarPresencasDesde, atualizarStatusFerias, aprovarFeriasEEstenderPlano } from '@/lib/firestore';
 import { usePersonal } from '@/lib/AuthContext';
 import { Users, TrendingUp, AlertTriangle, Clock, ArrowUpRight, CheckCircle2, CalendarDays, Cake, MessageCircle, Megaphone, X, Percent, ChevronDown, Umbrella } from 'lucide-react';
 import { useToast } from '@/components/Toast';
@@ -11,6 +11,19 @@ import { calcStatus } from '@/lib/statusAluno';
 import { alunosDeFeriasNoDia } from '@/lib/presencaAgenda';
 
 const DIAS_ABREV = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+// Alerta de aluno sumido (mesmos limiares do Início do app).
+const LIMIAR_SUMIDO_DIAS = 7;
+const JANELA_SUMIDO_DIAS = 45;
+const isoLocal = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const isoDiasAtras = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return isoLocal(d); };
+const diasEntreISO = (a, b) => Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 86400000);
+const diasAteBR = (br) => {
+  const [d, m, a] = String(br || '').split('/').map(Number);
+  if (!d || !m || !a) return null;
+  const h = new Date(); h.setHours(0, 0, 0, 0);
+  return Math.round((new Date(a, m - 1, d) - h) / 86400000);
+};
+const brParaDate = (br) => { const [d, m, a] = String(br || '').split('/').map(Number); return (d && m && a) ? new Date(a, m - 1, d) : null; };
 function minutosDoHorario(h) {
   const m = /^(\d{1,2})\s*[:hH]\s*(\d{2})?/.exec(String(h || '').trim());
   return m ? Number(m[1]) * 60 + Number(m[2] || 0) : null;
@@ -74,6 +87,11 @@ export default function DashboardPage() {
   const [config,     setConfig]     = useState({});
   const [ferias,     setFerias]     = useState([]);
   const [feriasAprovadas, setFeriasAprovadas] = useState([]);
+  const [treinosAtribuidos, setTreinosAtribuidos] = useState([]);
+  const [presencasRecentes, setPresencasRecentes] = useState([]);
+  const [sumidoOff, setSumidoOff] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('sumido_off') || '[]'); } catch { return []; }
+  });
   const [loading,    setLoading]    = useState(true);
   const [aprovandoId, setAprovandoId] = useState(null);
 
@@ -95,8 +113,10 @@ export default function DashboardPage() {
     setReajusteDone(done);
     if (new Date().getMonth() === 11 && !done) setShowReajuste(true);
 
-    Promise.allSettled([buscarAlunos(), buscarPagamentos(), buscarSessoes(), buscarConfigApp(), buscarFeriasPorStatus()])
-      .then(([ra, rp, rs, rc, rf]) => {
+    Promise.allSettled([buscarAlunos(), buscarPagamentos(), buscarSessoes(), buscarConfigApp(), buscarFeriasPorStatus(), buscarTreinosBiblioteca(), buscarPresencasDesde(isoDiasAtras(JANELA_SUMIDO_DIAS))])
+      .then(([ra, rp, rs, rc, rf, rt, rpr]) => {
+        if (rt.status === 'fulfilled') setTreinosAtribuidos(rt.value.filter(t => t.template !== true));
+        if (rpr.status === 'fulfilled') setPresencasRecentes(rpr.value);
         if (ra.status === 'fulfilled') setAlunos(ra.value);
         if (rp.status === 'fulfilled') setPagamentos(rp.value);
         if (rs.status === 'fulfilled') setSessoes(rs.value);
@@ -167,6 +187,41 @@ export default function DashboardPage() {
   const sessoesHoje = [...fixasHoje, ...avulsasHoje]
     .sort((a, b) => (minutosDoHorario(a.horario) ?? 24 * 60) - (minutosDoHorario(b.horario) ?? 24 * 60));
   const agoraMin = new Date().getHours() * 60 + new Date().getMinutes();
+  // Treinos AVULSOS (não programa) que vencem em ≤7 dias: depois disso arquivam sozinhos e
+  // somem da rotina do aluno, então o personal precisa renovar antes.
+  const treinosVencendo = treinosAtribuidos
+    .filter(t => {
+      if (t.origem === 'programa' || t.arquivado || !t.dataFim) return false;
+      const dias = diasAteBR(t.dataFim);
+      return dias !== null && dias >= 0 && dias <= 7;
+    })
+    .sort((x, y) => diasAteBR(x.dataFim) - diasAteBR(y.dataFim));
+
+  // Aluno sumido: última atividade (qualquer modalidade) há 7+ dias. Quem está de férias
+  // aprovadas (ou terminou há < 7 dias) não é sumido: é folga autorizada.
+  const ultimaPresencaPorAluno = {};
+  presencasRecentes.forEach(p => {
+    if (p.presente === false || !p.alunoId || !p.data) return;
+    if (!ultimaPresencaPorAluno[p.alunoId] || p.data > ultimaPresencaPorAluno[p.alunoId]) ultimaPresencaPorAluno[p.alunoId] = p.data;
+  });
+  const emFeriasSet = new Set(feriasAprovadas.filter(f => {
+    const ini = brParaDate(f.dataInicio), fim = brParaDate(f.dataFim);
+    if (!ini || !fim) return false;
+    const fimComGraca = new Date(fim); fimComGraca.setDate(fimComGraca.getDate() + LIMIAR_SUMIDO_DIAS);
+    return ini <= hoje && hoje <= fimComGraca;
+  }).map(f => f.alunoId));
+  const alunosSumidos = ativos
+    .filter(a => !emFeriasSet.has(a.id))
+    .map(a => ({ aluno: a, ultima: ultimaPresencaPorAluno[a.id] || null }))
+    .filter(x => x.ultima && diasEntreISO(x.ultima, hojeISO) >= LIMIAR_SUMIDO_DIAS)
+    .filter(x => !sumidoOff.includes(`${x.aluno.id}_${x.ultima}`))
+    .sort((x, y) => (x.ultima < y.ultima ? -1 : 1));
+  function dispensarSumido(alunoId, ultima) {
+    const novo = [...sumidoOff, `${alunoId}_${ultima}`];
+    setSumidoOff(novo);
+    try { localStorage.setItem('sumido_off', JSON.stringify(novo)); } catch {}
+  }
+
   const proximaId = sessoesHoje.find(s => { const m = minutosDoHorario(s.horario); return m !== null && m >= agoraMin; })?.id;
   const alunosMap = Object.fromEntries(alunos.map(a => [a.id, a]));
 
@@ -482,6 +537,49 @@ export default function DashboardPage() {
               })}
             </div>
           </div>
+
+          {/* Alunos sumidos */}
+          {alunosSumidos.length > 0 && (
+            <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
+              <div className="px-5 py-4 border-b border-white/[0.05] flex items-center justify-between">
+                <span className="text-[12px] font-semibold text-white/60 uppercase tracking-wider">Alunos sumidos</span>
+                <span className="text-[11px] text-white/30">{alunosSumidos.length}</span>
+              </div>
+              <div className="p-3">
+                {alunosSumidos.map(({ aluno, ultima }) => (
+                  <div key={aluno.id} className="flex items-center gap-2 px-2 py-2.5 rounded-lg hover:bg-white/[0.03] transition-colors">
+                    <Link href={`/dashboard/alunos?id=${aluno.id}`} className="flex-1 min-w-0">
+                      <p className="text-[12px] text-white/70 truncate">{aluno.nome}</p>
+                      <p className="text-[10px] text-white/30">Sem treinar há {diasEntreISO(ultima, hojeISO)} dias · dê um alô antes de perder</p>
+                    </Link>
+                    <button onClick={() => dispensarSumido(aluno.id, ultima)} title="Dispensar alerta"
+                      className="p-1.5 text-white/25 hover:text-white/60 transition-colors shrink-0"><X size={13} /></button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Treinos vencendo */}
+          {treinosVencendo.length > 0 && (
+            <div className="rounded-[22px] bg-[#141619] ring-1 ring-amber-500/15 overflow-hidden">
+              <div className="px-5 py-4 border-b border-white/[0.05] flex items-center gap-2">
+                <Clock size={13} className="text-amber-400" />
+                <span className="text-[12px] font-semibold text-amber-400/70 uppercase tracking-wider">Treinos vencendo</span>
+              </div>
+              <div className="p-3">
+                {treinosVencendo.map(t => {
+                  const d = diasAteBR(t.dataFim);
+                  return (
+                    <Link key={t.id} href={`/dashboard/alunos?id=${t.alunoId}`} className="block px-2 py-2.5 rounded-lg hover:bg-white/[0.03] transition-colors">
+                      <p className="text-[12px] text-white/70 truncate">{t.alunoNome || 'Aluno'}</p>
+                      <p className="text-[10px] text-white/30 truncate">Treino “{t.nome}” {d === 0 ? 'vence hoje' : `vence em ${d} ${d === 1 ? 'dia' : 'dias'}`} · renove antes que arquive</p>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Aniversariantes 7 dias */}
           {aniversariantes.length > 0 && (
