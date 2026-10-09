@@ -6,7 +6,7 @@ import { planoCanonico } from '@/lib/planos';
 import { calcStatus } from '@/lib/statusAluno';
 import { buscarCobrancasAssinatura } from '@/lib/asaas';
 import { gerarPixEMV } from '@/lib/pix';
-import { TrendingUp, Plus, X, ChevronLeft, ChevronRight, Trash2, DollarSign, Users, CreditCard, Target, Zap, QrCode, ExternalLink, Check, AlertTriangle, Copy, RefreshCw } from 'lucide-react';
+import { TrendingUp, Plus, X, ChevronLeft, ChevronRight, Trash2, DollarSign, Users, CreditCard, Target, Zap, QrCode, ExternalLink, Check, AlertTriangle, Copy, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import ConfirmModal from '@/components/ConfirmModal';
 
@@ -264,7 +264,7 @@ export default function FinanceiroPage() {
   const [saving, setSaving] = useState(false);
 
   // Aba alunos: filtro
-  const [filtro, setFiltro] = useState('todos');
+  const [filtro, setFiltro] = useState('presencial');
 
   const carregar = useCallback(async () => {
     setLoading(true);
@@ -573,6 +573,35 @@ export default function FinanceiroPage() {
     catch { toast('Erro ao salvar.', 'error'); } finally { setSalvandoCfg(false); }
   }
 
+  // Mesma regra do app (FinanceiroPersonal.statusPlano): a bandeira de vencido do Asaas vem
+  // primeiro; quem tem cobrança automática sem bandeira está em dia; os demais pela data.
+  const statusPlanoFin = (a) => {
+    if (a.pagamentoVencido) return 'pendente';
+    if (a.cobrancaAutomatica) return 'pago';
+    const dias = diasAteVencimento(a.vencimento);
+    if (dias === null) return 'pago';
+    if (dias < 0) return 'pendente';
+    if (dias <= 7) return 'vencendo';
+    return 'pago';
+  };
+  const STATUS_FIN = {
+    pago:     { cls: 'bg-accent/12 text-accent',      label: 'Em dia' },
+    vencendo: { cls: 'bg-amber-500/12 text-amber-400', label: 'Vencendo' },
+    pendente: { cls: 'bg-red-500/12 text-red-400',     label: 'Atrasado' },
+  };
+  const METODO_LABEL = {
+    asaas_cartao: 'Cartão · Asaas', confirmado: 'Confirmado por você', pix_recorrente: 'Pix Recorrente', pix_auto: 'Pix Recorrente',
+    pix_qr: 'PIX Copia e Cola', pix: 'PIX', cartao: 'Link de Pagamento', cartao_cred: 'Cartão Crédito', cartao_deb: 'Cartão Débito',
+    dinheiro: 'Dinheiro', transferencia: 'Transferência',
+  };
+  const tsPag = (pg) => pg.criadoEm?.seconds ? pg.criadoEm.seconds * 1000 : (() => { const [d, mo, y] = String(pg.data || '').split('/').map(Number); return d ? new Date(y, mo - 1, d).getTime() : 0; })();
+  const ultimoMetodoDoAluno = (alunoId) => {
+    const meus = pagamentos.filter(pg => pg.alunoId === alunoId).sort((x, y) => tsPag(y) - tsPag(x));
+    return meus[0]?.metodo || null;
+  };
+  const contPersonal = alunos.filter(a => a.ativo !== false && a.tipoServico !== 'online').length;
+  const contConsultoria = alunos.filter(a => a.ativo !== false && a.tipoServico === 'online').length;
+
   const alunosFiltrados = alunos.filter(a => {
     if (a.ativo === false) return false;
     if (filtro === 'presencial') return a.tipoServico !== 'online';
@@ -856,28 +885,10 @@ export default function FinanceiroPage() {
         <div className="space-y-4">
           {/* Filtro */}
           <div className="flex gap-2">
-            {[['todos','Todos'],['presencial','Presencial'],['online','Online']].map(([v,l]) => (
+            {[['presencial', `Personal (${contPersonal})`],['online', `Consultoria (${contConsultoria})`]].map(([v,l]) => (
               <button key={v} onClick={() => setFiltro(v)} className={`px-4 py-2 rounded-[14px] text-[12px] font-semibold transition-all ${filtro===v ? 'bg-accent/20 text-accent ring-1 ring-accent/30' : 'bg-white/[0.04] text-white/40 hover:text-white'}`}>{l}</button>
             ))}
           </div>
-
-          {/* Inadimplentes destaque */}
-          {inadimplentes.length > 0 && filtro !== 'online' && (
-            <div className="rounded-[22px] bg-red-500/[0.06] ring-1 ring-red-500/15 p-4">
-              <p className="text-[11px] font-semibold text-red-400 uppercase tracking-wider mb-2">⚠ Planos vencidos ({inadimplentes.length})</p>
-              <div className="space-y-1.5">
-                {inadimplentes.map(a => (
-                  <div key={a.id} className="flex items-center justify-between">
-                    <div>
-                      <span className="text-[13px] font-semibold text-white">{a.nome}</span>
-                      <span className="text-[11px] text-red-400 ml-2">venceu {a.vencimento}</span>
-                    </div>
-                    <button onClick={() => setCobrando(a)} className="px-3 py-1.5 rounded-[14px] bg-red-500/15 text-[11px] font-semibold text-red-400 hover:bg-red-500/25 transition-all">Cobrar</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Lista completa */}
           <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
@@ -889,33 +900,24 @@ export default function FinanceiroPage() {
             ) : (
               <div className="divide-y divide-white/[0.04]">
                 {alunosFiltrados.map(a => {
-                  const [d,m,an] = (a.vencimento||'').split('/').map(Number);
-                  const venc = a.vencimento ? new Date(an,m-1,d) : null;
-                  const diff = venc ? Math.round((venc - hoje) / 86400000) : null;
-                  const status = diff === null ? null : diff < 0 ? 'vencido' : diff <= 7 ? 'urgente' : 'ok';
+                  const st = STATUS_FIN[statusPlanoFin(a)];
+                  const met = ultimoMetodoDoAluno(a.id);
                   return (
-                    <div key={a.id} className="flex items-center gap-4 px-5 py-3.5 hover:bg-white/[0.02] transition-colors group">
-                      <div className={`w-2 h-2 rounded-full shrink-0 ${status==='vencido' ? 'bg-red-400' : status==='urgente' ? 'bg-amber-400' : status==='ok' ? 'bg-accent' : 'bg-white/20'}`} />
+                    <div key={a.id} className="flex items-center gap-4 px-5 py-4 hover:bg-white/[0.02] transition-colors group">
                       <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-semibold text-white">{a.nome}</p>
-                        <p className="text-[11px] text-white/35">{a.tipoServico === 'online' ? 'Online' : 'Presencial'} · {a.plano || a.tipo || '—'}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[13px] font-bold text-accent">{fmt(valorNum(a.valor))}</p>
-                        {a.vencimento && (
-                          <p className={`text-[11px] ${status==='vencido' ? 'text-red-400' : status==='urgente' ? 'text-amber-400' : 'text-white/35'}`}>
-                            {status==='vencido' ? `venceu ${a.vencimento}` : `vence ${a.vencimento}`}
-                          </p>
-                        )}
-                        {a.asaasSubscriptionId && a.proximoRecebimento && (
-                          <p className="text-[10px] text-amber-400/70 flex items-center justify-end gap-1 mt-0.5">
-                            <Zap size={9} /> {fmt(a.proximoRecebimento.netValue ?? a.proximoRecebimento.valor)} em {fmtDataISO(a.proximoRecebimento.dataCredito || a.proximoRecebimento.dueDate) || '—'}
-                          </p>
-                        )}
+                        <p className="text-[14px] font-semibold text-white">{a.nome}</p>
+                        <p className="text-[12px] text-white/40">{a.plano || 'Sem plano'} • Vence {a.vencimento || '—'}</p>
+                        <p className={`text-[11px] mt-1 flex items-center gap-1 ${a.cobrancaAutomatica || met ? 'text-accent' : 'text-white/30'}`}>
+                          {a.cobrancaAutomatica ? <><CheckCircle2 size={11} /> Cobrança automática</> : met ? <><Check size={11} /> {METODO_LABEL[met] || met}</> : 'Controle manual'}
+                        </p>
                       </div>
                       <button onClick={() => setCobrando(a)} className="opacity-0 group-hover:opacity-100 flex items-center gap-1 px-3 py-1.5 rounded-[14px] bg-accent/15 text-[11px] font-semibold text-accent hover:bg-accent/25 transition-all">
                         <DollarSign size={11} /> Cobrar
                       </button>
+                      <div className="text-right shrink-0">
+                        <p className="text-[15px] font-bold text-white">{fmt(valorNum(a.valor))}</p>
+                        <span className={`inline-block mt-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${st.cls}`}>{st.label}</span>
+                      </div>
                     </div>
                   );
                 })}

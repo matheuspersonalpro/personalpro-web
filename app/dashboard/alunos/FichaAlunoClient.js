@@ -1,5 +1,6 @@
 'use client';
 import { valorNum, valorMensalAsaas } from '@/lib/financeiro';
+import { calcStatus } from '@/lib/statusAluno';
 import { RITMOS_PROGRAMA, ritmoSelecionado, viraSozinho, diasDoBloco, diasParaProximoMes, diasNoBlocoAtual, rotuloRitmo } from '@/lib/programaMusculacao';
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -16,6 +17,7 @@ import {
   Phone, Mail, Calendar, Plus, ArrowUpRight, ClipboardList, Trash2,
   TrendingUp, Weight, Camera, CalendarDays, CheckCircle2, XCircle,
   ChevronRight, ChevronDown, Play,
+  MessageCircle,
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { mapaPresencaAgenda } from '@/lib/presencaAgenda';
@@ -882,13 +884,12 @@ export default function FichaAluno() {
   if (!aluno) return <div className="p-8 text-white/35">Aluno não encontrado.</div>;
 
   const hoje = new Date();
-  let statusVenc = 'ok';
-  if (aluno.vencimento) {
-    const [d, m, y] = aluno.vencimento.split('/');
-    const diff = Math.ceil((new Date(+y, m - 1, +d) - hoje) / 86400000);
-    if (diff < 0) statusVenc = 'vencido';
-    else if (diff <= 7) statusVenc = 'vencendo';
-  }
+  // Mesma regra do app e da lista (lib/statusAluno): cobrança automática só é atrasada
+  // quando o Asaas marcou vencido.
+  const stPlano = calcStatus(aluno);
+  const statusVenc = stPlano === 'pendente' ? 'vencido' : stPlano === 'vencendo' ? 'vencendo' : 'ok';
+  const wppAluno = (() => { const d = String(aluno.telefone || '').replace(/\D/g, ''); return d ? (d.length <= 11 ? '55' + d : d) : ''; })();
+  const DIAS_ORDEM = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
   return (
     <div className="px-4 pt-5 pb-6 md:p-8 max-w-5xl mx-auto w-full">
@@ -928,8 +929,8 @@ export default function FichaAluno() {
 
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-[22px] bg-surface-2 flex items-center justify-center text-xl font-semibold text-ink ring-1 ring-accent/20 font-display">
-            {aluno.nome?.[0]}
+          <div className="w-14 h-14 rounded-full overflow-hidden bg-surface-2 flex items-center justify-center text-xl font-semibold text-ink ring-1 ring-accent/20 font-display">
+            {aluno.fotoPerfil ? <img src={aluno.fotoPerfil} alt="" className="w-full h-full object-cover" /> : aluno.nome?.[0]}
           </div>
           <div>
             <h1 className="text-xl font-semibold text-white tracking-tight font-display">{aluno.nome}</h1>
@@ -954,6 +955,10 @@ export default function FichaAluno() {
         </div>
 
         <div className="flex items-center gap-2">
+          {wppAluno && (
+            <a href={`https://wa.me/${wppAluno}`} target="_blank" rel="noopener noreferrer" title="Abrir conversa no WhatsApp"
+              className="w-9 h-9 rounded-full bg-accent/10 hover:bg-accent/20 flex items-center justify-center text-accent transition-all"><MessageCircle size={16} /></a>
+          )}
           <button onClick={() => setConfirmAluno(true)}
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-[14px] border border-red-500/20 text-[12px] text-red-400/60 hover:text-red-400 hover:border-red-500/40 transition-all">
             <Trash2 size={13} /> Excluir
@@ -1008,6 +1013,50 @@ export default function FichaAluno() {
       </div>
 
       {aba === 'dados' && (
+        <div className="space-y-4">
+        {/* Resumo do plano, frequência e termo: a mesma ordem da ficha do app */}
+        <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-semibold text-white/35 uppercase tracking-wider">Plano {aluno.plano || '—'}</p>
+              <p className="text-[15px] text-white/80 mt-2">Vence em: <span className="text-accent font-semibold">{aluno.vencimento || '—'}</span>{aluno.valor ? <span className="text-white/35"> · R$ {aluno.valor}</span> : null}</p>
+            </div>
+            <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${statusVenc === 'vencido' ? 'bg-red-500/15 text-red-400' : statusVenc === 'vencendo' ? 'bg-amber-500/15 text-amber-400' : 'bg-accent/12 text-accent'}`}>
+              {statusVenc === 'vencido' ? 'Atrasado' : statusVenc === 'vencendo' ? 'Vencendo' : 'Ativo'}
+            </span>
+          </div>
+          {aluno.cobrancaAutomatica && (
+            <div className="mt-4 flex items-center gap-2 rounded-[14px] bg-accent/[0.07] ring-1 ring-accent/15 px-3.5 py-2.5 text-[12px]">
+              <CheckCircle2 size={14} className="text-accent shrink-0" />
+              <span className="text-accent font-medium">Cobrança automática ativa</span>
+              <span className="text-red-400/80">· cancelar em Finanças</span>
+            </div>
+          )}
+        </div>
+        {aluno.tipoServico !== 'online' && (
+          <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5">
+            <p className="text-[10px] font-semibold text-white/35 uppercase tracking-wider mb-3">Frequência semanal</p>
+            <div className="flex gap-3">
+              {DIAS_ORDEM.map(dia => {
+                const ativoDia = Array.isArray(aluno.dias) && aluno.dias.includes(dia);
+                return (
+                  <div key={dia} className="flex flex-col items-center gap-1.5">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-semibold ${ativoDia ? 'bg-accent text-on-accent' : 'bg-white/[0.05] text-white/35'}`}>{dia[0]}</div>
+                    <span className={`text-[10px] ${ativoDia ? 'text-accent' : 'text-white/30'}`}>{dia}</span>
+                  </div>
+                );
+              })}
+            </div>
+            {Array.isArray(aluno.dias) && aluno.dias.length > 0 && (
+              <p className="text-[12px] text-white/35 mt-3">{aluno.dias.length} dia{aluno.dias.length !== 1 ? 's' : ''} de treino por semana{aluno.horario ? `  ·  ${aluno.horario}` : ''}</p>
+            )}
+          </div>
+        )}
+        {aluno.tipoServico !== 'online' && (
+          <div className={`rounded-[14px] px-4 py-3 text-[13px] font-medium flex items-center gap-2 ring-1 ${aluno.termoAceito ? 'bg-accent/[0.06] ring-accent/15 text-accent' : 'bg-amber-500/[0.06] ring-amber-500/15 text-amber-400'}`}>
+            <ClipboardList size={14} />{aluno.termoAceito ? `Termo aceito${aluno.termoAceitoEm ? ` em ${new Date(aluno.termoAceitoEm).toLocaleString('pt-BR')}` : ''}` : 'Termo pendente'}
+          </div>
+        )}
         <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
             <Field label="Nome completo" field="nome" form={form} setForm={setForm} editing={editing} icon={User} />
@@ -1018,6 +1067,7 @@ export default function FichaAluno() {
               options={[{ value: 'presencial', label: 'Presencial' }, { value: 'online', label: 'Online' }]} />
             <Field label="Observações" field="observacoes" form={form} setForm={setForm} editing={editing} />
           </div>
+        </div>
         </div>
       )}
 
