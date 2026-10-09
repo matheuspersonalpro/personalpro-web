@@ -1,4 +1,5 @@
 ﻿'use client';
+import { valorTxtDe, valorDoTexto } from '@/lib/enduranceBlocos';
 import { useEffect, useState, useCallback } from 'react';
 import {
   buscarAlunos, criarSessaoEndurance, buscarSessoesEndurance,
@@ -211,15 +212,12 @@ export default function EndurancePage() {
 
   const modeloParaEditor = (m, data) => ({
     data, tipo: m.tipo, titulo: m.titulo, medida: m.medida,
-    valorTxt: m.valor != null ? (m.medida === 'distancia' ? String(m.valor / 1000).replace('.', ',') : String(Math.round(m.valor / 60))) : '',
+    valorTxt: valorTxtDe(m.medida, m.valor),
     zona: m.zona, detalhe: matDet(m.detalhe),
   });
 
-  const valorBase = (medida, valorTxt) => {
-    const n = parseFloat(String(valorTxt).replace(',', '.'));
-    if (!isFinite(n) || n <= 0) return null;
-    return medida === 'distancia' ? Math.round(n * 1000) : Math.round(n * 60);
-  };
+  // Ida e volta sem arredondar minuto inteiro (30s = "0,5" min, não 1 min).
+  const valorBase = valorDoTexto;
 
   function abrirNovo(key) {
     const t = tiposPorModalidade(modalidade)[1];
@@ -229,7 +227,7 @@ export default function EndurancePage() {
   function abrirEdicao(s) {
     setEditor({
       id:s.id, data:s.data, tipo:s.tipo, titulo:s.titulo, medida:s.medida,
-      valorTxt: s.valor != null ? (s.medida==='distancia' ? String(s.valor/1000).replace('.',',') : String(Math.round(s.valor/60))) : '',
+      valorTxt: valorTxtDe(s.medida, s.valor),
       zona:s.zona, detalhe:s.detalhe||'', status:s.status||null, pse:s.pse??null, comentario:s.comentario||'',
     });
   }
@@ -459,7 +457,7 @@ export default function EndurancePage() {
 
   function aplicarModelo(m) {
     setEditor(e => ({ ...e, tipo:m.tipo, titulo:m.titulo, medida:m.medida,
-      valorTxt: m.valor != null ? (m.medida==='distancia' ? String(m.valor/1000).replace('.',',') : String(Math.round(m.valor/60))) : '',
+      valorTxt: valorTxtDe(m.medida, m.valor),
       zona:m.zona, detalhe:matDet(m.detalhe) }));
     setModalMod(false);
   }
@@ -542,7 +540,7 @@ export default function EndurancePage() {
                             </button>
                           ))}
                           <div className="flex items-center gap-1.5 bg-white/[0.04] rounded-[14px] px-3 py-2 ring-1 ring-white/[0.08] flex-1">
-                            <input type="number" value={editor.valorTxt || ''} onChange={e => setEditor(x => ({...x, valorTxt:e.target.value}))}
+                            <input type="text" inputMode="decimal" value={editor.valorTxt || ''} onChange={e => setEditor(x => ({...x, valorTxt:e.target.value}))}
                               placeholder="0" className="flex-1 bg-transparent text-white text-[15px] font-semibold text-center focus:outline-none w-12" />
                             <span className="text-[12px] text-white/40">{editor.medida==='distancia' ? 'km' : 'min'}</span>
                           </div>
