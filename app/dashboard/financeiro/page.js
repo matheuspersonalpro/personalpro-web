@@ -10,6 +10,7 @@ import { TrendingUp, Plus, X, ChevronLeft, ChevronRight, Trash2, DollarSign, Use
 import { useToast } from '@/components/Toast';
 import ConfirmModal from '@/components/ConfirmModal';
 import ReajusteLote from './ReajusteLote';
+import QrPix from '@/components/QrPix';
 import PixNaHora, { textoInstrucaoPixAutomatico } from './PixNaHora';
 
 const FATOR_PLANO = { Mensal: 1, Trimestral: 3, Semestral: 6, Anual: 12 };
@@ -156,7 +157,6 @@ function CobrarModal({ aluno, config, onClose, onSalvo, toast }) {
     try { await navigator.clipboard.writeText(txt); setCopiado(true); setTimeout(() => setCopiado(false), 2000); } catch {}
   }
 
-  const qrUrl = pixEmv ? `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(pixEmv)}&size=180x180&bgcolor=ffffff&color=0a0b0d&qzone=1` : null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
@@ -171,7 +171,7 @@ function CobrarModal({ aluno, config, onClose, onSalvo, toast }) {
 
         {modo === 'pix' ? (
           <div className="p-6 text-center">
-            {qrUrl && <img src={qrUrl} alt="QR PIX" className="mx-auto mb-4 rounded-[14px] ring-1 ring-accent/20" width={180} height={180} />}
+            {pixEmv && <div className="flex justify-center mb-4"><QrPix valor={pixEmv} tamanho={180} className="ring-1 ring-accent/20" /></div>}
             <div className="flex items-center gap-2 p-3 rounded-[14px] bg-white/[0.04] ring-1 ring-white/[0.06] mb-4">
               <p className="flex-1 text-[10px] text-white/50 break-all font-mono text-left">{pixEmv.slice(0,40)}...</p>
               <button onClick={() => copiar(pixEmv)} className="shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg bg-accent/15 text-accent text-[11px]">
