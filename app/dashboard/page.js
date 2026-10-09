@@ -6,6 +6,7 @@ import { usePersonal } from '@/lib/AuthContext';
 import { Users, TrendingUp, AlertTriangle, Clock, ArrowUpRight, CheckCircle2, CalendarDays, Cake, MessageCircle, Megaphone, X, Percent, ChevronDown, Umbrella } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import { useConfirm } from '@/components/Confirm';
+import { valorNum, valorMensalAsaas } from '@/lib/financeiro';
 
 function KpiCard({ icon: Icon, label, value, sub, accent, href }) {
   const theme = {
@@ -220,7 +221,11 @@ export default function DashboardPage() {
 
   async function aplicarReajuste() {
     const pct = parseFloat(pctReajuste.replace(',','.'));
-    if (!pct || pct <= 0) { toast('Informe um percentual válido.', 'error'); return; }
+    if (!Number.isFinite(pct) || pct === 0 || pct < -50 || pct > 100) { toast('Informe um percentual entre -50 e 100.', 'error'); return; }
+    const previa = alunos
+      .filter(x => x.status !== 'inativo' && x.ativo !== false && valorNum(x.valor) > 0)
+      .map(x => ({ aluno: x, novo: Math.round(valorNum(x.valor) * (1 + pct / 100) * 100) / 100 }));
+    if (previa.some(x => x.novo > 10000 || x.novo <= 0)) { toast('O reajuste geraria um valor fora do limite (R$ 0 a R$ 10.000). Nada foi alterado.', 'error'); return; }
     if (!await confirm({
       title: `Aplicar reajuste de ${pct}% em TODOS os alunos ativos?`,
       message: 'O valor mensal de cada aluno ativo com plano será recalculado. Esta ação não pode ser desfeita em massa.',
@@ -229,14 +234,24 @@ export default function DashboardPage() {
     setAplicandoR(true);
     try {
       const { atualizarAluno } = await import('@/lib/firestore');
-      for (const a of alunos.filter(a => a.status !== 'inativo' && a.valor)) {
-        const novoValor = Math.round(Number(a.valor) * (1 + pct/100) * 100) / 100;
-        await atualizarAluno(a.id, { valor: novoValor }).catch(() => {});
+      const { atualizarValorAssinaturaAsaas } = await import('@/lib/asaas');
+      const falhas = [];
+      for (const { aluno, novo } of previa) {
+        try {
+          await atualizarAluno(aluno.id, { valor: novo.toFixed(2).replace('.', ',') });
+          if (aluno.asaasSubscriptionId && aluno.cobrancaAutomatica) {
+            await atualizarValorAssinaturaAsaas(aluno.asaasSubscriptionId, valorMensalAsaas(novo, aluno.plano), true);
+          }
+        } catch (e) {
+          console.error('Reajuste falhou para', aluno.nome, e);
+          falhas.push(aluno.nome);
+        }
       }
       const ano = new Date().getFullYear();
       localStorage.setItem(`reajuste_aviso_${ano}`, '1');
       setReajusteDone(true); setShowReajuste(false);
-      toast(`Reajuste de ${pct}% aplicado.`);
+      if (falhas.length) toast(`Reajuste aplicado, mas falhou para: ${falhas.join(', ')}. Confira o valor no Asaas.`, 'error');
+      else toast(`Reajuste de ${pct}% aplicado.`);
     } catch { toast('Erro ao aplicar reajuste.', 'error'); } finally { setAplicandoR(false); }
   }
 

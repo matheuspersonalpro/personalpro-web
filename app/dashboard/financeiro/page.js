@@ -1,6 +1,8 @@
 ﻿'use client';
-import { useEffect, useState, useCallback } from 'react';
-import { buscarPagamentos, buscarAlunos, registrarPagamento, excluirPagamento, atualizarAluno, buscarConfigApp, salvarConfigApp } from '@/lib/firestore';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { buscarPagamentos, buscarAlunos, registrarPagamento, excluirPagamento, atualizarAluno, buscarConfigApp, salvarConfigApp, renovarPlanoPorPagamentoAsaas } from '@/lib/firestore';
+import { valorNum, proximoVencimento, diaAncoraDe, ultimaPagaAsaas } from '@/lib/financeiro';
+import { planoCanonico } from '@/lib/planos';
 import { buscarCobrancasAssinatura } from '@/lib/asaas';
 import { gerarPixEMV } from '@/lib/pix';
 import { TrendingUp, Plus, X, ChevronLeft, ChevronRight, Trash2, DollarSign, Users, CreditCard, Target, Zap, QrCode, ExternalLink, Check, AlertTriangle, Copy, RefreshCw } from 'lucide-react';
@@ -69,6 +71,43 @@ function DonutChart({ presencial, consultoria }) {
   );
 }
 
+// Trava de tempo do sync: reabrir a tela dentro de 10 min nao consulta o Asaas de novo.
+// Fica no escopo do MODULO de proposito -- sobrevive a navegar entre abas do painel.
+const INTERVALO_MIN_SYNC_MS = 10 * 60 * 1000;
+let ultimaSyncAsaasTs = 0;
+
+// Aceita "DD/MM/AAAA" e "AAAA-MM-DD". Devolve Date ou null.
+function parseDataFlex(str) {
+  if (!str) return null;
+  const x = String(str).slice(0, 10);
+  const nums = x.includes('/') ? x.split('/').map(Number) : x.split('-').map(Number).reverse();
+  const [d, m, a] = nums;
+  if (!d || !m || !a) return null;
+  const dt = new Date(a, m - 1, d);
+  return isNaN(dt.getTime()) ? null : dt;
+}
+
+// Renova o plano depois de um pagamento MANUAL (PIX/dinheiro). Mesma conta do app
+// (NovoPagamento): parte do vencimento atual se ainda estiver no futuro, senao de hoje;
+// gruda no ultimo dia do mes curto (31/01 + 1 mes = 28/02, nao 03/03); preserva o dia
+// contratado; e derruba a bandeira de atrasado, senao o aluno fica pago e "Atrasado".
+//
+// Plano que nao da pra reconhecer NAO renova a data (a mesma regra do app: melhor nao
+// renovar do que gravar data errada) -- mas a bandeira cai, porque o pagamento entrou.
+// Antes: setMonth a partir da data antiga, mesmo vencida, e adivinhando o plano por
+// includes('3') -- que casa ate "Personal 3x na semana".
+async function renovarPlanoManual(aluno) {
+  const plano = planoCanonico(aluno.plano || aluno.tipo);
+  const ancora = diaAncoraDe(aluno);
+  const novoVenc = plano ? proximoVencimento(aluno.vencimento, plano, new Date(), ancora) : null;
+  await atualizarAluno(aluno.id, {
+    ...(novoVenc ? { vencimento: novoVenc } : {}),
+    ...(novoVenc && ancora ? { diaVencimento: ancora } : {}),
+    pagamentoVencido: false,
+  });
+  return novoVenc;
+}
+
 function CobrarModal({ aluno, config, onClose, onSalvo, toast }) {
   const [modo, setModo] = useState(null); // 'pix'|'confirmar'|'registrar'
   const [valor, setValor] = useState('');
@@ -79,8 +118,8 @@ function CobrarModal({ aluno, config, onClose, onSalvo, toast }) {
 
   function gerarPix() {
     if (!config?.pixChave) { toast('Configure a chave PIX primeiro na aba Recebimento.', 'error'); return; }
-    const v = parseFloat((valor||'0').replace(',','.')) || 0;
-    const emv = gerarPixEMV({ chave: config.pixChave, nome: config.pixNome||'Personal', cidade: config.pixCidade||'Brasil', valor: v > 0 ? v : (aluno?.valor||0) });
+    const v = valorNum(valor);
+    const emv = gerarPixEMV({ chave: config.pixChave, nome: config.pixNome||'Personal', cidade: config.pixCidade||'Brasil', valor: v > 0 ? v : valorNum(aluno?.valor) });
     setPixEmv(emv);
     setModo('pix');
   }
@@ -88,21 +127,12 @@ function CobrarModal({ aluno, config, onClose, onSalvo, toast }) {
   async function confirmarRecebimento() {
     setSalvando(true);
     try {
-      const v = parseFloat((valor||'0').replace(',','.')) || aluno?.valor || 0;
+      const v = valorNum(valor) || valorNum(aluno?.valor);
       await registrarPagamento({ alunoId: aluno.id, alunoNome: aluno.nome, valor: v, forma, data: new Date().toLocaleDateString('pt-BR'), tipo: aluno.plano||aluno.tipo||'Mensal', descricao: `Mensalidade — ${aluno.nome}` });
-      // Estender plano
-      const tipo = (aluno.plano||aluno.tipo||'').toLowerCase();
-      let meses = 1;
-      if (tipo.includes('trimest')||tipo.includes('3')) meses = 3;
-      else if (tipo.includes('semest')||tipo.includes('6')) meses = 6;
-      else if (tipo.includes('anual')||tipo.includes('12')) meses = 12;
-      if (aluno.vencimento) {
-        const [d,m,a] = aluno.vencimento.split('/').map(Number);
-        const novaData = new Date(a, m-1, d); novaData.setMonth(novaData.getMonth() + meses);
-        const pad = n => String(n).padStart(2,'0');
-        await atualizarAluno(aluno.id, { vencimento: `${pad(novaData.getDate())}/${pad(novaData.getMonth()+1)}/${novaData.getFullYear()}` });
-      }
-      toast(`Pagamento de ${aluno.nome} confirmado!`);
+      const novoVenc = await renovarPlanoManual(aluno);
+      toast(novoVenc
+        ? `Pagamento de ${aluno.nome} confirmado! Plano renovado até ${novoVenc}.`
+        : `Pagamento de ${aluno.nome} confirmado. O plano "${aluno.plano || aluno.tipo || ''}" não foi reconhecido (use Mensal, Trimestral, Semestral ou Anual), então o vencimento ficou como estava.`);
       onSalvo();
     } catch { toast('Erro ao confirmar pagamento.', 'error'); } finally { setSalvando(false); }
   }
@@ -110,7 +140,7 @@ function CobrarModal({ aluno, config, onClose, onSalvo, toast }) {
   async function registrarSomente() {
     setSalvando(true);
     try {
-      const v = parseFloat((valor||'0').replace(',','.')) || aluno?.valor || 0;
+      const v = valorNum(valor) || valorNum(aluno?.valor);
       await registrarPagamento({ alunoId: aluno.id, alunoNome: aluno.nome, valor: v, forma, data: new Date().toLocaleDateString('pt-BR'), tipo: aluno.plano||aluno.tipo||'Mensal', descricao: `Pagamento — ${aluno.nome}` });
       toast('Pagamento registrado.');
       onSalvo();
@@ -121,7 +151,7 @@ function CobrarModal({ aluno, config, onClose, onSalvo, toast }) {
     try { await navigator.clipboard.writeText(txt); setCopiado(true); setTimeout(() => setCopiado(false), 2000); } catch {}
   }
 
-  const qrUrl = pixEmv ? `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(pixEmv)}&size=180x180&bgcolor=1a2744&color=60a5fa&qzone=1` : null;
+  const qrUrl = pixEmv ? `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(pixEmv)}&size=180x180&bgcolor=ffffff&color=0a0b0d&qzone=1` : null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
@@ -255,26 +285,67 @@ export default function FinanceiroPage() {
   // trimestrais/semestrais — cada pagamento avança exatamente 1 mês).
   const [sincronizando, setSincronizando] = useState(false);
 
-  const sincronizarAsaas = useCallback(async () => {
+  const sincronizandoRef = useRef(false);
+
+  // Port de FinanceiroPersonal.sincronizarAsaas do app. Cada regra abaixo veio de um
+  // incidente real (Talita, Celia, Andre Coral) -- os comentarios explicam. O que
+  // estava aqui ANTES era uma versao ingenua, e rodava toda vez que esta tela abria:
+  //   - pagas[0] sem ordenar: podia pegar um pagamento antigo, registrar de novo e
+  //     empurrar o vencimento um mes a mais;
+  //   - addDoc com id aleatorio: o webhook grava asaas_<id>, entao o MESMO pagamento
+  //     entrava em dobro;
+  //   - setMonth(+1): vencimento dia 29/30/31 pulando mes;
+  //   - consultava TODA a carteira a cada abertura.
+  const sincronizarAsaas = useCallback(async ({ forcar = false } = {}) => {
+    if (sincronizandoRef.current) return;
+    // A trava de TEMPO vem antes: e ela que corta o ciclo de reabertura da tela.
+    if (!forcar && Date.now() - ultimaSyncAsaasTs < INTERVALO_MIN_SYNC_MS) return;
+    ultimaSyncAsaasTs = Date.now();
+    sincronizandoRef.current = true;
     setSincronizando(true);
+    const falhas = [];
     try {
       const listaAlunos = await buscarAlunos();
-      const comAsaas = listaAlunos.filter(a => a.asaasSubscriptionId && a.cobrancaAutomatica);
+      // So quem tem cobranca relevante AGORA: nunca sincronizado, credito previsto na
+      // janela de -7 a +7 dias, ou marcado como vencido. Consultar a carteira inteira a
+      // cada abertura era gasto a toa.
+      const AGORA = Date.now();
+      const JANELA = 7 * 24 * 60 * 60 * 1000;
+      const precisaOlhar = (a) => {
+        if (a.pagamentoVencido) return true;
+        const pr = a.proximoRecebimento;
+        if (!pr || !pr.dataCredito) return true;
+        const d = parseDataFlex(pr.dataCredito);
+        if (!d) return true;
+        return Math.abs(d.getTime() - AGORA) <= JANELA;
+      };
+      // Exige asaasSubscriptionId (nao so customerId): so quem tem assinatura ATIVA agora.
+      const comAsaas = listaAlunos
+        .filter(a => a.asaasSubscriptionId && a.cobrancaAutomatica)
+        .filter(a => forcar || precisaOlhar(a));
       if (!comAsaas.length) return;
       let houveMudanca = false;
 
-      const pad = n => String(n).padStart(2, '0');
-      const fmtBR = d => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
-
       for (const aluno of comAsaas) {
         try {
+          // Por ASSINATURA, nao por cliente: cobranca residual de assinatura antiga ou
+          // cancelada nao contamina os dados da ativa.
           const cobr = await buscarCobrancasAssinatura(aluno.asaasSubscriptionId);
           const lista = cobr?.data || [];
           const patch = {};
 
-          const aCaminho = lista
-            .filter(c => c.status === 'PENDING' || c.status === 'CONFIRMED')
+          // Proximo recebimento. PENDING e sempre a proxima cobranca de verdade e vence
+          // QUALQUER CONFIRMED antiga: comparar as duas por dueDate pegava a mais velha
+          // ja paga e escondia reagendamentos feitos no painel do Asaas (ferias). So cai
+          // pra CONFIRMED recente (ainda em transito de credito) se nao houver PENDING.
+          const limiteAntigo = new Date(); limiteAntigo.setDate(limiteAntigo.getDate() - 40);
+          const pendente = lista
+            .filter(c => c.status === 'PENDING')
             .sort((a, b) => new Date(a.dueDate || 0) - new Date(b.dueDate || 0))[0];
+          const confirmadaRecente = lista
+            .filter(c => c.status === 'CONFIRMED' && new Date(c.dueDate || 0) >= limiteAntigo)
+            .sort((a, b) => new Date(b.dueDate || 0) - new Date(a.dueDate || 0))[0];
+          const aCaminho = pendente || confirmadaRecente;
           const proximoRecebimento = aCaminho ? {
             valor:       aCaminho.value ?? null,
             netValue:    aCaminho.netValue ?? null,
@@ -287,36 +358,55 @@ export default function FinanceiroPage() {
             patch.proximoRecebimento = proximoRecebimento;
           }
 
-          const pagas = lista.filter(c => c.status === 'RECEIVED' || c.status === 'CONFIRMED');
-          const ultima = pagas[0];
-          const dataUltima = ultima && (ultima.paymentDate || ultima.confirmedDate);
-          if (ultima && dataUltima && aluno.ultimoPagamentoAsaasId !== ultima.id) {
-            let base = new Date();
-            if (aluno.vencimento) {
-              const [d, m, a] = aluno.vencimento.split('/').map(Number);
-              const v = new Date(a, m - 1, d);
-              if (v > base) base = v;
+          // Cobranca VENCIDA ganha da PENDING: a assinatura segue gerando a do mes
+          // seguinte, e espelhar so a PENDING jogava o vencimento pra frente de quem nao
+          // pagou -- o aluno nunca era bloqueado (caso do Andre Coral).
+          const vencida = lista
+            .filter(c => c.status === 'OVERDUE')
+            .sort((a, b) => new Date(a.dueDate || 0) - new Date(b.dueDate || 0))[0];
+          if (vencida && aluno.pagamentoVencido !== true) patch.pagamentoVencido = true;
+          const alvoVenc = vencida || pendente;
+          if (alvoVenc?.dueDate) {
+            const [ano, mes, dia] = String(alvoVenc.dueDate).split('-');
+            if (ano && mes && dia) {
+              const vencAsaas = `${dia}/${mes}/${ano}`;
+              if (vencAsaas !== aluno.vencimento) patch.vencimento = vencAsaas;
             }
-            base.setMonth(base.getMonth() + 1);
-            await registrarPagamento({
-              alunoId:   aluno.id,
-              alunoNome: aluno.nome,
-              valor:     ultima.value,
-              forma:     'Asaas',
-              data:      fmtBR(new Date()),
-              tipo:      aluno.plano || aluno.tipo || 'Mensal',
-              descricao: `Mensalidade automática Asaas — ${aluno.nome}`,
-            });
-            patch.vencimento = fmtBR(base);
-            patch.ultimoPagamentoAsaasId = ultima.id;
           }
 
-          if (Object.keys(patch).length) { await atualizarAluno(aluno.id, patch); houveMudanca = true; }
-        } catch {}
+          // Renovacao quando entra pagamento novo. A do ciclo mais recente, pelo
+          // VENCIMENTO (ultimaPagaAsaas): por paymentDate a cobranca do mes passado no
+          // cartao passava na frente e era registrada de novo.
+          const ultima = ultimaPagaAsaas(lista);
+          const dataUltima = ultima && (ultima.paymentDate || ultima.confirmedDate);
+          if (ultima && dataUltima && aluno.ultimoPagamentoAsaasId !== ultima.id) {
+            // Transacao: le ultimoPagamentoAsaasId na hora de gravar e so cria o
+            // pagamento se ainda nao foi processado (fecha a corrida entre duas abas, ou
+            // site + app abertos juntos).
+            const gravou = await renovarPlanoPorPagamentoAsaas(aluno.id, aluno.nome, ultima, patch);
+            if (gravou) houveMudanca = true;
+            // Pagar um mes nao quita OUTRO que continua vencido.
+            if (gravou && vencida) {
+              const [ano, mes, dia] = String(vencida.dueDate).split('-');
+              await atualizarAluno(aluno.id, { pagamentoVencido: true, vencimento: `${dia}/${mes}/${ano}` });
+            }
+          } else if (Object.keys(patch).length) {
+            await atualizarAluno(aluno.id, patch); houveMudanca = true;
+          }
+        } catch (e) {
+          console.error(`Erro ao sincronizar Asaas do aluno ${aluno.nome}:`, e);
+          falhas.push(aluno.nome);
+        }
       }
       if (houveMudanca) carregar();
+    } catch (e) {
+      console.error('Erro ao sincronizar Asaas:', e);
     } finally {
+      sincronizandoRef.current = false;
       setSincronizando(false);
+      // Antes isso era 100% silencioso: um erro no meio deixava o personal achando que
+      // estava tudo em dia sem estar.
+      if (falhas.length) toast(`Não consegui sincronizar o Asaas de: ${falhas.join(', ')}. Tentando de novo na próxima abertura.`, 'error');
     }
   }, [carregar]);
 
@@ -331,7 +421,7 @@ export default function FinanceiroPage() {
     return pagamentos.filter(p => {
       const [d, mo, a] = (p.data || '').split('/').map(Number);
       return mo - 1 === m && a === y;
-    }).reduce((s, p) => s + (Number(p.valor) || 0), 0);
+    }).reduce((s, p) => s + valorNum(p.valor), 0);
   }
 
   const receitaMes    = somaMes(mesAtual, anoAtual);
@@ -345,7 +435,7 @@ export default function FinanceiroPage() {
   // inteiro — meses futuros óbvio que ainda não têm receita.
   const mesesDecorridosAno = anoAtual === agora.getFullYear() ? agora.getMonth() + 1 : 12;
   const mediaMensal   = receitaAno / Math.max(1, mesesDecorridosAno);
-  const metaNum       = parseFloat((meta||'0').replace(',','.').replace('R$','').replace(/\./g,'').trim()) || 0;
+  const metaNum       = valorNum(meta);
   const metaPct       = metaNum > 0 ? Math.min(100, (receitaMes / metaNum) * 100) : 0;
 
   // Projeção próximo mês: média dos últimos 3 meses COM pagamento registrado
@@ -363,7 +453,7 @@ export default function FinanceiroPage() {
   // histórico suficiente pra calcular uma média de verdade.
   const receitaEsperadaAtivos = alunos
     .filter(a => a.ativo !== false)
-    .reduce((s,a) => s + (Number(a.valor) || 0), 0);
+    .reduce((s,a) => s + valorNum(a.valor), 0);
   const projecao = projecaoHistorico ?? receitaEsperadaAtivos;
 
   // Gráfico 6 meses
@@ -381,8 +471,8 @@ export default function FinanceiroPage() {
   // Donut
   const presenciais = alunos.filter(a => a.tipoServico !== 'online' && a.ativo !== false);
   const online      = alunos.filter(a => a.tipoServico === 'online'  && a.ativo !== false);
-  const recPresencial  = presenciais.reduce((s,a) => s + (Number(a.valor)||0), 0);
-  const recConsultoria = online.reduce((s,a) => s + (Number(a.valor)||0), 0);
+  const recPresencial  = presenciais.reduce((s,a) => s + valorNum(a.valor), 0);
+  const recConsultoria = online.reduce((s,a) => s + valorNum(a.valor), 0);
 
   // Inadimplentes
   const hoje = new Date(); hoje.setHours(0,0,0,0);
@@ -408,8 +498,10 @@ export default function FinanceiroPage() {
     setSaving(true);
     try {
       const aluno = alunos.find(a => a.id === form.alunoId);
-      await registrarPagamento({ ...form, valor: parseFloat((form.valor||'0').replace(',','.')), alunoNome: aluno?.nome || '' });
-      toast('Pagamento registrado.');
+      await registrarPagamento({ ...form, valor: valorNum(form.valor), alunoNome: aluno?.nome || '' });
+      // Como no app (NovoPagamento): registrar o pagamento tambem renova o plano.
+      const novoVenc = aluno ? await renovarPlanoManual(aluno) : null;
+      toast(novoVenc ? `Pagamento registrado. Plano renovado até ${novoVenc}.` : 'Pagamento registrado.');
       setShowForm(false); setForm({ alunoId:'', valor:'', forma:'PIX', tipo:'Mensal', data: new Date().toLocaleDateString('pt-BR'), descricao:'' });
       carregar();
     } catch { toast('Erro ao registrar.', 'error'); } finally { setSaving(false); }
@@ -650,7 +742,7 @@ export default function FinanceiroPage() {
                       <p className="text-[13px] font-semibold text-white">{p.alunoNome || '—'}</p>
                       <p className="text-[11px] text-white/35">{p.data} · {p.forma || '—'}</p>
                     </div>
-                    <span className="text-[14px] font-bold text-accent">{fmt(Number(p.valor))}</span>
+                    <span className="text-[14px] font-bold text-accent">{fmt(valorNum(p.valor))}</span>
                     <button onClick={() => setConfirmPagId(p.id)} className="opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400 transition-all"><Trash2 size={14} /></button>
                   </div>
                 ))}
@@ -710,7 +802,7 @@ export default function FinanceiroPage() {
                         <p className="text-[11px] text-white/35">{a.tipoServico === 'online' ? 'Online' : 'Presencial'} · {a.plano || a.tipo || '—'}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[13px] font-bold text-accent">{fmt(Number(a.valor)||0)}</p>
+                        <p className="text-[13px] font-bold text-accent">{fmtvalorNum(a.valor)}</p>
                         {a.vencimento && (
                           <p className={`text-[11px] ${status==='vencido' ? 'text-red-400' : status==='urgente' ? 'text-amber-400' : 'text-white/35'}`}>
                             {status==='vencido' ? `venceu ${a.vencimento}` : `vence ${a.vencimento}`}
