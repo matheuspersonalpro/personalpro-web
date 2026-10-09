@@ -4,7 +4,10 @@
 // (screens/personal/PerfilPersonal.js). Cada controle salva na hora, como no app.
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Copy, Link2, FileText, CreditCard, ChevronRight } from 'lucide-react';
+import { Copy, Link2, FileText, CreditCard, ChevronRight, Camera, Lock, X } from 'lucide-react';
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
+import { auth, storage } from '@/lib/firebase';
 import { buscarConfigApp, salvarConfigApp, obterCodigoConvite } from '@/lib/firestore';
 import { useToast } from '@/components/Toast';
 
@@ -49,9 +52,20 @@ export default function ConfigExtra({ nomePersonal }) {
   const [repoAntecedencia, setRepoAntecedencia] = useState('24');
   const [reajusteAtivo, setReajusteAtivo] = useState(true);
   const [ocupado, setOcupado] = useState(false);
+  const [logoUrl, setLogoUrl] = useState('');
+  const [enviandoLogo, setEnviandoLogo] = useState(false);
+  const [modalSenha, setModalSenha] = useState(false);
+  const [senhaAtual, setSenhaAtual] = useState('');
+  const [novaSenha, setNovaSenha] = useState('');
+  const [confirmar, setConfirmar] = useState('');
+  const [salvandoSenha, setSalvandoSenha] = useState(false);
+  const [erroSenha, setErroSenha] = useState('');
+  // Conta Google/Apple não tem senha: "Trocar senha" pediria a senha atual e sempre falharia.
+  const entraComSenha = !!auth.currentUser?.providerData?.some(pd => pd.providerId === 'password');
 
   useEffect(() => {
     buscarConfigApp().then(cfg => {
+      if (cfg?.logoUrl) setLogoUrl(cfg.logoUrl);
       if (cfg?.termoCompromisso) { setTermo(cfg.termoCompromisso); setTemTermo(true); }
       if (cfg?.feriasAtiva === false) setFeriasAtiva(false);
       if (cfg?.feriasDias) setFeriasDias(String(cfg.feriasDias));
@@ -88,6 +102,65 @@ export default function ConfigExtra({ nomePersonal }) {
     setter(String(val));
     await salvar({ [campo]: val }, 'Não foi possível salvar.', aviso(val));
   }
+  // Reduz a foto para no máximo 512 px (JPEG) antes de enviar, como o app.
+  function reduzirFoto(arquivo, lado = 512) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(arquivo);
+      img.onload = () => {
+        const esc = Math.min(1, lado / Math.max(img.width, img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width * esc); c.height = Math.round(img.height * esc);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(b => (b ? resolve(b) : reject(new Error('Não consegui processar a imagem.'))), 'image/jpeg', 0.85);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Arquivo de imagem inválido.')); };
+      img.src = url;
+    });
+  }
+  async function escolherLogo(e) {
+    const arq = e.target.files?.[0];
+    e.target.value = '';
+    if (!arq) return;
+    if (!arq.type.startsWith('image/')) { toast('Escolha um arquivo de imagem.', 'error'); return; }
+    const uid = auth.currentUser?.uid;
+    if (!uid) { toast('Sessão expirada. Entre novamente.', 'error'); return; }
+    setEnviandoLogo(true);
+    try {
+      const blob = await reduzirFoto(arq);
+      const fRef = storageRef(storage, `perfis/${uid}/logo.jpg`);
+      await uploadBytes(fRef, blob);
+      const url = await getDownloadURL(fRef);
+      await salvarConfigApp({ logoUrl: url });
+      setLogoUrl(url + '&t=' + Date.now());
+      toast('Foto atualizada.');
+    } catch (err) { toast(err?.message || 'Não foi possível enviar a foto.', 'error'); }
+    finally { setEnviandoLogo(false); }
+  }
+
+  function fecharSenha() { setModalSenha(false); setSenhaAtual(''); setNovaSenha(''); setConfirmar(''); setErroSenha(''); }
+  async function alterarSenha() {
+    setErroSenha('');
+    if (!senhaAtual || !novaSenha || !confirmar) { setErroSenha('Preencha todos os campos.'); return; }
+    if (novaSenha.length < 6) { setErroSenha('A nova senha precisa ter pelo menos 6 caracteres.'); return; }
+    if (novaSenha !== confirmar) { setErroSenha('A nova senha e a confirmação não coincidem.'); return; }
+    setSalvandoSenha(true);
+    try {
+      const user = auth.currentUser;
+      await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, senhaAtual));
+      await updatePassword(user, novaSenha);
+      fecharSenha();
+      toast('Sua senha foi atualizada com sucesso.');
+    } catch (e) {
+      if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') setErroSenha('A senha atual informada está incorreta.');
+      else if (e.code === 'auth/network-request-failed') setErroSenha('Verifique sua internet e tente de novo.');
+      else if (e.code === 'auth/requires-recent-login') setErroSenha('Por segurança, saia e entre de novo antes de trocar a senha.');
+      else if (e.code === 'auth/too-many-requests') setErroSenha('Muitas tentativas. Aguarde alguns minutos e tente de novo.');
+      else setErroSenha('Não foi possível alterar a senha agora. Tente novamente em instantes.');
+    } finally { setSalvandoSenha(false); }
+  }
+
   async function salvarTermo() {
     const texto = termo.trim();
     if (texto.length > 0 && texto.length < 50) { toast('Escreva pelo menos um parágrafo, ou deixe em branco para não usar termo.', 'error'); return; }
@@ -103,6 +176,22 @@ export default function ConfigExtra({ nomePersonal }) {
   if (!carregou) return null;
   return (
     <>
+      <div className={card}>
+        <h2 className={titulo}>Foto ou logo</h2>
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-full overflow-hidden bg-surface-2 flex items-center justify-center ring-1 ring-accent/20 shrink-0">
+            {logoUrl ? <img src={logoUrl} alt="" className="w-full h-full object-cover" /> : <Camera size={20} className="text-white/30" />}
+          </div>
+          <div>
+            <label className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-accent/15 text-[12px] font-semibold text-accent hover:bg-accent/25 transition-all cursor-pointer ${enviandoLogo ? 'opacity-50 pointer-events-none' : ''}`}>
+              <Camera size={13} /> {enviandoLogo ? 'Enviando…' : logoUrl ? 'Trocar foto' : 'Adicionar foto ou logo'}
+              <input type="file" accept="image/*" className="hidden" onChange={escolherLogo} />
+            </label>
+            <p className="text-[11px] text-white/30 mt-1.5">Aparece para os seus alunos no app.</p>
+          </div>
+        </div>
+      </div>
+
       <div className={card}>
         <h2 className={titulo}>Convidar aluno</h2>
         <p className="text-[11px] text-white/30 mb-4">O aluno toca no link e entra direto na sua lista.</p>
@@ -173,7 +262,37 @@ export default function ConfigExtra({ nomePersonal }) {
         <Link href="/dashboard/assinatura" className="flex items-center justify-between py-2 text-[13px] font-medium text-white/75 hover:text-white transition-colors">
           <span className="flex items-center gap-2"><CreditCard size={14} className="text-accent" /> Minha assinatura</span><ChevronRight size={14} className="text-white/30" />
         </Link>
+        {entraComSenha && (
+          <button type="button" onClick={() => setModalSenha(true)} className="w-full flex items-center justify-between py-2 text-[13px] font-medium text-white/75 hover:text-white transition-colors">
+            <span className="flex items-center gap-2"><Lock size={14} className="text-accent" /> Trocar senha</span><ChevronRight size={14} className="text-white/30" />
+          </button>
+        )}
       </div>
+
+      {modalSenha && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}>
+          <div className="w-full max-w-sm rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
+              <h2 className="text-[15px] font-bold text-white">Trocar senha</h2>
+              <button onClick={fecharSenha} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all"><X size={16} /></button>
+            </div>
+            <div className="p-6 space-y-3">
+              {[['Senha atual', senhaAtual, setSenhaAtual, 'current-password'], ['Nova senha', novaSenha, setNovaSenha, 'new-password'], ['Confirmar nova senha', confirmar, setConfirmar, 'new-password']].map(([l, v, set, ac]) => (
+                <div key={l}>
+                  <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">{l}</label>
+                  <input type="password" value={v} autoComplete={ac} onChange={e => set(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all" />
+                </div>
+              ))}
+              {erroSenha && <p className="text-[12px] text-red-400">{erroSenha}</p>}
+            </div>
+            <div className="px-6 py-4 border-t border-white/[0.06] flex justify-end gap-2">
+              <button onClick={fecharSenha} className="px-4 py-2 rounded-[14px] border border-white/[0.08] text-[13px] text-white/50 hover:text-white transition-all">Cancelar</button>
+              <button onClick={alterarSenha} disabled={salvandoSenha} className={btnSalvar}>{salvandoSenha ? 'Salvando…' : 'Salvar nova senha'}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

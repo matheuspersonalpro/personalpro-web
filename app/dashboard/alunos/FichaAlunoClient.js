@@ -1,6 +1,7 @@
 'use client';
 import { valorNum, valorMensalAsaas } from '@/lib/financeiro';
 import { calcStatus } from '@/lib/statusAluno';
+import RelatorioMensalModal from './RelatorioMensalModal';
 import { RITMOS_PROGRAMA, ritmoSelecionado, viraSozinho, diasDoBloco, diasParaProximoMes, diasNoBlocoAtual, rotuloRitmo } from '@/lib/programaMusculacao';
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -793,6 +794,7 @@ export default function FichaAluno() {
   const [saving,    setSaving]    = useState(false);
   const [aba,       setAba]       = useState('dados');
   const [atribuirPrograma, setAtribuirPrograma] = useState(false);
+  const [relatorioAberto, setRelatorioAberto] = useState(false);
   const [confirmExcluirId, setConfirmExcluirId] = useState(null);
   const [confirmAluno, setConfirmAluno] = useState(false);
   const [confirmRemoverPrograma, setConfirmRemoverPrograma] = useState(false);
@@ -893,6 +895,7 @@ export default function FichaAluno() {
 
   return (
     <div className="px-4 pt-5 pb-6 md:p-8 max-w-5xl mx-auto w-full">
+      {relatorioAberto && <RelatorioMensalModal aluno={aluno} onFechar={() => setRelatorioAberto(false)} />}
       {atribuirPrograma && (
         <AtribuirProgramaModal
           aluno={aluno}
@@ -1057,6 +1060,7 @@ export default function FichaAluno() {
             <ClipboardList size={14} />{aluno.termoAceito ? `Termo aceito${aluno.termoAceitoEm ? ` em ${new Date(aluno.termoAceitoEm).toLocaleString('pt-BR')}` : ''}` : 'Termo pendente'}
           </div>
         )}
+        <button onClick={() => setRelatorioAberto(true)} className="flex items-center gap-2 text-[13px] font-medium text-accent hover:text-accent-pale transition-colors"><ClipboardList size={14} /> Relatório mensal para o aluno</button>
         <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
             <Field label="Nome completo" field="nome" form={form} setForm={setForm} editing={editing} icon={User} />

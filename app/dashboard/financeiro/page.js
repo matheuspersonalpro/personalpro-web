@@ -10,6 +10,7 @@ import { TrendingUp, Plus, X, ChevronLeft, ChevronRight, Trash2, DollarSign, Use
 import { useToast } from '@/components/Toast';
 import ConfirmModal from '@/components/ConfirmModal';
 import ReajusteLote from './ReajusteLote';
+import PixNaHora, { textoInstrucaoPixAutomatico } from './PixNaHora';
 
 const FATOR_PLANO = { Mensal: 1, Trimestral: 3, Semestral: 6, Anual: 12 };
 const MESES_LONGOS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -262,6 +263,11 @@ export default function FinanceiroPage() {
   // Formulário novo pagamento (aba resumo)
   const [showForm, setShowForm] = useState(false);
   const [showReajusteLote, setShowReajusteLote] = useState(false);
+  const [showPixHora, setShowPixHora] = useState(false);
+  async function copiarInstrucaoPix() {
+    try { await navigator.clipboard.writeText(textoInstrucaoPixAutomatico(config.pixChave)); toast('Texto copiado: cole na conversa com o aluno.'); }
+    catch { toast('Não consegui copiar o texto.', 'error'); }
+  }
   const [form, setForm] = useState({ alunoId:'', valor:'', forma:'PIX', tipo:'Mensal', data: new Date().toLocaleDateString('pt-BR'), descricao:'' });
   const [saving, setSaving] = useState(false);
 
@@ -930,11 +936,20 @@ export default function FinanceiroPage() {
       )}
 
       {/* ── ABA RECEBIMENTO ──────────────────────────────────────────────────────── */}
+      {showPixHora && <PixNaHora config={config} onFechar={() => setShowPixHora(false)} onConfigurar={() => { setShowPixHora(false); setEditCfg(true); }} />}
       {showReajusteLote && <ReajusteLote alunos={alunos} onFechar={() => setShowReajusteLote(false)} onAplicado={carregar} />}
       {!loading && aba === 'recebimento' && (
         <div className="mb-4">
           <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-2">Ferramentas de recebimento</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <button onClick={() => setShowPixHora(true)} className="flex items-center gap-3 rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] hover:ring-accent/30 p-4 text-left transition-all">
+              <span className="w-10 h-10 rounded-[14px] bg-accent/10 flex items-center justify-center shrink-0"><QrCode size={16} className="text-accent" /></span>
+              <span><span className="block text-[14px] font-semibold text-white/85">Gerar PIX na hora</span><span className="block text-[12px] text-white/35">Cria um PIX copia e cola pra mandar agora</span></span>
+            </button>
+            <button onClick={copiarInstrucaoPix} className="flex items-center gap-3 rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] hover:ring-accent/30 p-4 text-left transition-all">
+              <span className="w-10 h-10 rounded-[14px] bg-accent/10 flex items-center justify-center shrink-0"><Copy size={16} className="text-accent" /></span>
+              <span><span className="block text-[14px] font-semibold text-white/85">PIX Recorrente (sem taxa)</span><span className="block text-[12px] text-white/35">Copia o texto para o aluno agendar um PIX mensal no banco dele · você marca como recebido quando cai</span></span>
+            </button>
             <button onClick={() => setShowForm(true)} className="flex items-center gap-3 rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] hover:ring-accent/30 p-4 text-left transition-all">
               <span className="w-10 h-10 rounded-[14px] bg-accent/10 flex items-center justify-center shrink-0"><Plus size={16} className="text-accent" /></span>
               <span><span className="block text-[14px] font-semibold text-white/85">Registrar pagamento recebido</span><span className="block text-[12px] text-white/35">Anote um dinheiro/PIX que já caiu (fora do Asaas)</span></span>
