@@ -1,8 +1,9 @@
 ﻿'use client';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { buscarPagamentos, buscarAlunos, registrarPagamento, excluirPagamento, atualizarAluno, buscarConfigApp, salvarConfigApp, renovarPlanoPorPagamentoAsaas } from '@/lib/firestore';
-import { valorNum, proximoVencimento, diaAncoraDe, ultimaPagaAsaas, resumoFinanceiro, montarAReceber, previstosManuais, agruparPorMes, somaBruto, somaLiquido, liquidoAsaas } from '@/lib/financeiro';
+import { valorNum, proximoVencimento, diaAncoraDe, ultimaPagaAsaas, resumoFinanceiro, mrrAtivos, diasAteVencimento, montarAReceber, previstosManuais, agruparPorMes, somaBruto, somaLiquido, liquidoAsaas } from '@/lib/financeiro';
 import { planoCanonico } from '@/lib/planos';
+import { calcStatus } from '@/lib/statusAluno';
 import { buscarCobrancasAssinatura } from '@/lib/asaas';
 import { gerarPixEMV } from '@/lib/pix';
 import { TrendingUp, Plus, X, ChevronLeft, ChevronRight, Trash2, DollarSign, Users, CreditCard, Target, Zap, QrCode, ExternalLink, Check, AlertTriangle, Copy, RefreshCw } from 'lucide-react';
@@ -10,6 +11,7 @@ import { useToast } from '@/components/Toast';
 import ConfirmModal from '@/components/ConfirmModal';
 
 const FATOR_PLANO = { Mensal: 1, Trimestral: 3, Semestral: 6, Anual: 12 };
+const MESES_LONGOS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const TIPOS = ['Mensal','Trimestral','Semestral','Anual','Avulso'];
 const FORMAS = ['PIX','Dinheiro','Cartão de Crédito','Cartão de Débito','Transferência','Asaas'];
@@ -444,6 +446,19 @@ export default function FinanceiroPage() {
   const aReceberPorMes = agruparPorMes(aReceberFuturo);
   const totalBrutoFuturo = somaBruto(aReceberFuturo);
   const totalLiquidoFuturo = somaLiquido(aReceberFuturo);
+  // Como no Resumo do app: o "A receber" do topo é o do MÊS atual (bruto); a lista completa vem
+  // abaixo em "Quando cai na conta".
+  const grupoMesAtual = aReceberPorMes.find(g => g.mes === agora.getMonth() && g.ano === agora.getFullYear());
+  const totalBrutoProximo = grupoMesAtual?.bruto || 0;
+  const totalMensal = mrrAtivos(alunos);
+  const inadimplentesResumo = alunos
+    .filter(a => a.ativo !== false && calcStatus(a) === 'pendente')
+    .map(a => ({ ...a, diasAtraso: -(diasAteVencimento(a.vencimento) || 0) }))
+    .sort((a, b) => b.diasAtraso - a.diasAtraso);
+  const totalInadimplente = inadimplentesResumo.reduce((t, a) => t + valorNum(a.valor), 0);
+  const proxMes = new Date(agora.getFullYear(), agora.getMonth() + 1, 1);
+  const alunosNaProjecao = alunos.filter(a => { const d = diasAteVencimento(a.vencimento); return a.ativo !== false && (d === null || d > -60); });
+  const projecaoProx = alunosNaProjecao.reduce((t, a) => t + valorNum(a.valor) / (FATOR_PLANO[a.plano] || 1), 0);
 
   function somaMes(m, y) {
     return pagamentos.filter(p => {
@@ -665,26 +680,52 @@ export default function FinanceiroPage() {
             </div>
           )}
 
-          {/* KPIs */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { label:'Recebido no mês', value: fmt(fin.recebido), sub: `${variacaoMes >= 0 ? '+' : ''}${variacaoMes.toFixed(1)}% vs. mês anterior`, subColor: variacaoMes >= 0 ? 'text-accent' : 'text-red-400' },
-              { label:'Faturado no mês', value: fmt(fin.faturado), sub: `${fin.qtdFaturado} cobrança${fin.qtdFaturado === 1 ? '' : 's'}`, subColor:'text-white/35' },
-              { label:'A receber', value: fmt(totalLiquidoFuturo), sub: `bruto ${fmt(totalBrutoFuturo)} · líquido do Asaas`, subColor:'text-white/35' },
-              { label:'Média mensal', value: fmt(mediaMensal), sub:'Baseado no ano atual', subColor:'text-white/35' },
-            ].map((k,i) => (
-              <div key={i} className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-4">
-                <p className="text-[10px] font-semibold text-white/35 uppercase tracking-wider mb-2">{k.label}</p>
-                <p className="text-[22px] font-semibold text-white leading-none mb-1 font-display">{k.value}</p>
-                <p className={`text-[11px] ${k.subColor}`}>{k.sub}</p>
+          {/* Resumo: mesma ordem do app (Recebido em destaque; Faturado / A receber / Mensal total ao lado) */}
+          <div>
+            <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-2">{MESES_LONGOS[mesAtual]} {anoAtual}</p>
+            <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5">
+              <p className="text-[10px] font-semibold text-white/40 uppercase tracking-wider">Recebido · já na sua conta</p>
+              <p className="text-[34px] font-semibold text-accent leading-tight mt-1 font-display">{fmt(fin.recebido)}</p>
+              <p className="text-[11px] text-white/35 mb-4">{fin.qtdRecebido} pagamento{fin.qtdRecebido === 1 ? '' : 's'} creditado{fin.qtdRecebido === 1 ? '' : 's'}</p>
+              <div className="grid grid-cols-3 gap-3 pt-4 border-t border-white/[0.06]">
+                <div><p className="text-[17px] font-semibold text-white font-display">{fmt(fin.faturado)}</p><p className="text-[10px] text-white/35 mt-0.5">Faturado</p></div>
+                <div className="border-x border-white/[0.06] px-3"><p className="text-[17px] font-semibold text-amber-400 font-display">{fmt(totalBrutoProximo)}</p><p className="text-[10px] text-white/35 mt-0.5">A receber no mês</p></div>
+                <div><p className="text-[17px] font-semibold text-accent-pale font-display">{fmt(totalMensal)}</p><p className="text-[10px] text-white/35 mt-0.5">Mensal total</p></div>
               </div>
-            ))}
+            </div>
+          </div>
+
+          {inadimplentesResumo.length > 0 && (
+            <div>
+              <p className="text-[11px] font-semibold text-red-300 uppercase tracking-wider mb-2">Inadimplência</p>
+              <div className="rounded-[22px] bg-red-500/[0.05] ring-1 ring-red-500/15 p-5">
+                <p className="text-[22px] font-semibold text-red-400 font-display">{fmt(totalInadimplente)} <span className="text-[12px] font-normal text-white/40">a receber · {inadimplentesResumo.length} aluno{inadimplentesResumo.length > 1 ? 's' : ''}</span></p>
+                <div className="mt-3 divide-y divide-white/[0.05]">
+                  {inadimplentesResumo.slice(0, 5).map(a => (
+                    <div key={a.id} className="flex items-center gap-3 py-2 text-[13px]">
+                      <span className="flex-1 truncate text-white/80">{a.nome}</span>
+                      <span className="text-amber-400 text-[12px]">{a.diasAtraso > 0 ? `${a.diasAtraso}d` : 'cobrança não paga'}</span>
+                      <span className="text-white/80 w-24 text-right">{fmt(valorNum(a.valor))}</span>
+                    </div>
+                  ))}
+                  {inadimplentesResumo.length > 5 && <p className="pt-2 text-[11px] text-white/35">+{inadimplentesResumo.length - 5} outros</p>}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div>
+            <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-2">Projeção — {MESES_LONGOS[proxMes.getMonth()]} {proxMes.getFullYear()}</p>
+            <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5">
+              <p className="text-[26px] font-semibold text-white font-display">{fmt(projecaoProx)}</p>
+              <p className="text-[11px] text-white/35 mt-1">Baseado em {alunosNaProjecao.length} alunos ativos · Personal + Consultoria, qualquer forma de pagamento</p>
+            </div>
           </div>
 
           {/* A receber por mês */}
           {aReceberPorMes.length > 0 && (
             <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5">
-              <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-3">A receber</p>
+              <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-3">Quando cai na conta</p>
               <div className="space-y-4">
                 {aReceberPorMes.map(g => (
                   <div key={`${g.ano}-${g.mes}`}>

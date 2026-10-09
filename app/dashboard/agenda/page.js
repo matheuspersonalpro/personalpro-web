@@ -693,7 +693,7 @@ export default function AgendaPage() {
         {/* Horários para reposição */}
         <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05]">
-            <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">Horários livres ({slots.length})</p>
+            <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">Horários para reposição ({slots.length})</p>
             <button onClick={() => setModalSlot(true)} className="w-6 h-6 rounded-lg bg-accent/10 flex items-center justify-center text-accent hover:bg-accent/20 transition-all">
               <Plus size={12} />
             </button>
@@ -744,7 +744,7 @@ export default function AgendaPage() {
         {/* Reposições confirmadas */}
         <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
           <div className="px-4 py-3 border-b border-white/[0.05]">
-            <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">Reposições ({reposicoesFuturas.length})</p>
+            <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">Reposições agendadas ({reposicoesFuturas.length})</p>
           </div>
           {reposicoesFuturas.length === 0 ? (
             <p className="text-[12px] text-white/25 text-center py-6">Nenhuma reposição</p>
