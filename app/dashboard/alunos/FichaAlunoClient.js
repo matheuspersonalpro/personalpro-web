@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   buscarAluno, buscarTreinos, atualizarAluno, excluirAluno,
-  buscarAvaliacoes, excluirAvaliacao, buscarHistoricoDoAluno,
+  buscarAvaliacoes, tsAvaliacao, excluirAvaliacao, buscarHistoricoDoAluno,
   atribuirProgramaMuscular, removerProgramaMuscular, sincronizarProgramaMuscular, listarProgramas,
   buscarFotosEvolucao, uploadFotoEvolucao, salvarFotosEvolucao, deletarSessaoFotos,
   buscarPresencasDoAluno, registrarPresenca,
@@ -152,9 +152,8 @@ const LABEL_TIPO_AVAL = {
 
 function CardAvaliacao({ av, onExcluir }) {
   const [aberto, setAberto] = useState(false);
-  const data = av.criadoEm?.seconds
-    ? new Date(av.criadoEm.seconds * 1000).toLocaleDateString('pt-BR')
-    : '—';
+  const ts = tsAvaliacao(av);
+  const data = ts ? new Date(ts).toLocaleDateString('pt-BR') : '—';
   const tipo = LABEL_TIPO_AVAL[av.tipoAvaliacao] || 'Avaliação';
   const m = metricasAvaliacao(av);
   const itens = [
@@ -1014,12 +1013,10 @@ export default function FichaAluno() {
 
         // Ordena cronologicamente (mais antigas primeiro) para o gráfico
         const sorted = [...avaliacoes]
-          .sort((a, b) => (a.criadoEm?.seconds || 0) - (b.criadoEm?.seconds || 0));
+          .sort((a, b) => tsAvaliacao(a) - tsAvaliacao(b));
 
         const chartData = sorted.map(av => {
-          const d = av.criadoEm?.seconds
-            ? new Date(av.criadoEm.seconds * 1000)
-            : null;
+          const d = tsAvaliacao(av) ? new Date(tsAvaliacao(av)) : null;
           const label = d
             ? d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '')
             : '—';
@@ -1088,8 +1085,8 @@ export default function FichaAluno() {
                         </span>
                       );
                     };
-                    const data = av.criadoEm?.seconds
-                      ? new Date(av.criadoEm.seconds * 1000).toLocaleDateString('pt-BR')
+                    const data = tsAvaliacao(av)
+                      ? new Date(tsAvaliacao(av)).toLocaleDateString('pt-BR')
                       : '—';
                     const mAv   = metricasAvaliacao(av);
                     const mPrev = prev ? metricasAvaliacao(prev) : {};
