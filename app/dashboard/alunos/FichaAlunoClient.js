@@ -16,6 +16,7 @@ import {
   ChevronRight, ChevronDown, Play,
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { mapaPresencaAgenda } from '@/lib/presencaAgenda';
 import { useToast } from '@/components/Toast';
 import ConfirmModal from '@/components/ConfirmModal';
 import { METODOS } from '@/lib/treinoData';
@@ -557,7 +558,7 @@ function FotosTab({ alunoId }) {
 const DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 const MESES_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
-function FrequenciaTab({ alunoId }) {
+function FrequenciaTab({ alunoId, alunoNome }) {
   const toast = useToast();
   const hoje = new Date();
   const [mes, setMes]     = useState(hoje.getMonth());
@@ -570,8 +571,15 @@ function FrequenciaTab({ alunoId }) {
     setLoading(true);
     buscarPresencasDoAluno(alunoId)
       .then(lista => {
+        // Um dia pode ter vários docs (um por modalidade). Só a aula do personal e a
+        // musculação do app contam; Yoga/corrida avulsa não acendem a frequência.
+        const porDia = {};
+        lista.forEach(p => { (porDia[p.data] = porDia[p.data] || []).push(p); });
         const map = {};
-        lista.forEach(p => { map[p.data] = p.presente; });
+        Object.entries(porDia).forEach(([dia, docs]) => {
+          const r = mapaPresencaAgenda(docs)[alunoId];
+          if (r !== undefined) map[dia] = r;
+        });
         setPresencas(map);
       })
       .finally(() => setLoading(false));
@@ -592,7 +600,7 @@ function FrequenciaTab({ alunoId }) {
       if (novoVal === null) {
         setPresencas(p => { const c = { ...p }; delete c[dataStr]; return c; });
       } else {
-        await registrarPresenca(alunoId, dataStr, novoVal);
+        await registrarPresenca(alunoId, dataStr, novoVal, alunoNome);
         setPresencas(p => ({ ...p, [dataStr]: novoVal }));
       }
     } catch { toast('Erro ao registrar presença.', 'error'); }
@@ -1110,7 +1118,7 @@ export default function FichaAluno() {
         );
       })()}
 
-      {aba === 'frequencia' && <FrequenciaTab alunoId={id} />}
+      {aba === 'frequencia' && <FrequenciaTab alunoId={id} alunoNome={aluno?.nome || ''} />}
 
       {aba === 'fotos' && <FotosTab alunoId={id} />}
 
