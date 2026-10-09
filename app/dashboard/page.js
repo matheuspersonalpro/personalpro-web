@@ -221,7 +221,7 @@ export default function DashboardPage() {
 
   async function aplicarReajuste() {
     const pct = parseFloat(pctReajuste.replace(',','.'));
-    if (!Number.isFinite(pct) || pct === 0 || pct < -50 || pct > 100) { toast('Informe um percentual entre -50 e 100.', 'error'); return; }
+    if (!Number.isFinite(pct) || pct < 0.1 || pct > 50) { toast('Digite um percentual entre 0,1% e 50%.', 'error'); return; }
     const previa = alunos
       .filter(x => x.status !== 'inativo' && x.ativo !== false && valorNum(x.valor) > 0)
       .map(x => ({ aluno: x, novo: Math.round(valorNum(x.valor) * (1 + pct / 100) * 100) / 100 }));
@@ -247,11 +247,23 @@ export default function DashboardPage() {
           falhas.push(aluno.nome);
         }
       }
+      // Avisa os alunos (o app faz igual). O reajuste JÁ foi aplicado: se o aviso falhar
+      // não desfaz nada, mas o personal precisa saber que ninguém foi avisado.
+      let avisoFalhou = false;
+      try {
+        const { httpsCallable } = await import('firebase/functions');
+        const { functions } = await import('@/lib/firebase');
+        await httpsCallable(functions, 'notificarAvisoAlunos')({
+          texto: `Seu plano será reajustado em ${pct}% (IPCA) a partir do mês que vem. Qualquer dúvida, fale com seu personal.`,
+          titulo: '💰 Reajuste do plano',
+        });
+      } catch (e) { console.error('Aviso do reajuste falhou', e); avisoFalhou = true; }
       const ano = new Date().getFullYear();
       localStorage.setItem(`reajuste_aviso_${ano}`, '1');
       setReajusteDone(true); setShowReajuste(false);
       if (falhas.length) toast(`Reajuste aplicado, mas falhou para: ${falhas.join(', ')}. Confira o valor no Asaas.`, 'error');
-      else toast(`Reajuste de ${pct}% aplicado.`);
+      else if (avisoFalhou) toast(`Reajuste de ${pct}% aplicado, mas o aviso aos alunos não saiu. Avise por fora.`, 'error');
+      else toast(`Reajuste de ${pct}% aplicado e alunos avisados.`);
     } catch { toast('Erro ao aplicar reajuste.', 'error'); } finally { setAplicandoR(false); }
   }
 
