@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { X, Copy, Check } from 'lucide-react';
 import { gerarPixEMV } from '@/lib/pix';
 import { valorNum } from '@/lib/financeiro';
+import QrPix from '@/components/QrPix';
 
 export function textoInstrucaoPixAutomatico(chave) {
   const c = chave || '(configure sua chave PIX nas configurações)';
@@ -34,7 +35,6 @@ export default function PixNaHora({ config, onFechar, onConfigurar }) {
     try { await navigator.clipboard.writeText(codigo); setCopiado(true); setTimeout(() => setCopiado(false), 2000); }
     catch { setErro('Não consegui copiar. Selecione o código e copie manualmente.'); }
   }
-  const qrUrl = codigo ? `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(codigo)}&size=180x180&bgcolor=ffffff&color=0a0b0d&qzone=1` : null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}>
@@ -54,7 +54,7 @@ export default function PixNaHora({ config, onFechar, onConfigurar }) {
           )}
           {codigo && (
             <div className="space-y-3">
-              <div className="flex justify-center"><img src={qrUrl} alt="QR Code PIX" width={180} height={180} className="rounded-[14px] bg-white" /></div>
+              <div className="flex justify-center"><QrPix valor={codigo} tamanho={180} /></div>
               <p className="text-[11px] text-white/45 break-all rounded-[14px] bg-white/[0.04] px-3 py-2.5 font-mono leading-relaxed">{codigo}</p>
               <p className="text-[11px] text-white/30">Confira o nome do recebedor no app do banco antes de mandar para alguém.</p>
             </div>
