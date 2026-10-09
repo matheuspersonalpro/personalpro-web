@@ -6,7 +6,7 @@ import {
   buscarTreino, buscarAlunos, salvarTreino, buscarExerciciosCustom, criarExercicioCustom,
   buscarVideosExercicios,
 } from '@/lib/firestore';
-import { BIBLIOTECA, GRUPOS_NOMES, METODOS, PERIODIZACOES } from '@/lib/treinoData';
+import { BIBLIOTECA, GRUPOS_NOMES, METODOS, PERIODIZACOES, grupoAtual } from '@/lib/treinoData';
 import {
   ChevronLeft, Save, Search, Plus, X, Dumbbell, GripVertical,
   ChevronDown, ChevronUp, Zap, Play, Layers, Check,
@@ -399,7 +399,7 @@ export default function EditarTreino() {
   const customNomes = new Set(exCustom.map(e => e.nome.toLowerCase()));
   const bibCompleta = [
     ...bibBase.filter(e => !customNomes.has(e.nome.toLowerCase())),
-    ...exCustom.map(e => ({ nome: e.nome, grupo: e.grupo || 'Custom', custom: true })),
+    ...exCustom.map(e => ({ nome: e.nome, grupo: grupoAtual(e.grupo) || 'Custom', custom: true })),
   ];
 
   const filtradosGrupo = grupoFiltro ? bibCompleta.filter(e => e.grupo === grupoFiltro) : bibCompleta;

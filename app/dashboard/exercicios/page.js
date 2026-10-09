@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 import {
   listarVideosExercicios, salvarVideoExercicio, removerVideoExercicio, buscarExerciciosCustom,
 } from '@/lib/firestore';
-import { BIBLIOTECA } from '@/lib/treinoData';
+import { BIBLIOTECA, grupoAtual } from '@/lib/treinoData';
 import { Video, Plus, X, Pencil, Trash2, Search, ExternalLink, Play } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import ConfirmModal from '@/components/ConfirmModal';
@@ -215,7 +215,7 @@ export default function ExerciciosPage() {
     linhas.push({ nome, grupo: grupo || 'Outros', video: videoPorNome.get(k) || null });
   };
   TODOS_EXERCICIOS.forEach(e => addLinha(e.nome, e.grupo));
-  custom.forEach(e => addLinha(e.nome, e.grupo));
+  custom.forEach(e => addLinha(e.nome, grupoAtual(e.grupo)));
   videos.forEach(v => addLinha(v.nome, 'Outros'));
   const grupos = [];
   linhas

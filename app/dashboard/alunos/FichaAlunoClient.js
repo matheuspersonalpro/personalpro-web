@@ -1,12 +1,13 @@
 'use client';
 import { valorNum, valorMensalAsaas } from '@/lib/financeiro';
+import { RITMOS_PROGRAMA, ritmoSelecionado, viraSozinho, diasDoBloco, diasParaProximoMes, diasNoBlocoAtual, rotuloRitmo } from '@/lib/programaMusculacao';
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   buscarAluno, buscarTreinos, atualizarAluno, excluirAluno,
   buscarAvaliacoes, tsAvaliacao, excluirAvaliacao, buscarHistoricoDoAluno,
-  atribuirProgramaMuscular, removerProgramaMuscular, sincronizarProgramaMuscular, listarProgramas,
+  atribuirProgramaMuscular, removerProgramaMuscular, sincronizarProgramaMuscular, listarProgramas, definirRitmoPrograma, definirMesPrograma,
   buscarFotosEvolucao, uploadFotoEvolucao, salvarFotosEvolucao, deletarSessaoFotos,
   buscarPresencasDoAluno, registrarPresenca,
 } from '@/lib/firestore';
@@ -202,6 +203,54 @@ function CardAvaliacao({ av, onExcluir }) {
   );
 }
 
+// ── Card do programa: mês, ritmo e avanço manual (porte do card do app) ───────
+function CardPrograma({ aluno, onMudou }) {
+  const toast = useToast();
+  const meta = aluno.programaMuscular;
+  const [ocupado, setOcupado] = useState(false);
+  const mes = Number(meta.mesAtual) || 1;
+  const auto = viraSozinho(meta);
+  const faltam = diasParaProximoMes(meta);
+
+  async function mudarRitmo(dias) {
+    if (ocupado || dias === ritmoSelecionado(meta)) return;
+    setOcupado(true);
+    try { await definirRitmoPrograma(aluno, dias); toast('Ritmo atualizado.'); await onMudou(); }
+    catch (e) { toast(`Erro ao mudar o ritmo: ${e?.code || e?.message || 'desconhecido'}`, 'error'); }
+    finally { setOcupado(false); }
+  }
+  async function avancar() {
+    if (ocupado || mes >= 12) return;
+    setOcupado(true);
+    try { await definirMesPrograma(aluno, mes + 1); toast(`Programa avançou para o Mês ${mes + 1}.`); await onMudou(); }
+    catch (e) { toast(`Erro ao avançar o mês: ${e?.code || e?.message || 'desconhecido'}`, 'error'); }
+    finally { setOcupado(false); }
+  }
+
+  return (
+    <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-4 space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-[13px] font-semibold text-white/85">Mês {mes} de 12 · troca {rotuloRitmo(meta).toLowerCase()}</p>
+          <p className="text-[11px] text-white/35 mt-0.5">
+            {!auto ? `No Mês ${mes} há ${diasNoBlocoAtual(meta)} dias` : mes >= 12 ? 'Último bloco do programa' : faltam > 0 ? `Próximo bloco em ${faltam} dias` : 'Próximo bloco libera na próxima abertura'}
+          </p>
+        </div>
+        {mes < 12 && (
+          <button onClick={avancar} disabled={ocupado}
+            className="px-3 py-1.5 rounded-[14px] border border-white/[0.1] text-[12px] font-semibold text-white/70 hover:text-white disabled:opacity-40 transition-all">Avançar mês</button>
+        )}
+      </div>
+      <div className="grid grid-cols-4 gap-1.5">
+        {RITMOS_PROGRAMA.map(r => (
+          <button key={r.dias} type="button" onClick={() => mudarRitmo(r.dias)} disabled={ocupado}
+            className={`py-1.5 rounded-[14px] text-[11px] font-semibold ring-1 transition-all ${ritmoSelecionado(meta) === r.dias ? 'bg-accent/15 text-accent ring-accent/30' : 'text-white/40 ring-white/[0.08] hover:text-white/70'}`}>{r.label}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── Atribuir Programa Modal ───────────────────────────────────────────────────
 function AtribuirProgramaModal({ aluno, onSalvo, onFechar }) {
   const toast = useToast();
@@ -209,6 +258,8 @@ function AtribuirProgramaModal({ aluno, onSalvo, onFechar }) {
   const [programaId, setProgramaId] = useState('');
   const [mes, setMes] = useState(1);
   const [salvando, setSalvando] = useState(false);
+  // Ritmo de troca de bloco POR ALUNO (30/45/60 dias ou manual). Parte do que o aluno já tem.
+  const [ritmo, setRitmo] = useState(aluno?.programaMuscular ? ritmoSelecionado(aluno.programaMuscular) : 30);
 
   useEffect(() => {
     listarProgramas().then(lista => {
@@ -221,7 +272,7 @@ function AtribuirProgramaModal({ aluno, onSalvo, onFechar }) {
     if (!programaId) return;
     setSalvando(true);
     try {
-      await atribuirProgramaMuscular(aluno, programaId, mes);
+      await atribuirProgramaMuscular(aluno, programaId, mes, { diasPorBloco: ritmo });
       toast('Programa atribuído com sucesso.');
       onSalvo();
     } catch (e) {
@@ -258,6 +309,18 @@ function AtribuirProgramaModal({ aluno, onSalvo, onFechar }) {
             <input type="number" min={1} max={12} value={mes} onChange={e => setMes(Number(e.target.value))}
               className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all" />
           </div>
+          <div>
+            <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Trocar de bloco</label>
+            <div className="grid grid-cols-4 gap-1.5">
+              {RITMOS_PROGRAMA.map(r => (
+                <button key={r.dias} type="button" onClick={() => setRitmo(r.dias)}
+                  className={`py-2 rounded-[14px] text-[12px] font-semibold ring-1 transition-all ${ritmo === r.dias ? 'bg-accent/15 text-accent ring-accent/30' : 'text-white/45 ring-white/[0.08] hover:text-white/75'}`}>
+                  {r.label}
+                </button>
+              ))}
+            </div>
+            <p className="text-[11px] text-white/30 mt-1.5">{RITMOS_PROGRAMA.find(r => r.dias === ritmo)?.desc}</p>
+          </div>
           <p className="text-[11px] text-amber-400/70 leading-relaxed">
             Atenção: os treinos de programa existentes deste aluno serão substituídos.
           </p>
@@ -284,9 +347,11 @@ const POSICOES = [
 ];
 
 function ComparacaoModal({ sessA, sessB, onFechar }) {
-  const fmtData = sess => sess?.criadoEm?.seconds
+  // A data ESCOLHIDA pelo personal (`data`, DD/MM/AAAA), não a do upload: sessão lançada com
+  // data passada aparecia com a data de hoje.
+  const fmtData = sess => sess?.data || (sess?.criadoEm?.seconds
     ? new Date(sess.criadoEm.seconds * 1000).toLocaleDateString('pt-BR')
-    : '—';
+    : '—');
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(6px)' }}>
@@ -491,9 +556,9 @@ function FotosTab({ alunoId }) {
         ) : (
           <div className="divide-y divide-white/[0.04]">
             {historico.map((sess, idx) => {
-              const data = sess.criadoEm?.seconds
+              const data = sess.data || (sess.criadoEm?.seconds
                 ? new Date(sess.criadoEm.seconds * 1000).toLocaleDateString('pt-BR')
-                : '—';
+                : '—');
               const fotos = sess.fotos || {};
               const selecionada = selecionadas.includes(sess.id);
               const ordemSel = selecionadas.indexOf(sess.id);
@@ -992,6 +1057,9 @@ export default function FichaAluno() {
               <Plus size={13} /> Novo treino
             </Link>
           </div>
+          {aluno?.programaMuscular?.programaId && (
+            <CardPrograma aluno={aluno} onMudou={carregar} />
+          )}
           {treinos.length === 0 ? (
             <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-12 text-center">
               <Dumbbell size={28} className="text-white/15 mx-auto mb-3" strokeWidth={1.5} />
