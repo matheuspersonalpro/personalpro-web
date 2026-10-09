@@ -9,6 +9,7 @@ import { gerarPixEMV } from '@/lib/pix';
 import { TrendingUp, Plus, X, ChevronLeft, ChevronRight, Trash2, DollarSign, Users, CreditCard, Target, Zap, QrCode, ExternalLink, Check, AlertTriangle, Copy, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import ConfirmModal from '@/components/ConfirmModal';
+import ReajusteLote from './ReajusteLote';
 
 const FATOR_PLANO = { Mensal: 1, Trimestral: 3, Semestral: 6, Anual: 12 };
 const MESES_LONGOS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -260,6 +261,7 @@ export default function FinanceiroPage() {
 
   // Formulário novo pagamento (aba resumo)
   const [showForm, setShowForm] = useState(false);
+  const [showReajusteLote, setShowReajusteLote] = useState(false);
   const [form, setForm] = useState({ alunoId:'', valor:'', forma:'PIX', tipo:'Mensal', data: new Date().toLocaleDateString('pt-BR'), descricao:'' });
   const [saving, setSaving] = useState(false);
 
@@ -928,6 +930,22 @@ export default function FinanceiroPage() {
       )}
 
       {/* ── ABA RECEBIMENTO ──────────────────────────────────────────────────────── */}
+      {showReajusteLote && <ReajusteLote alunos={alunos} onFechar={() => setShowReajusteLote(false)} onAplicado={carregar} />}
+      {!loading && aba === 'recebimento' && (
+        <div className="mb-4">
+          <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-2">Ferramentas de recebimento</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <button onClick={() => setShowForm(true)} className="flex items-center gap-3 rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] hover:ring-accent/30 p-4 text-left transition-all">
+              <span className="w-10 h-10 rounded-[14px] bg-accent/10 flex items-center justify-center shrink-0"><Plus size={16} className="text-accent" /></span>
+              <span><span className="block text-[14px] font-semibold text-white/85">Registrar pagamento recebido</span><span className="block text-[12px] text-white/35">Anote um dinheiro/PIX que já caiu (fora do Asaas)</span></span>
+            </button>
+            <button onClick={() => setShowReajusteLote(true)} className="flex items-center gap-3 rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] hover:ring-accent/30 p-4 text-left transition-all">
+              <span className="w-10 h-10 rounded-[14px] bg-accent/10 flex items-center justify-center shrink-0"><TrendingUp size={16} className="text-accent" /></span>
+              <span><span className="block text-[14px] font-semibold text-white/85">Reajuste anual em lote</span><span className="block text-[12px] text-white/35">Aplica um percentual em vários alunos de uma vez · atualiza o valor e a assinatura no Asaas</span></span>
+            </button>
+          </div>
+        </div>
+      )}
       {!loading && aba === 'recebimento' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Config PIX */}
