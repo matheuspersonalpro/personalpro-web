@@ -21,9 +21,9 @@ export function ToastProvider({ children }) {
         {toasts.map(toast => (
           <div
             key={toast.id}
-            className="flex items-center gap-3 px-4 py-3 rounded-2xl pointer-events-auto"
+            className="flex items-center gap-3 px-4 py-3 rounded-[22px] pointer-events-auto"
             style={{
-              background: '#0d1b2e',
+              background: '#141619',
               border: '1px solid rgba(255,255,255,0.10)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
               animation: 'slideIn 0.2s ease',
@@ -32,7 +32,7 @@ export function ToastProvider({ children }) {
             }}
           >
             {toast.type === 'success'
-              ? <CheckCircle2 size={15} className="text-green-400 shrink-0" />
+              ? <CheckCircle2 size={15} className="text-accent shrink-0" />
               : <AlertCircle size={15} className="text-red-400 shrink-0" />
             }
             <p className="text-[13px] font-medium" style={{ color: 'rgba(255,255,255,0.8)' }}>

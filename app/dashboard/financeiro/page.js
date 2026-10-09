@@ -34,9 +34,9 @@ function BarChart({ data }) {
               </span>
             )}
             <div className="w-full relative" style={{ height: `${Math.max(pct, 4)}%` }}>
-              <div className={`absolute inset-0 rounded-t-lg transition-all ${isLast ? 'bg-blue-500' : 'bg-blue-500/30 group-hover:bg-blue-500/50'}`} />
+              <div className={`absolute inset-0 rounded-t-lg transition-all ${isLast ? 'bg-accent' : 'bg-accent/30 group-hover:bg-accent/50'}`} />
             </div>
-            <span className={`text-[10px] font-medium ${isLast ? 'text-blue-400' : 'text-white/30'}`}>{item.mes}</span>
+            <span className={`text-[10px] font-medium ${isLast ? 'text-accent' : 'text-white/30'}`}>{item.mes}</span>
           </div>
         );
       })}
@@ -55,15 +55,15 @@ function DonutChart({ presencial, consultoria }) {
   return (
     <div className="flex items-center gap-4">
       <svg width="90" height="90" viewBox="0 0 90 90">
-        <circle cx="45" cy="45" r={r} fill="none" stroke="#34d399" strokeWidth="12"
+        <circle cx="45" cy="45" r={r} fill="none" stroke="#A3A8B0" strokeWidth="12"
           strokeDasharray={`${dashC} ${dashP}`} strokeDashoffset={circ * 0.25} />
-        <circle cx="45" cy="45" r={r} fill="none" stroke="#60a5fa" strokeWidth="12"
+        <circle cx="45" cy="45" r={r} fill="none" stroke="#C6F432" strokeWidth="12"
           strokeDasharray={`${dashP} ${dashC}`} strokeDashoffset={circ * 0.25} />
         <text x="45" y="49" textAnchor="middle" fill="white" fontSize="13" fontWeight="bold">{pPct}%</text>
       </svg>
       <div className="space-y-2">
-        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-blue-400" /><span className="text-[12px] text-white/60">Presencial <span className="text-white font-semibold">{pPct}%</span></span></div>
-        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-green-400" /><span className="text-[12px] text-white/60">Consultoria <span className="text-white font-semibold">{100-pPct}%</span></span></div>
+        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-accent" /><span className="text-[12px] text-white/60">Presencial <span className="text-white font-semibold">{pPct}%</span></span></div>
+        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#A3A8B0]" /><span className="text-[12px] text-white/60">Consultoria <span className="text-white font-semibold">{100-pPct}%</span></span></div>
       </div>
     </div>
   );
@@ -125,7 +125,7 @@ function CobrarModal({ aluno, config, onClose, onSalvo, toast }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-      <div className="w-full max-w-sm rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
+      <div className="w-full max-w-sm rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
           <div>
             <h2 className="text-[15px] font-bold text-white">Cobrar aluno</h2>
@@ -136,10 +136,10 @@ function CobrarModal({ aluno, config, onClose, onSalvo, toast }) {
 
         {modo === 'pix' ? (
           <div className="p-6 text-center">
-            {qrUrl && <img src={qrUrl} alt="QR PIX" className="mx-auto mb-4 rounded-xl ring-1 ring-blue-500/20" width={180} height={180} />}
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-white/[0.04] ring-1 ring-white/[0.06] mb-4">
+            {qrUrl && <img src={qrUrl} alt="QR PIX" className="mx-auto mb-4 rounded-[14px] ring-1 ring-accent/20" width={180} height={180} />}
+            <div className="flex items-center gap-2 p-3 rounded-[14px] bg-white/[0.04] ring-1 ring-white/[0.06] mb-4">
               <p className="flex-1 text-[10px] text-white/50 break-all font-mono text-left">{pixEmv.slice(0,40)}...</p>
-              <button onClick={() => copiar(pixEmv)} className="shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-500/15 text-blue-400 text-[11px]">
+              <button onClick={() => copiar(pixEmv)} className="shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg bg-accent/15 text-accent text-[11px]">
                 {copiado ? <Check size={12} /> : <Copy size={12} />} {copiado ? 'Copiado' : 'Copiar'}
               </button>
             </div>
@@ -150,26 +150,26 @@ function CobrarModal({ aluno, config, onClose, onSalvo, toast }) {
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Valor (R$)</label>
               <input type="text" value={valor} onChange={e => setValor(e.target.value)} placeholder={fmt(aluno.valor||0)}
-                className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all" />
             </div>
             <div>
               <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Forma de pagamento</label>
               <div className="flex flex-wrap gap-2">
                 {FORMAS.map(f => (
-                  <button key={f} onClick={() => setForma(f)} className={`px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all ${forma===f ? 'bg-blue-600/20 text-blue-400 ring-1 ring-blue-500/30' : 'bg-white/[0.04] text-white/40 hover:text-white'}`}>{f}</button>
+                  <button key={f} onClick={() => setForma(f)} className={`px-3 py-1.5 rounded-[14px] text-[11px] font-semibold transition-all ${forma===f ? 'bg-accent/20 text-accent ring-1 ring-accent/30' : 'bg-white/[0.04] text-white/40 hover:text-white'}`}>{f}</button>
                 ))}
               </div>
             </div>
             {modo === 'confirmar' && aluno.vencimento && (
-              <div className="p-3 rounded-xl bg-blue-500/[0.06] ring-1 ring-blue-500/15">
-                <p className="text-[11px] text-blue-400">Plano será renovado automaticamente</p>
+              <div className="p-3 rounded-[14px] bg-accent/[0.06] ring-1 ring-accent/15">
+                <p className="text-[11px] text-accent">Plano será renovado automaticamente</p>
                 <p className="text-[10px] text-white/35 mt-0.5">Vencimento atual: {aluno.vencimento}</p>
               </div>
             )}
             <div className="flex gap-2 pt-1">
-              <button onClick={() => setModo(null)} className="flex-1 py-2.5 rounded-xl border border-white/[0.08] text-[13px] text-white/50 hover:text-white transition-all">Voltar</button>
+              <button onClick={() => setModo(null)} className="flex-1 py-2.5 rounded-[14px] border border-white/[0.08] text-[13px] text-white/50 hover:text-white transition-all">Voltar</button>
               <button onClick={modo==='confirmar' ? confirmarRecebimento : registrarSomente} disabled={salvando}
-                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all">
+                className="flex-1 py-2.5 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent disabled:opacity-40 transition-all">
                 {salvando ? 'Salvando...' : (modo==='confirmar' ? 'Confirmar' : 'Registrar')}
               </button>
             </div>
@@ -178,20 +178,20 @@ function CobrarModal({ aluno, config, onClose, onSalvo, toast }) {
           <div className="p-4 space-y-2">
             {config?.pixLink && (
               <a href={config.pixLink} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-3 w-full px-4 py-3 rounded-xl hover:bg-white/[0.04] ring-1 ring-white/[0.06] text-left transition-all">
-                <ExternalLink size={16} className="text-blue-400 shrink-0" />
+                className="flex items-center gap-3 w-full px-4 py-3 rounded-[14px] hover:bg-white/[0.04] ring-1 ring-white/[0.06] text-left transition-all">
+                <ExternalLink size={16} className="text-accent shrink-0" />
                 <div><p className="text-[13px] font-semibold text-white">Abrir link de pagamento</p><p className="text-[11px] text-white/35">Compartilhar com o aluno</p></div>
               </a>
             )}
-            <button onClick={gerarPix} className="flex items-center gap-3 w-full px-4 py-3 rounded-xl hover:bg-white/[0.04] ring-1 ring-white/[0.06] text-left transition-all">
-              <QrCode size={16} className="text-blue-400 shrink-0" />
+            <button onClick={gerarPix} className="flex items-center gap-3 w-full px-4 py-3 rounded-[14px] hover:bg-white/[0.04] ring-1 ring-white/[0.06] text-left transition-all">
+              <QrCode size={16} className="text-accent shrink-0" />
               <div><p className="text-[13px] font-semibold text-white">Gerar QR Code PIX</p><p className="text-[11px] text-white/35">Pagamento por aproximação</p></div>
             </button>
-            <button onClick={() => setModo('confirmar')} className="flex items-center gap-3 w-full px-4 py-3 rounded-xl hover:bg-white/[0.04] ring-1 ring-white/[0.06] text-left transition-all">
-              <Check size={16} className="text-green-400 shrink-0" />
+            <button onClick={() => setModo('confirmar')} className="flex items-center gap-3 w-full px-4 py-3 rounded-[14px] hover:bg-white/[0.04] ring-1 ring-white/[0.06] text-left transition-all">
+              <Check size={16} className="text-accent shrink-0" />
               <div><p className="text-[13px] font-semibold text-white">Confirmar recebimento</p><p className="text-[11px] text-white/35">Registra e renova o plano</p></div>
             </button>
-            <button onClick={() => setModo('registrar')} className="flex items-center gap-3 w-full px-4 py-3 rounded-xl hover:bg-white/[0.04] ring-1 ring-white/[0.06] text-left transition-all">
+            <button onClick={() => setModo('registrar')} className="flex items-center gap-3 w-full px-4 py-3 rounded-[14px] hover:bg-white/[0.04] ring-1 ring-white/[0.06] text-left transition-all">
               <DollarSign size={16} className="text-white/50 shrink-0" />
               <div><p className="text-[13px] font-semibold text-white">Registrar pagamento</p><p className="text-[11px] text-white/35">Só anota, não renova plano</p></div>
             </button>
@@ -460,25 +460,25 @@ export default function FinanceiroPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-[22px] font-bold text-white">Financeiro</h1>
+          <h1 className="text-[22px] font-semibold text-white font-display">Financeiro</h1>
           <p className="text-[12px] text-white/35 mt-0.5">Controle de receitas e cobranças</p>
         </div>
         {aba === 'resumo' && (
-          <button onClick={() => setShowForm(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
+          <button onClick={() => setShowForm(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[12px] font-semibold text-on-accent transition-all shadow-lg shadow-black/30">
             <Plus size={13} /> Registrar
           </button>
         )}
       </div>
 
       {/* Abas */}
-      <div className="flex gap-1 p-1 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] mb-6 w-fit">
+      <div className="flex gap-1 p-1 rounded-[14px] bg-white/[0.03] ring-1 ring-white/[0.06] mb-6 w-fit">
         {[['resumo','Resumo'],['alunos','Alunos'],['recebimento','Recebimento']].map(([v,l]) => (
-          <button key={v} onClick={() => setAba(v)} className={`px-4 py-2 rounded-lg text-[12px] font-semibold transition-all ${aba===v ? 'bg-[#0d1b2e] text-white shadow-sm' : 'text-white/40 hover:text-white/70'}`}>{l}</button>
+          <button key={v} onClick={() => setAba(v)} className={`px-4 py-2 rounded-lg text-[12px] font-semibold transition-all ${aba===v ? 'bg-[#141619] text-white shadow-sm' : 'text-white/40 hover:text-white/70'}`}>{l}</button>
         ))}
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-24"><div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" /></div>
+        <div className="flex items-center justify-center py-24"><div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" /></div>
       )}
 
       {/* ── ABA RESUMO ─────────────────────────────────────────────────────────── */}
@@ -487,7 +487,7 @@ export default function FinanceiroPage() {
           {/* Modal registrar pagamento */}
           {showForm && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(4px)' }}>
-              <div className="w-full max-w-md rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
+              <div className="w-full max-w-md rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] overflow-hidden">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
                   <h2 className="text-[15px] font-bold text-white">Registrar pagamento</h2>
                   <button onClick={() => setShowForm(false)} className="p-1.5 text-white/40 hover:text-white"><X size={16} /></button>
@@ -496,7 +496,7 @@ export default function FinanceiroPage() {
                   <div>
                     <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Aluno</label>
                     <select value={form.alunoId} onChange={e => setForm(f => ({...f, alunoId: e.target.value}))}
-                      className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                      className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all">
                       <option value="">Selecione...</option>
                       {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
                     </select>
@@ -505,26 +505,26 @@ export default function FinanceiroPage() {
                     <div>
                       <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Valor (R$) *</label>
                       <input type="text" required value={form.valor} onChange={e => setForm(f=>({...f, valor:e.target.value}))} placeholder="0,00"
-                        className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                        className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all" />
                     </div>
                     <div>
                       <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Data *</label>
                       <input type="date" required value={form.data.split('/').reverse().join('-')} onChange={e => { const [a,m,d]=e.target.value.split('-'); setForm(f=>({...f, data:`${d}/${m}/${a}`})); }}
-                        className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                        className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Forma</label>
                       <select value={form.forma} onChange={e => setForm(f=>({...f, forma:e.target.value}))}
-                        className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                        className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all">
                         {FORMAS.map(f => <option key={f}>{f}</option>)}
                       </select>
                     </div>
                     <div>
                       <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Tipo</label>
                       <select value={form.tipo} onChange={e => setForm(f=>({...f, tipo:e.target.value}))}
-                        className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all">
+                        className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all">
                         {TIPOS.map(t => <option key={t}>{t}</option>)}
                       </select>
                     </div>
@@ -532,11 +532,11 @@ export default function FinanceiroPage() {
                   <div>
                     <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1.5">Descrição</label>
                     <input type="text" value={form.descricao} onChange={e => setForm(f=>({...f, descricao:e.target.value}))}
-                      className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                      className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all" />
                   </div>
                   <div className="flex justify-end gap-2 pt-1">
-                    <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 rounded-xl border border-white/[0.08] text-[13px] text-white/50 hover:text-white transition-all">Cancelar</button>
-                    <button type="submit" disabled={saving} className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all">
+                    <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 rounded-[14px] border border-white/[0.08] text-[13px] text-white/50 hover:text-white transition-all">Cancelar</button>
+                    <button type="submit" disabled={saving} className="px-5 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent disabled:opacity-40 transition-all">
                       {saving ? 'Salvando...' : 'Registrar'}
                     </button>
                   </div>
@@ -548,14 +548,14 @@ export default function FinanceiroPage() {
           {/* KPIs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label:'Receita do mês', value: fmt(receitaMes), sub: `${variacaoMes >= 0 ? '+' : ''}${variacaoMes.toFixed(1)}% vs. mês anterior`, subColor: variacaoMes >= 0 ? 'text-green-400' : 'text-red-400' },
+              { label:'Receita do mês', value: fmt(receitaMes), sub: `${variacaoMes >= 0 ? '+' : ''}${variacaoMes.toFixed(1)}% vs. mês anterior`, subColor: variacaoMes >= 0 ? 'text-accent' : 'text-red-400' },
               { label:'Receita no ano', value: fmt(receitaAno), sub:`${pagamentos.filter(p => { const [,mo,a] = (p.data||'').split('/').map(Number); return a === anoAtual; }).length} pagamentos`, subColor:'text-white/35' },
               { label:'Média mensal', value: fmt(mediaMensal), sub:'Baseado no ano atual', subColor:'text-white/35' },
               { label:'Projeção mês seguinte', value: fmt(projecao), sub:'Média dos últimos 3 meses', subColor:'text-white/35' },
             ].map((k,i) => (
-              <div key={i} className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-4">
+              <div key={i} className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-4">
                 <p className="text-[10px] font-semibold text-white/35 uppercase tracking-wider mb-2">{k.label}</p>
-                <p className="text-[22px] font-bold text-white leading-none mb-1">{k.value}</p>
+                <p className="text-[22px] font-semibold text-white leading-none mb-1 font-display">{k.value}</p>
                 <p className={`text-[11px] ${k.subColor}`}>{k.sub}</p>
               </div>
             ))}
@@ -564,31 +564,31 @@ export default function FinanceiroPage() {
           {/* Meta + Gráfico */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Meta */}
-            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
+            <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider">Meta do mês</p>
-                <button onClick={() => setEditMeta(true)} className="text-[11px] text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
+                <button onClick={() => setEditMeta(true)} className="text-[11px] text-accent hover:text-accent-pale transition-colors">Editar</button>
               </div>
               {editMeta ? (
                 <div className="space-y-2">
                   <input type="text" value={tempMeta} onChange={e => setTempMeta(e.target.value)} placeholder="Ex: 5000"
                     onKeyDown={e => { if (e.key === 'Enter') salvarMeta(); if (e.key === 'Escape') setEditMeta(false); }}
-                    className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-blue-500/30 text-white text-[13px] focus:outline-none transition-all" autoFocus />
+                    className="w-full px-3 py-2 rounded-[14px] bg-white/[0.04] border border-accent/30 text-white text-[13px] focus:outline-none transition-all" autoFocus />
                   <div className="flex gap-2">
                     <button onClick={() => setEditMeta(false)} className="flex-1 py-1.5 rounded-lg border border-white/[0.08] text-[12px] text-white/40 hover:text-white transition-all">Cancelar</button>
-                    <button onClick={salvarMeta} className="flex-1 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white transition-all">OK</button>
+                    <button onClick={salvarMeta} className="flex-1 py-1.5 rounded-lg bg-accent hover:bg-accent-hover text-[12px] font-semibold text-on-accent transition-all">OK</button>
                   </div>
                 </div>
               ) : metaNum > 0 ? (
                 <>
                   <div className="flex items-end gap-1 mb-2">
-                    <span className="text-[20px] font-bold text-white">{fmt(receitaMes)}</span>
+                    <span className="text-[20px] font-semibold text-white font-display">{fmt(receitaMes)}</span>
                     <span className="text-[12px] text-white/35 mb-0.5">/ {fmt(metaNum)}</span>
                   </div>
                   <div className="relative h-2 rounded-full bg-white/[0.06] overflow-hidden mb-1">
-                    <div className="absolute inset-y-0 left-0 rounded-full bg-blue-500 transition-all" style={{ width:`${metaPct}%` }} />
+                    <div className="absolute inset-y-0 left-0 rounded-full bg-accent transition-all" style={{ width:`${metaPct}%` }} />
                   </div>
-                  <p className={`text-[11px] ${metaPct >= 100 ? 'text-green-400' : 'text-white/35'}`}>{metaPct.toFixed(0)}% da meta {metaPct >= 100 ? '🎉' : ''}</p>
+                  <p className={`text-[11px] ${metaPct >= 100 ? 'text-accent' : 'text-white/35'}`}>{metaPct.toFixed(0)}% da meta {metaPct >= 100 ? '🎉' : ''}</p>
                 </>
               ) : (
                 <p className="text-[12px] text-white/25 mt-2">Clique em Editar para definir uma meta</p>
@@ -596,13 +596,13 @@ export default function FinanceiroPage() {
             </div>
 
             {/* Donut */}
-            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
+            <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5">
               <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-3">Distribuição</p>
               <DonutChart presencial={recPresencial} consultoria={recConsultoria} />
             </div>
 
             {/* Inadimplência */}
-            <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
+            <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5">
               <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-3">Situação dos planos</p>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -614,28 +614,28 @@ export default function FinanceiroPage() {
                   <span className={`text-[13px] font-bold ${vencendo7.length > 0 ? 'text-amber-400' : 'text-white/40'}`}>{vencendo7.length}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-white/60 flex items-center gap-1.5"><Check size={12} className="text-green-400" /> Em dia</span>
-                  <span className="text-[13px] font-bold text-green-400">{alunos.filter(a => a.ativo !== false).length - inadimplentes.length - vencendo7.length}</span>
+                  <span className="text-[12px] text-white/60 flex items-center gap-1.5"><Check size={12} className="text-accent" /> Em dia</span>
+                  <span className="text-[13px] font-bold text-accent">{alunos.filter(a => a.ativo !== false).length - inadimplentes.length - vencendo7.length}</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Gráfico 6 meses */}
-          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
+          <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5">
             <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-4">Receita dos últimos 6 meses</p>
             <BarChart data={chart6} />
           </div>
 
           {/* Lista pagamentos do mês */}
-          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+          <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.05]">
               <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider">
                 {MESES[mesAtual]} {anoAtual} · {fmt(receitaMes)}
               </p>
               <div className="flex items-center gap-1">
                 <button onClick={() => setMesOffset(o => o - 1)} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all"><ChevronLeft size={14} /></button>
-                {mesOffset !== 0 && <button onClick={() => setMesOffset(0)} className="px-2 py-1 rounded-lg text-[10px] text-blue-400 hover:bg-blue-500/10 transition-all">Hoje</button>}
+                {mesOffset !== 0 && <button onClick={() => setMesOffset(0)} className="px-2 py-1 rounded-lg text-[10px] text-accent hover:bg-accent/10 transition-all">Hoje</button>}
                 <button onClick={() => setMesOffset(o => o + 1)} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all"><ChevronRight size={14} /></button>
               </div>
             </div>
@@ -645,12 +645,12 @@ export default function FinanceiroPage() {
               <div className="divide-y divide-white/[0.04]">
                 {pagsMes.map(p => (
                   <div key={p.id} className="flex items-center gap-4 px-5 py-3.5 hover:bg-white/[0.02] transition-colors group">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0 mt-0.5" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-accent shrink-0 mt-0.5" />
                     <div className="flex-1 min-w-0">
                       <p className="text-[13px] font-semibold text-white">{p.alunoNome || '—'}</p>
                       <p className="text-[11px] text-white/35">{p.data} · {p.forma || '—'}</p>
                     </div>
-                    <span className="text-[14px] font-bold text-blue-400">{fmt(Number(p.valor))}</span>
+                    <span className="text-[14px] font-bold text-accent">{fmt(Number(p.valor))}</span>
                     <button onClick={() => setConfirmPagId(p.id)} className="opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400 transition-all"><Trash2 size={14} /></button>
                   </div>
                 ))}
@@ -666,13 +666,13 @@ export default function FinanceiroPage() {
           {/* Filtro */}
           <div className="flex gap-2">
             {[['todos','Todos'],['presencial','Presencial'],['online','Online']].map(([v,l]) => (
-              <button key={v} onClick={() => setFiltro(v)} className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition-all ${filtro===v ? 'bg-blue-600/20 text-blue-400 ring-1 ring-blue-500/30' : 'bg-white/[0.04] text-white/40 hover:text-white'}`}>{l}</button>
+              <button key={v} onClick={() => setFiltro(v)} className={`px-4 py-2 rounded-[14px] text-[12px] font-semibold transition-all ${filtro===v ? 'bg-accent/20 text-accent ring-1 ring-accent/30' : 'bg-white/[0.04] text-white/40 hover:text-white'}`}>{l}</button>
             ))}
           </div>
 
           {/* Inadimplentes destaque */}
           {inadimplentes.length > 0 && filtro !== 'online' && (
-            <div className="rounded-2xl bg-red-500/[0.06] ring-1 ring-red-500/15 p-4">
+            <div className="rounded-[22px] bg-red-500/[0.06] ring-1 ring-red-500/15 p-4">
               <p className="text-[11px] font-semibold text-red-400 uppercase tracking-wider mb-2">⚠ Planos vencidos ({inadimplentes.length})</p>
               <div className="space-y-1.5">
                 {inadimplentes.map(a => (
@@ -681,7 +681,7 @@ export default function FinanceiroPage() {
                       <span className="text-[13px] font-semibold text-white">{a.nome}</span>
                       <span className="text-[11px] text-red-400 ml-2">venceu {a.vencimento}</span>
                     </div>
-                    <button onClick={() => setCobrando(a)} className="px-3 py-1.5 rounded-xl bg-red-500/15 text-[11px] font-semibold text-red-400 hover:bg-red-500/25 transition-all">Cobrar</button>
+                    <button onClick={() => setCobrando(a)} className="px-3 py-1.5 rounded-[14px] bg-red-500/15 text-[11px] font-semibold text-red-400 hover:bg-red-500/25 transition-all">Cobrar</button>
                   </div>
                 ))}
               </div>
@@ -689,7 +689,7 @@ export default function FinanceiroPage() {
           )}
 
           {/* Lista completa */}
-          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+          <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
             <div className="px-5 py-3 border-b border-white/[0.05]">
               <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider">{alunosFiltrados.length} aluno{alunosFiltrados.length !== 1 ? 's' : ''}</p>
             </div>
@@ -704,13 +704,13 @@ export default function FinanceiroPage() {
                   const status = diff === null ? null : diff < 0 ? 'vencido' : diff <= 7 ? 'urgente' : 'ok';
                   return (
                     <div key={a.id} className="flex items-center gap-4 px-5 py-3.5 hover:bg-white/[0.02] transition-colors group">
-                      <div className={`w-2 h-2 rounded-full shrink-0 ${status==='vencido' ? 'bg-red-400' : status==='urgente' ? 'bg-amber-400' : status==='ok' ? 'bg-green-400' : 'bg-white/20'}`} />
+                      <div className={`w-2 h-2 rounded-full shrink-0 ${status==='vencido' ? 'bg-red-400' : status==='urgente' ? 'bg-amber-400' : status==='ok' ? 'bg-accent' : 'bg-white/20'}`} />
                       <div className="flex-1 min-w-0">
                         <p className="text-[13px] font-semibold text-white">{a.nome}</p>
                         <p className="text-[11px] text-white/35">{a.tipoServico === 'online' ? 'Online' : 'Presencial'} · {a.plano || a.tipo || '—'}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[13px] font-bold text-blue-400">{fmt(Number(a.valor)||0)}</p>
+                        <p className="text-[13px] font-bold text-accent">{fmt(Number(a.valor)||0)}</p>
                         {a.vencimento && (
                           <p className={`text-[11px] ${status==='vencido' ? 'text-red-400' : status==='urgente' ? 'text-amber-400' : 'text-white/35'}`}>
                             {status==='vencido' ? `venceu ${a.vencimento}` : `vence ${a.vencimento}`}
@@ -722,7 +722,7 @@ export default function FinanceiroPage() {
                           </p>
                         )}
                       </div>
-                      <button onClick={() => setCobrando(a)} className="opacity-0 group-hover:opacity-100 flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-500/15 text-[11px] font-semibold text-blue-400 hover:bg-blue-500/25 transition-all">
+                      <button onClick={() => setCobrando(a)} className="opacity-0 group-hover:opacity-100 flex items-center gap-1 px-3 py-1.5 rounded-[14px] bg-accent/15 text-[11px] font-semibold text-accent hover:bg-accent/25 transition-all">
                         <DollarSign size={11} /> Cobrar
                       </button>
                     </div>
@@ -738,13 +738,13 @@ export default function FinanceiroPage() {
       {!loading && aba === 'recebimento' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Config PIX */}
-          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
+          <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <QrCode size={16} className="text-blue-400" />
+                <QrCode size={16} className="text-accent" />
                 <p className="text-[14px] font-bold text-white">PIX</p>
               </div>
-              <button onClick={() => setEditCfg(c => !c)} className="text-[11px] text-blue-400 hover:text-blue-300 transition-colors">
+              <button onClick={() => setEditCfg(c => !c)} className="text-[11px] text-accent hover:text-accent-pale transition-colors">
                 {editCfg ? 'Cancelar' : 'Editar'}
               </button>
             </div>
@@ -754,10 +754,10 @@ export default function FinanceiroPage() {
                   <div key={k}>
                     <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1">{l}</label>
                     <input value={cfgForm[k]} onChange={e => setCfgForm(f => ({...f, [k]: e.target.value}))} placeholder={k === 'pixLink' ? 'https://...' : ''}
-                      className="w-full px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all" />
+                      className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.04] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all" />
                   </div>
                 ))}
-                <button onClick={salvarConfig} disabled={salvandoCfg} className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all">
+                <button onClick={salvarConfig} disabled={salvandoCfg} className="w-full py-2.5 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent disabled:opacity-40 transition-all">
                   {salvandoCfg ? 'Salvando...' : 'Salvar configuração'}
                 </button>
               </div>
@@ -771,7 +771,7 @@ export default function FinanceiroPage() {
                 ))}
                 {config.pixLink && (
                   <a href={config.pixLink} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-blue-500/[0.08] ring-1 ring-blue-500/20 text-blue-400 text-[12px] font-semibold hover:bg-blue-500/15 transition-all">
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-[14px] bg-accent/[0.08] ring-1 ring-accent/20 text-accent text-[12px] font-semibold hover:bg-accent/15 transition-all">
                     <ExternalLink size={13} /> Abrir link de pagamento
                   </a>
                 )}
@@ -785,14 +785,14 @@ export default function FinanceiroPage() {
           </div>
 
           {/* Asaas */}
-          <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-5">
+          <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Zap size={16} className="text-amber-400" />
                 <p className="text-[14px] font-bold text-white">Asaas (recorrência automática)</p>
               </div>
               <button onClick={sincronizarAsaas} disabled={sincronizando}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-400 text-[11px] font-semibold hover:bg-amber-500/20 disabled:opacity-40 transition-all">
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-[14px] bg-amber-500/10 text-amber-400 text-[11px] font-semibold hover:bg-amber-500/20 disabled:opacity-40 transition-all">
                 <RefreshCw size={12} className={sincronizando ? 'animate-spin' : ''} /> {sincronizando ? 'Sincronizando...' : 'Sincronizar agora'}
               </button>
             </div>
@@ -803,7 +803,7 @@ export default function FinanceiroPage() {
               const comAsaas = alunos.filter(a => a.asaasSubscriptionId && a.cobrancaAutomatica);
               if (!comAsaas.length) {
                 return (
-                  <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.05]">
+                  <div className="flex items-start gap-3 p-3 rounded-[14px] bg-white/[0.03] ring-1 ring-white/[0.05]">
                     <p className="text-[12px] text-white/40">Nenhum aluno com cobrança automática Asaas vinculada ainda.</p>
                   </div>
                 );
@@ -811,7 +811,7 @@ export default function FinanceiroPage() {
               return (
                 <div className="space-y-2">
                   {comAsaas.map(a => (
-                    <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] ring-1 ring-white/[0.05]">
+                    <div key={a.id} className="flex items-center justify-between p-3 rounded-[14px] bg-white/[0.03] ring-1 ring-white/[0.05]">
                       <span className="text-[12px] font-semibold text-white/70">{a.nome}</span>
                       {a.proximoRecebimento ? (
                         <span className="text-[11px] text-amber-400">

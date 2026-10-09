@@ -29,8 +29,8 @@ function extrairYoutubeId(url) {
 // ── Agrupamento (Bi-set/Tri-set/Circuito) — mesma lógica do app ────────────
 const METODOS_AGRUPAMENTO = { 'Bi-set': 2, 'Tri-set': 3, 'Circuito': 4 };
 const GRUPO_COR = {
-  'Bi-set':   { cor: '#60a5fa', bg: 'rgba(96,165,250,0.08)', border: 'rgba(96,165,250,0.35)' },
-  'Tri-set':  { cor: '#60a5fa', bg: 'rgba(96,165,250,0.08)', border: 'rgba(96,165,250,0.35)' },
+  'Bi-set':   { cor: '#C6F432', bg: 'rgba(198,244,50,0.08)', border: 'rgba(198,244,50,0.35)' },
+  'Tri-set':  { cor: '#C6F432', bg: 'rgba(198,244,50,0.08)', border: 'rgba(198,244,50,0.35)' },
   'Circuito': { cor: '#34d399', bg: 'rgba(52,211,153,0.08)', border: 'rgba(52,211,153,0.35)' },
 };
 
@@ -87,13 +87,13 @@ function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
         : []);
 
   return (
-    <div className="rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] overflow-hidden">
+    <div className="rounded-[14px] bg-white/[0.03] ring-1 ring-white/[0.06] overflow-hidden">
       {/* Player modal */}
       {showPlayer && videoUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}
           onClick={() => setShowPlayer(false)}>
-          <div className="w-full max-w-2xl rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden" onClick={e => e.stopPropagation()}>
+          <div className="w-full max-w-2xl rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] overflow-hidden" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.06]">
               <p className="text-[13px] font-semibold text-white/80 truncate">{ex.nome}</p>
               <button onClick={() => setShowPlayer(false)} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all">
@@ -129,7 +129,7 @@ function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
         <div className="flex-1 min-w-0">
           <p className="text-[13px] font-semibold text-white/80 truncate">{ex.nome}</p>
           <div className="flex items-center gap-2">
-            {!open && resumirSeries(series) && <p className="text-[10px] text-blue-400/70">{resumirSeries(series)}</p>}
+            {!open && resumirSeries(series) && <p className="text-[10px] text-accent/70">{resumirSeries(series)}</p>}
             {ex.grupo && <p className="text-[10px] text-white/30">{ex.grupo}</p>}
             {metodoInfo && (
               <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
@@ -170,20 +170,20 @@ function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
                   const base = series[0] || { reps: '12', carga: '', pausa: '60s' };
                   onChange(idx, 'series', Array.from({ length: n }, () => ({ ...base })));
                 }}
-                className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] text-center focus:outline-none focus:border-blue-500/50 transition-all" />
+                className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] text-center focus:outline-none focus:border-accent/50 transition-all" />
               <input value={series[0]?.reps || ''} onChange={e => onChange(idx, 'series', series.map(s => ({ ...s, reps: e.target.value })))} placeholder="12"
-                className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all" />
+                className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-accent/50 transition-all" />
               <input value={series[0]?.carga || ''} onChange={e => onChange(idx, 'series', series.map(s => ({ ...s, carga: e.target.value })))} placeholder="—"
-                className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all" />
+                className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-accent/50 transition-all" />
               <input value={series[0]?.pausa || ''} onChange={e => onChange(idx, 'series', series.map(s => ({ ...s, pausa: e.target.value })))} placeholder="60s"
-                className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-all" />
+                className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-accent/50 transition-all" />
             </div>
           </div>
           {/* Método */}
           <div>
             <label className="block text-[9px] font-semibold text-white/25 uppercase tracking-wider mb-1.5">Método</label>
             <select value={ex.metodo || ''} onChange={e => onChange(idx, 'metodo', e.target.value)}
-              className="w-full px-2.5 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/70 text-[12px] focus:outline-none focus:border-blue-500/50 transition-all">
+              className="w-full px-2.5 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/70 text-[12px] focus:outline-none focus:border-accent/50 transition-all">
               <option value="">Padrão</option>
               {Object.keys(METODOS).map(m => <option key={m} value={m}>{m}</option>)}
             </select>
@@ -377,7 +377,7 @@ export default function EditarTreino() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <div className="w-7 h-7 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-7 h-7 border-2 border-accent border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
@@ -385,7 +385,7 @@ export default function EditarTreino() {
     <div className="flex flex-col h-full">
 
       {/* ── Barra superior ───────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center justify-between gap-y-2 px-4 md:px-8 py-3 md:py-4 border-b border-white/[0.05] shrink-0 bg-[#080f1d]">
+      <div className="flex flex-wrap items-center justify-between gap-y-2 px-4 md:px-8 py-3 md:py-4 border-b border-white/[0.05] shrink-0 bg-[#0A0B0D]">
         <div className="flex items-center gap-3">
           <button onClick={() => router.push('/dashboard/treinos/')}
             className="w-7 h-7 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/35 hover:text-white transition-all">
@@ -407,21 +407,21 @@ export default function EditarTreino() {
           {/* Aluno — modelos da biblioteca não têm aluno vinculado */}
           {!form.template && (
             <select value={form.alunoId || ''} onChange={e => setForm(f => ({ ...f, alunoId: e.target.value }))}
-              className="px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/60 text-[12px] focus:outline-none focus:border-blue-500/50 transition-all">
+              className="px-3 py-2 rounded-[14px] bg-white/[0.04] border border-white/[0.07] text-white/60 text-[12px] focus:outline-none focus:border-accent/50 transition-all">
               <option value="">Sem aluno</option>
               {alunos.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
             </select>
           )}
 
           <button onClick={salvar} disabled={saving}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[12px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-blue-900/30">
+            className="flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[12px] font-semibold text-on-accent disabled:opacity-40 transition-all shadow-lg shadow-black/30">
             <Save size={13} /> {saving ? 'Salvando...' : 'Salvar'}
           </button>
         </div>
       </div>
 
       {/* ── Abas (somente mobile) ────────────────────────────────────── */}
-      <div className="md:hidden flex shrink-0 border-b border-white/[0.05] bg-[#080f1d]">
+      <div className="md:hidden flex shrink-0 border-b border-white/[0.05] bg-[#0A0B0D]">
         {[
           { id: 'treino',     label: `Treino${form.exercicios?.length ? ` (${form.exercicios.length})` : ''}` },
           { id: 'biblioteca', label: 'Biblioteca' },
@@ -429,7 +429,7 @@ export default function EditarTreino() {
           <button key={t.id} onClick={() => setMobileTab(t.id)}
             className={`flex-1 py-3 text-[12px] font-semibold transition-all ${
               mobileTab === t.id
-                ? 'text-blue-400 border-b-2 border-blue-500'
+                ? 'text-accent border-b-2 border-accent'
                 : 'text-white/35 border-b-2 border-transparent'
             }`}>
             {t.label}
@@ -443,9 +443,9 @@ export default function EditarTreino() {
         <div className={`${mobileTab === 'treino' ? 'block' : 'hidden'} md:block flex-1 overflow-y-auto p-4 md:p-6`}>
           <div className="max-w-2xl space-y-2.5">
             {/* Periodização — aplica ao adicionar exercícios novos */}
-            <div className="rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] p-3">
+            <div className="rounded-[14px] bg-white/[0.03] ring-1 ring-white/[0.06] p-3">
               <div className="flex items-center gap-1.5 mb-2">
-                <Layers size={12} className="text-blue-400/70" />
+                <Layers size={12} className="text-accent/70" />
                 <p className="text-[10px] font-semibold text-white/35 uppercase tracking-wider">Periodização</p>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -470,7 +470,7 @@ export default function EditarTreino() {
             </div>
 
             {(form.exercicios || []).length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/[0.08] p-14 text-center">
+              <div className="rounded-[22px] border border-dashed border-white/[0.08] p-14 text-center">
                 <Dumbbell size={28} className="text-white/15 mx-auto mb-3" strokeWidth={1.5} />
                 <p className="text-[13px] text-white/25">Selecione exercícios da biblioteca à direita</p>
                 <p className="text-[11px] text-white/15 mt-1">Você pode buscar por nome ou filtrar por grupo muscular</p>
@@ -482,7 +482,7 @@ export default function EditarTreino() {
                     {form.exercicios.length} exercício{form.exercicios.length !== 1 ? 's' : ''}
                   </p>
                   <button onClick={() => { setModoAgrupar(v => !v); setSelecionados([]); }}
-                    className={`flex items-center gap-1 text-[11px] font-semibold transition-colors ${modoAgrupar ? 'text-blue-400' : 'text-white/30 hover:text-white/60'}`}>
+                    className={`flex items-center gap-1 text-[11px] font-semibold transition-colors ${modoAgrupar ? 'text-accent' : 'text-white/30 hover:text-white/60'}`}>
                     <Layers size={12} /> {modoAgrupar ? 'Cancelar' : 'Agrupar (bi/tri-set)'}
                   </button>
                 </div>
@@ -492,7 +492,7 @@ export default function EditarTreino() {
                     <span className="text-[10px] text-white/30">{selecionados.length} selecionado{selecionados.length !== 1 ? 's' : ''} — escolha consecutivos:</span>
                     {Object.entries(METODOS_AGRUPAMENTO).map(([nome, qtd]) => (
                       <button key={nome} disabled={selecionados.length !== qtd} onClick={() => agruparSelecionados(nome)}
-                        className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-blue-500/12 text-blue-400 hover:bg-blue-500/20 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
+                        className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-accent/12 text-accent hover:bg-accent/20 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
                         {nome} ({qtd})
                       </button>
                     ))}
@@ -513,9 +513,9 @@ export default function EditarTreino() {
                         {modoAgrupar && (
                           <button onClick={() => toggleSelecionado(idx)}
                             className={`mt-3.5 w-5 h-5 rounded-md border shrink-0 flex items-center justify-center transition-all ${
-                              selecionados.includes(idx) ? 'bg-blue-600 border-blue-500' : 'border-white/20 hover:border-white/40'
+                              selecionados.includes(idx) ? 'bg-accent border-accent' : 'border-white/20 hover:border-white/40'
                             }`}>
-                            {selecionados.includes(idx) && <Check size={12} className="text-white" />}
+                            {selecionados.includes(idx) && <Check size={12} className="text-on-accent" />}
                           </button>
                         )}
                         <div className="flex-1 min-w-0">
@@ -527,7 +527,7 @@ export default function EditarTreino() {
                   }
                   const gc = GRUPO_COR[item.metodo] || GRUPO_COR['Bi-set'];
                   return (
-                    <div key={item.grupoId} className="rounded-xl p-2 space-y-2" style={{ background: gc.bg, border: `1px solid ${gc.border}` }}>
+                    <div key={item.grupoId} className="rounded-[14px] p-2 space-y-2" style={{ background: gc.bg, border: `1px solid ${gc.border}` }}>
                       <div className="flex items-center justify-between px-2">
                         <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: gc.cor }}>
                           {item.metodo} · {item.indices.length} exercícios sem descanso entre eles
@@ -558,30 +558,30 @@ export default function EditarTreino() {
         </div>
 
         {/* ── Sidebar: biblioteca ───────────────────────────────────── */}
-        <div className={`${mobileTab === 'biblioteca' ? 'flex' : 'hidden'} md:flex w-full md:w-[280px] shrink-0 border-l-0 md:border-l border-white/[0.05] flex-col bg-[#0a1628]`}>
+        <div className={`${mobileTab === 'biblioteca' ? 'flex' : 'hidden'} md:flex w-full md:w-[280px] shrink-0 border-l-0 md:border-l border-white/[0.05] flex-col bg-[#0A0B0D]`}>
 
           {/* Busca e filtro */}
           <div className="p-3 border-b border-white/[0.05] shrink-0 space-y-2">
             <div className="flex items-center justify-between mb-1">
               <p className="text-[10px] font-semibold text-white/35 uppercase tracking-wider">Biblioteca</p>
               <button onClick={() => setShowNovoEx(v => !v)}
-                className="flex items-center gap-1 text-[10px] text-blue-400/70 hover:text-blue-400 transition-colors">
+                className="flex items-center gap-1 text-[10px] text-accent/70 hover:text-accent transition-colors">
                 <Plus size={11} /> Novo
               </button>
             </div>
 
             {showNovoEx && (
-              <div className="rounded-xl bg-white/[0.04] p-2.5 space-y-2 border border-white/[0.06]">
+              <div className="rounded-[14px] bg-white/[0.04] p-2.5 space-y-2 border border-white/[0.06]">
                 <input value={novoExNome} onChange={e => setNovoExNome(e.target.value)}
                   placeholder="Nome do exercício..."
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.07] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-blue-500/50" />
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.07] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-accent/50" />
                 <select value={novoExGrupo} onChange={e => setNovoExGrupo(e.target.value)}
                   className="w-full px-2.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.07] text-white/60 text-[12px] focus:outline-none">
                   <option value="">Grupo muscular</option>
                   {GRUPOS_NOMES.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <button onClick={criarExercicio} disabled={criandoEx || !novoExNome.trim()}
-                  className="w-full py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-[11px] font-semibold text-white disabled:opacity-40 transition-all">
+                  className="w-full py-1.5 rounded-lg bg-accent hover:bg-accent-hover text-[11px] font-semibold text-on-accent disabled:opacity-40 transition-all">
                   {criandoEx ? 'Criando...' : 'Criar exercício'}
                 </button>
               </div>
@@ -591,7 +591,7 @@ export default function EditarTreino() {
               <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/25" />
               <input value={buscaEx} onChange={e => setBuscaEx(e.target.value)}
                 placeholder="Buscar exercício..."
-                className="w-full pl-7 pr-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.07] text-white placeholder-white/20 text-[12px] focus:outline-none focus:border-blue-500/50 transition-all" />
+                className="w-full pl-7 pr-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.07] text-white placeholder-white/20 text-[12px] focus:outline-none focus:border-accent/50 transition-all" />
             </div>
             <select value={grupoFiltro} onChange={e => setGrupo(e.target.value)}
               className="w-full px-2.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.07] text-white/50 text-[12px] focus:outline-none transition-all">
@@ -616,7 +616,7 @@ export default function EditarTreino() {
               return (
                 <div key={bloco.grupo}>
                   {!buscaEx && (
-                    <p className="px-3 pt-3 pb-1 text-[9px] font-bold text-white/25 uppercase tracking-widest sticky top-0 bg-[#0a1628]">
+                    <p className="px-3 pt-3 pb-1 text-[9px] font-bold text-white/25 uppercase tracking-widest sticky top-0 bg-[#0A0B0D]">
                       {bloco.grupo}
                     </p>
                   )}
@@ -636,7 +636,7 @@ export default function EditarTreino() {
                             )}
                           </div>
                           {!jaAdicionado && (
-                            <Plus size={12} className="text-white/20 group-hover:text-blue-400 transition-colors shrink-0" />
+                            <Plus size={12} className="text-white/20 group-hover:text-accent transition-colors shrink-0" />
                           )}
                         </div>
                       </button>

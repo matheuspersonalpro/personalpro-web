@@ -22,7 +22,7 @@ function PlayerModal({ video, onFechar }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onFechar(); }}>
-      <div className="w-full max-w-2xl rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
+      <div className="w-full max-w-2xl rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] overflow-hidden">
         <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.06]">
           <p className="text-[14px] font-semibold text-white truncate">{video.nome}</p>
           <button onClick={onFechar} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white transition-all">
@@ -90,7 +90,7 @@ function ModalVideo({ item, onFechar, onSalvo }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}>
-      <div className="w-full max-w-lg rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.08] overflow-hidden">
+      <div className="w-full max-w-lg rounded-[22px] bg-[#141619] ring-1 ring-white/[0.08] overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
           <h2 className="text-[15px] font-bold text-white">
             {item ? 'Editar vídeo' : 'Adicionar vídeo'}
@@ -113,10 +113,10 @@ function ModalVideo({ item, onFechar, onSalvo }) {
               onFocus={() => setShowSug(true)}
               onBlur={() => setTimeout(() => setShowSug(false), 150)}
               placeholder="Ex: Supino Reto com Barra"
-              className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all"
+              className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all"
             />
             {showSug && sugestoes.length > 0 && (
-              <div className="absolute left-0 right-0 top-full mt-1 z-10 rounded-xl bg-white/[0.04] ring-1 ring-white/[0.08] overflow-hidden shadow-2xl">
+              <div className="absolute left-0 right-0 top-full mt-1 z-10 rounded-[14px] bg-white/[0.04] ring-1 ring-white/[0.08] overflow-hidden shadow-2xl">
                 {sugestoes.map(s => (
                   <button key={s.nome}
                     onMouseDown={() => { setNome(s.nome); setSugestoes([]); setShowSug(false); }}
@@ -138,13 +138,13 @@ function ModalVideo({ item, onFechar, onSalvo }) {
               value={url}
               onChange={e => setUrl(e.target.value)}
               placeholder="https://youtube.com/watch?v=..."
-              className="w-full px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-blue-500/60 transition-all"
+              className="w-full px-3 py-2.5 rounded-[14px] bg-white/[0.05] border border-white/[0.08] text-white text-[13px] focus:outline-none focus:border-accent/60 transition-all"
             />
           </div>
 
           {/* Preview YouTube */}
           {thumb && (
-            <div className="rounded-xl overflow-hidden ring-1 ring-white/[0.08]">
+            <div className="rounded-[14px] overflow-hidden ring-1 ring-white/[0.08]">
               <img src={thumb} alt="Thumbnail" className="w-full object-cover" style={{ maxHeight: 180 }} />
               <div className="px-3 py-2 bg-white/[0.03] flex items-center gap-2">
                 <Video size={12} className="text-white/30" />
@@ -156,11 +156,11 @@ function ModalVideo({ item, onFechar, onSalvo }) {
 
         <div className="px-6 py-4 border-t border-white/[0.06] flex justify-end gap-2">
           <button onClick={onFechar}
-            className="px-4 py-2 rounded-xl border border-white/[0.08] text-[13px] text-white/50 hover:text-white hover:border-white/15 transition-all">
+            className="px-4 py-2 rounded-[14px] border border-white/[0.08] text-[13px] text-white/50 hover:text-white hover:border-white/15 transition-all">
             Cancelar
           </button>
           <button onClick={salvar} disabled={salvando}
-            className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white disabled:opacity-40 transition-all shadow-lg shadow-blue-900/30">
+            className="px-5 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent disabled:opacity-40 transition-all shadow-lg shadow-black/30">
             {salvando ? 'Salvando...' : 'Salvar'}
           </button>
         </div>
@@ -222,11 +222,11 @@ export default function ExerciciosPage() {
 
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Vídeos de Exercícios</h1>
+          <h1 className="text-2xl font-semibold text-white tracking-tight font-display">Vídeos de Exercícios</h1>
           <p className="text-[13px] text-white/35 mt-1">Gerencie os vídeos vinculados a cada exercício</p>
         </div>
         <button onClick={() => setModal('novo')}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
+          className="flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent transition-all shadow-lg shadow-black/30">
           <Plus size={14} /> Adicionar vídeo
         </button>
       </div>
@@ -238,16 +238,16 @@ export default function ExerciciosPage() {
           value={busca}
           onChange={e => setBusca(e.target.value)}
           placeholder="Buscar exercício..."
-          className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#0d1b2e] ring-1 ring-white/[0.06] text-white text-[13px] placeholder-white/25 focus:outline-none focus:ring-blue-500/40 transition-all"
+          className="w-full pl-9 pr-4 py-2.5 rounded-[14px] bg-[#141619] ring-1 ring-white/[0.06] text-white text-[13px] placeholder-white/25 focus:outline-none focus:ring-accent/40 transition-all"
         />
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <div className="w-7 h-7 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-7 h-7 border-2 border-accent border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtrados.length === 0 ? (
-        <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] p-14 text-center">
+        <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-14 text-center">
           <Video size={28} className="text-white/15 mx-auto mb-3" strokeWidth={1.5} />
           <p className="text-[13px] text-white/30">
             {busca ? 'Nenhum vídeo encontrado para esta busca.' : 'Nenhum vídeo cadastrado ainda.'}
@@ -259,7 +259,7 @@ export default function ExerciciosPage() {
           )}
         </div>
       ) : (
-        <div className="rounded-2xl bg-[#0d1b2e] ring-1 ring-white/[0.06] overflow-hidden">
+        <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
           {filtrados.map((v, i) => {
             const ytId = extrairYoutubeId(v.videoUrl || '');
             const thumb = v.thumbnailUrl || (ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : null);
@@ -288,7 +288,7 @@ export default function ExerciciosPage() {
                   <div className="flex items-center gap-2">
                     <p className="text-[13px] font-semibold text-white/80 truncate">{v.nome}</p>
                     {v.global && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400 ring-1 ring-blue-500/20 shrink-0">
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-accent/15 text-accent ring-1 ring-accent/20 shrink-0">
                         GLOBAL
                       </span>
                     )}

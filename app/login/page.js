@@ -82,14 +82,12 @@ export default function LoginPage() {
 
       {/* ── Painel esquerdo ─────────────────────────────────────────────── */}
       <div className="hidden lg:flex flex-col w-[460px] shrink-0 relative overflow-hidden"
-        style={{ background: 'linear-gradient(150deg, #0b1a35 0%, #0d1f42 55%, #091628 100%)' }}>
+        style={{ background: '#0A0B0D', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
 
         {/* Decoração de fundo */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-32 -left-32 w-[420px] h-[420px] rounded-full"
-            style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.10) 0%, transparent 70%)' }} />
-          <div className="absolute -bottom-40 -right-20 w-96 h-96 rounded-full"
-            style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)' }} />
+            style={{ background: 'radial-gradient(circle, rgba(198,244,50,0.10) 0%, transparent 70%)' }} />
           <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.04 }} xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern id="dots" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
@@ -110,10 +108,10 @@ export default function LoginPage() {
           {/* Headline + Features + Footer — bloco base */}
           <div>
             <div className="mb-10">
-              <p className="text-[11px] font-semibold text-blue-400/70 uppercase tracking-widest mb-4">
+              <p className="text-[11px] font-semibold text-accent/70 uppercase tracking-widest mb-4">
                 Plataforma web para personal trainers
               </p>
-              <h2 className="text-[32px] font-bold text-white leading-tight tracking-tight mb-5">
+              <h2 className="text-[32px] font-semibold text-white leading-tight tracking-tight mb-5 font-display">
                 Gerencie seu negócio<br />com clareza.
               </h2>
               <p className="text-[14px] text-white/45 leading-relaxed max-w-xs">
@@ -125,8 +123,8 @@ export default function LoginPage() {
               {FEATURES.map(({ label, desc }) => (
                 <div key={label} className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
-                    style={{ background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.25)' }}>
-                    <ChevronRight size={10} className="text-blue-400" />
+                    style={{ background: 'rgba(198,244,50,0.12)', border: '1px solid rgba(198,244,50,0.25)' }}>
+                    <ChevronRight size={10} className="text-accent" />
                   </div>
                   <div>
                     <p className="text-[13px] font-semibold text-white/80 leading-none mb-1">{label}</p>
@@ -148,13 +146,13 @@ export default function LoginPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
           style={{ background: 'rgba(0,0,0,0.7)' }}
           onClick={() => setModalReset(false)}>
-          <div className="w-full max-w-sm rounded-2xl p-6"
-            style={{ background: '#0d1b2a', border: '1px solid rgba(255,255,255,0.08)' }}
+          <div className="w-full max-w-sm rounded-[22px] p-6"
+            style={{ background: '#141619', border: '1px solid rgba(255,255,255,0.08)' }}
             onClick={e => e.stopPropagation()}>
 
             {!resetSucesso ? (
               <>
-                <h2 className="text-[18px] font-bold text-white mb-1">Redefinir senha</h2>
+                <h2 className="text-[18px] font-semibold text-white mb-1 font-display">Redefinir senha</h2>
                 <p className="text-[12px] text-white/40 mb-5">
                   Informe seu e-mail e enviaremos um link para redefinir sua senha.
                 </p>
@@ -168,14 +166,14 @@ export default function LoginPage() {
                       required
                       autoFocus
                       placeholder="seu@email.com"
-                      className="w-full pl-9 pr-4 py-3 rounded-xl text-[13px] text-white placeholder-white/20 focus:outline-none transition-all"
+                      className="w-full pl-9 pr-4 py-3 rounded-[14px] text-[13px] text-white placeholder-white/20 focus:outline-none transition-all"
                       style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-                      onFocus={e => e.target.style.borderColor = 'rgba(59,130,246,0.5)'}
+                      onFocus={e => e.target.style.borderColor = 'rgba(198,244,50,0.5)'}
                       onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
                     />
                   </div>
                   {resetErro && (
-                    <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl"
+                    <div className="flex items-start gap-2 px-3 py-2.5 rounded-[14px]"
                       style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
                       <AlertCircle size={13} className="text-red-400 shrink-0 mt-0.5" />
                       <p className="text-[12px] text-red-300">{resetErro}</p>
@@ -183,16 +181,16 @@ export default function LoginPage() {
                   )}
                   <div className="flex gap-3 pt-1">
                     <button type="button" onClick={() => setModalReset(false)}
-                      className="flex-1 py-2.5 rounded-xl text-[13px] text-white/50 hover:text-white/80 transition-colors"
+                      className="flex-1 py-2.5 rounded-[14px] text-[13px] text-white/50 hover:text-white/80 transition-colors"
                       style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                       Cancelar
                     </button>
                     <button type="submit" disabled={resetLoading}
-                      className="flex-1 py-2.5 rounded-xl text-[13px] font-semibold text-white disabled:opacity-40 transition-all"
-                      style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }}>
+                      className="flex-1 py-2.5 rounded-[14px] text-[13px] font-semibold text-on-accent disabled:opacity-40 transition-all"
+                      style={{ background: '#C6F432' }}>
                       {resetLoading ? (
                         <span className="flex items-center justify-center gap-2">
-                          <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <span className="w-3.5 h-3.5 border-2 border-black/20 border-t-on-accent rounded-full animate-spin" />
                           Enviando...
                         </span>
                       ) : 'Enviar link'}
@@ -202,14 +200,14 @@ export default function LoginPage() {
               </>
             ) : (
               <div className="text-center py-2">
-                <CheckCircle size={36} className="text-green-400 mx-auto mb-3" />
+                <CheckCircle size={36} className="text-accent mx-auto mb-3" />
                 <h2 className="text-[16px] font-bold text-white mb-2">E-mail enviado!</h2>
                 <p className="text-[12px] text-white/40 mb-5">
                   Verifique sua caixa de entrada (e spam) para o link de redefinição.
                 </p>
                 <button onClick={() => setModalReset(false)}
-                  className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white"
-                  style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }}>
+                  className="w-full py-2.5 rounded-[14px] text-[13px] font-semibold text-on-accent"
+                  style={{ background: '#C6F432' }}>
                   Fechar
                 </button>
               </div>
@@ -220,12 +218,12 @@ export default function LoginPage() {
 
       {/* ── Painel direito — formulário ──────────────────────────────────── */}
       <div className="flex-1 flex items-center justify-center px-6 relative"
-        style={{ background: '#080f1d' }}>
+        style={{ background: '#0A0B0D' }}>
 
         {/* Fundo sutil */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.03]"
-            style={{ background: 'radial-gradient(circle, #3b82f6 0%, transparent 70%)' }} />
+            style={{ background: 'radial-gradient(circle, #C6F432 0%, transparent 70%)' }} />
         </div>
 
         <div className="relative w-full max-w-[380px]">
@@ -236,7 +234,7 @@ export default function LoginPage() {
 
           {/* Cabeçalho do form */}
           <div className="mb-8">
-            <h1 className="text-[26px] font-bold text-white tracking-tight mb-2">Entrar na plataforma</h1>
+            <h1 className="text-[26px] font-semibold text-white tracking-tight mb-2 font-display">Entrar na plataforma</h1>
             <p className="text-[13px] text-white/35">Acesso restrito a personal trainers cadastrados.</p>
           </div>
 
@@ -255,12 +253,12 @@ export default function LoginPage() {
                   required
                   autoComplete="email"
                   placeholder="seu@email.com"
-                  className="w-full pl-9 pr-4 py-3 rounded-xl text-[13px] text-white placeholder-white/20 focus:outline-none transition-all"
+                  className="w-full pl-9 pr-4 py-3 rounded-[14px] text-[13px] text-white placeholder-white/20 focus:outline-none transition-all"
                   style={{
                     background: 'rgba(255,255,255,0.04)',
                     border: '1px solid rgba(255,255,255,0.08)',
                   }}
-                  onFocus={e => { e.target.style.borderColor = 'rgba(59,130,246,0.5)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }}
+                  onFocus={e => { e.target.style.borderColor = 'rgba(198,244,50,0.5)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }}
                   onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.background = 'rgba(255,255,255,0.04)'; }}
                 />
               </div>
@@ -279,12 +277,12 @@ export default function LoginPage() {
                   required
                   autoComplete="current-password"
                   placeholder="••••••••"
-                  className="w-full pl-9 pr-10 py-3 rounded-xl text-[13px] text-white placeholder-white/20 focus:outline-none transition-all"
+                  className="w-full pl-9 pr-10 py-3 rounded-[14px] text-[13px] text-white placeholder-white/20 focus:outline-none transition-all"
                   style={{
                     background: 'rgba(255,255,255,0.04)',
                     border: '1px solid rgba(255,255,255,0.08)',
                   }}
-                  onFocus={e => { e.target.style.borderColor = 'rgba(59,130,246,0.5)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }}
+                  onFocus={e => { e.target.style.borderColor = 'rgba(198,244,50,0.5)'; e.target.style.background = 'rgba(255,255,255,0.06)'; }}
                   onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.background = 'rgba(255,255,255,0.04)'; }}
                 />
                 <button
@@ -302,14 +300,14 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={abrirModalReset}
-                className="text-[12px] text-blue-400/70 hover:text-blue-400 transition-colors"
+                className="text-[12px] text-accent/70 hover:text-accent transition-colors"
               >
                 Esqueci minha senha
               </button>
             </div>
 
             {erro && (
-              <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl"
+              <div className="flex items-start gap-2.5 px-4 py-3 rounded-[14px]"
                 style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
                 <AlertCircle size={14} className="text-red-400 shrink-0 mt-0.5" />
                 <p className="text-[12px] text-red-300 leading-relaxed">{erro}</p>
@@ -319,15 +317,14 @@ export default function LoginPage() {
 <button
               type="submit"
               disabled={loading || loadingGoogle}
-              className="w-full py-3 rounded-xl font-semibold text-[14px] text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all mt-1"
+              className="w-full py-3 rounded-[14px] font-semibold text-[14px] text-on-accent disabled:opacity-40 disabled:cursor-not-allowed transition-all mt-1"
               style={{
-                background: loading ? '#2563eb' : 'linear-gradient(135deg, #3b82f6, #2563eb)',
-                boxShadow: '0 4px 24px rgba(37,99,235,0.25)',
+                background: loading ? '#D6FA5E' : '#C6F432',
               }}
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span className="w-4 h-4 border-2 border-black/20 border-t-on-accent rounded-full animate-spin" />
                   Entrando...
                 </span>
               ) : 'Entrar'}
@@ -346,11 +343,11 @@ export default function LoginPage() {
             type="button"
             onClick={handleGoogle}
             disabled={loading || loadingGoogle}
-            className="w-full flex items-center justify-center gap-3 py-3 rounded-xl text-[13px] font-medium text-white/80 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            className="w-full flex items-center justify-center gap-3 py-3 rounded-[14px] text-[13px] font-medium text-white/80 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all"
             style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)' }}
           >
             {loadingGoogle ? (
-              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span className="w-4 h-4 border-2 border-black/20 border-t-on-accent rounded-full animate-spin" />
             ) : (
               <svg width="16" height="16" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

@@ -48,16 +48,16 @@ function GatePaywall({ alunosCount, avaliacao }) {
     : `Sua assinatura expirou. Renove para continuar acessando todas as funcionalidades.`;
 
   return (
-    <div className="flex-1 flex items-center justify-center bg-[#080f1d] relative">
-      <div className="absolute inset-0 bg-[#080f1d]/80 backdrop-blur-sm" />
+    <div className="flex-1 flex items-center justify-center bg-[#0A0B0D] relative">
+      <div className="absolute inset-0 bg-[#0A0B0D]/80 backdrop-blur-sm" />
       <div className="relative z-10 text-center max-w-sm px-6">
-        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mx-auto mb-5 ring-1 ring-amber-500/20">
+        <div className="w-16 h-16 rounded-[22px] bg-amber-500/10 flex items-center justify-center mx-auto mb-5 ring-1 ring-amber-500/20">
           <Lock size={28} className="text-amber-400" strokeWidth={1.5} />
         </div>
-        <h2 className="text-[18px] font-bold text-white mb-2">Assinatura necessária</h2>
+        <h2 className="text-[18px] font-semibold text-white mb-2 font-display">Assinatura necessária</h2>
         <p className="text-[13px] text-white/45 leading-relaxed mb-6">{msg}</p>
         <Link href="/dashboard/assinatura"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-[13px] font-semibold text-white transition-all shadow-lg shadow-blue-900/30">
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-semibold text-on-accent transition-all shadow-lg shadow-black/30">
           <CreditCard size={14} />
           Ver planos e assinar
         </Link>
@@ -91,8 +91,8 @@ export default function DashboardLayout({ children }) {
 
   if (!personal) {
     return (
-      <div className="flex h-full items-center justify-center bg-[#080f1d]">
-        <div className="w-7 h-7 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      <div className="flex h-full items-center justify-center bg-bg">
+        <div className="w-7 h-7 border-2 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -115,7 +115,7 @@ export default function DashboardLayout({ children }) {
   const segs = pathname.split('/').filter(Boolean);
 
   return (
-    <div className="flex h-full bg-[#080f1d]">
+    <div className="flex h-full bg-bg">
 
       {sidebarAberta && (
         <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
@@ -124,7 +124,7 @@ export default function DashboardLayout({ children }) {
 
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-[260px] flex flex-col transition-transform duration-300 ease-in-out md:relative md:z-auto md:w-[220px] md:shrink-0 md:translate-x-0 ${sidebarAberta ? 'translate-x-0' : '-translate-x-full'}`}
-        style={{ background: 'rgba(8,14,30,0.98)', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+        style={{ background: '#0A0B0D', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
 
         <div className="flex items-center justify-between px-4 h-14 shrink-0"
           style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
@@ -145,11 +145,11 @@ export default function DashboardLayout({ children }) {
             const bloqueada = gateAtivo && !ROTAS_LIVRES.some(r => href.startsWith(r)) && href !== '/dashboard';
             return (
               <Link key={href} href={href}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 mb-0.5 relative"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-[14px] text-[13px] font-medium transition-all duration-150 mb-0.5 relative"
                 style={active ? {
-                  background: 'rgba(59,130,246,0.12)',
-                  color: '#60a5fa',
-                  boxShadow: 'inset 2px 0 0 #3b82f6',
+                  background: 'rgba(198,244,50,0.12)',
+                  color: '#C6F432',
+                  boxShadow: 'inset 2px 0 0 #C6F432',
                 } : {
                   color: bloqueada ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.4)',
                 }}
@@ -167,16 +167,15 @@ export default function DashboardLayout({ children }) {
         <div className="p-2.5 shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
           {gateAtivo && (
             <Link href="/dashboard/assinatura"
-              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 ring-1 ring-amber-500/20 mb-2 hover:bg-amber-500/15 transition-all">
+              className="flex items-center gap-2 px-3 py-2 rounded-[14px] bg-amber-500/10 ring-1 ring-amber-500/20 mb-2 hover:bg-amber-500/15 transition-all">
               <AlertTriangle size={12} className="text-amber-400 shrink-0" />
               <p className="text-[10px] text-amber-300/80 leading-tight">Assinatura necessária</p>
             </Link>
           )}
 
-          <div className="flex items-center gap-2.5 px-3 py-3 rounded-xl mb-1"
+          <div className="flex items-center gap-2.5 px-3 py-3 rounded-[14px] mb-1"
             style={{ background: 'rgba(255,255,255,0.03)' }}>
-            <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-[11px] font-bold text-white"
-              style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)', boxShadow: '0 2px 8px rgba(99,102,241,0.3)' }}>
+            <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-[11px] font-display font-semibold text-ink bg-surface-2">
               {initials}
             </div>
             <div className="min-w-0">
@@ -195,7 +194,7 @@ export default function DashboardLayout({ children }) {
 
           <button
             onClick={() => logout().then(() => router.replace('/login'))}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] transition-all"
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[14px] text-[12px] transition-all"
             style={{ color: 'rgba(255,255,255,0.35)' }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = ''; e.currentTarget.style.color = 'rgba(255,255,255,0.35)'; }}
@@ -211,7 +210,7 @@ export default function DashboardLayout({ children }) {
         <header className="h-14 shrink-0 flex items-center justify-between px-4 md:px-8"
           style={{
             borderBottom: '1px solid rgba(255,255,255,0.05)',
-            background: 'rgba(8,14,30,0.6)',
+            background: 'rgba(10,11,13,0.7)',
             backdropFilter: 'blur(12px)',
           }}>
           <div className="flex items-center gap-3 min-w-0">
