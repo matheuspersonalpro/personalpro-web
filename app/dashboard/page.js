@@ -1,12 +1,20 @@
 ﻿'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { buscarAlunos, buscarPagamentos, buscarSessoes, buscarConfigApp, salvarConfigApp, buscarFeriasPendentes, atualizarStatusFerias, aprovarFeriasEEstenderPlano } from '@/lib/firestore';
+import { buscarAlunos, buscarPagamentos, buscarSessoes, buscarConfigApp, salvarConfigApp, buscarFeriasPorStatus, atualizarStatusFerias, aprovarFeriasEEstenderPlano } from '@/lib/firestore';
 import { usePersonal } from '@/lib/AuthContext';
 import { Users, TrendingUp, AlertTriangle, Clock, ArrowUpRight, CheckCircle2, CalendarDays, Cake, MessageCircle, Megaphone, X, Percent, ChevronDown, Umbrella } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import { useConfirm } from '@/components/Confirm';
-import { valorNum, valorMensalAsaas } from '@/lib/financeiro';
+import { valorNum, valorMensalAsaas, resumoFinanceiro } from '@/lib/financeiro';
+import { calcStatus } from '@/lib/statusAluno';
+import { alunosDeFeriasNoDia } from '@/lib/presencaAgenda';
+
+const DIAS_ABREV = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+function minutosDoHorario(h) {
+  const m = /^(\d{1,2})\s*[:hH]\s*(\d{2})?/.exec(String(h || '').trim());
+  return m ? Number(m[1]) * 60 + Number(m[2] || 0) : null;
+}
 
 function KpiCard({ icon: Icon, label, value, sub, accent, href }) {
   const theme = {
@@ -65,6 +73,7 @@ export default function DashboardPage() {
   const [sessoes,    setSessoes]    = useState([]);
   const [config,     setConfig]     = useState({});
   const [ferias,     setFerias]     = useState([]);
+  const [feriasAprovadas, setFeriasAprovadas] = useState([]);
   const [loading,    setLoading]    = useState(true);
   const [aprovandoId, setAprovandoId] = useState(null);
 
@@ -86,12 +95,12 @@ export default function DashboardPage() {
     setReajusteDone(done);
     if (new Date().getMonth() === 11 && !done) setShowReajuste(true);
 
-    Promise.allSettled([buscarAlunos(), buscarPagamentos(), buscarSessoes(), buscarConfigApp(), buscarFeriasPendentes()])
+    Promise.allSettled([buscarAlunos(), buscarPagamentos(), buscarSessoes(), buscarConfigApp(), buscarFeriasPorStatus()])
       .then(([ra, rp, rs, rc, rf]) => {
         if (ra.status === 'fulfilled') setAlunos(ra.value);
         if (rp.status === 'fulfilled') setPagamentos(rp.value);
         if (rs.status === 'fulfilled') setSessoes(rs.value);
-        if (rf.status === 'fulfilled') setFerias(rf.value);
+        if (rf.status === 'fulfilled') { setFerias(rf.value.pendentes); setFeriasAprovadas(rf.value.aprovadas); }
         if (rc.status === 'fulfilled') {
           const cfg = rc.value || {};
           setConfig(cfg);
@@ -106,16 +115,14 @@ export default function DashboardPage() {
   const mesAtual = hoje.getMonth();       // 0-11
   const anoAtual = hoje.getFullYear();
 
-  const ativos        = alunos.filter(a => a.status !== 'inativo');
-  const inadimplentes = alunos.filter(a => {
-    if (!a.vencimento) return false;
-    const [d,m,y] = a.vencimento.split('/');
-    return new Date(+y, m-1, +d) < hoje;
-  });
+  const ativos        = alunos.filter(a => a.ativo !== false);
+  // Mesma regra do status "Atrasado" do app (lib/statusAluno): aluno com cobrança
+  // automática só é atrasado se o Asaas marcou vencido; inativo nunca entra.
+  const inadimplentes = ativos.filter(a => calcStatus(a) === 'pendente');
   // Aluno com cobrança automática (Asaas) renova sozinho — mostrar ele aqui
   // é alarme falso (achado pelo dono: Paulo aparecia em "vencendo" mesmo já
   // ativo/recorrente, sem precisar de nenhuma ação manual do personal).
-  const vencendo = alunos.filter(a => {
+  const vencendo = ativos.filter(a => {
     if (!a.vencimento || a.cobrancaAutomatica) return false;
     const [d,m,y] = a.vencimento.split('/');
     const diff = (new Date(+y, m-1, +d) - hoje) / 86400000;
@@ -132,7 +139,7 @@ export default function DashboardPage() {
     const [d,m,y] = a.vencimento.split('/');
     return new Date(+y, m-1, +d).getTime();
   };
-  const previaAlunos = [...alunos].sort((a, b) => {
+  const previaAlunos = [...ativos].sort((a, b) => {
     const va = msVenc(a), vb = msVenc(b);
     if (va !== vb) return va - vb;
     return (a.nome || '').localeCompare(b.nome || '', 'pt-BR');
@@ -140,16 +147,27 @@ export default function DashboardPage() {
   // Pagamentos são salvos como DD/MM/YYYY (mesmo formato lido no Financeiro) —
   // filtra por mês+ano parseando a data BR, não por prefixo YYYY-MM (que nunca
   // casava, deixando a receita do mês sempre zerada no painel).
-  const receitaMes = pagamentos
-    .filter(p => {
-      const [, mo, a] = (p.data || '').split('/').map(Number);
-      return mo === mesAtual + 1 && a === anoAtual;
-    })
-    .reduce((s,p) => s + Number(p.valor||0), 0);
+  // "Recebido" = dinheiro que JÁ caiu na conta no mês; é o mesmo número do Financeiro
+  // e do Início do app (antes aqui somava por data de registro e divergia dos dois).
+  const receitaMes = resumoFinanceiro(pagamentos, hoje).recebido;
 
-  const hojeISO = hoje.toISOString().split('T')[0];
-  const sessoesHoje = sessoes.filter(s => s.data === hojeISO)
-    .sort((a,b) => (a.horario||'').localeCompare(b.horario||''));
+  // hoje.toISOString() é UTC: depois das 21h no Brasil já vira o dia seguinte.
+  const hojeISO = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}-${String(hoje.getDate()).padStart(2,'0')}`;
+  const diaSemanaHoje = DIAS_ABREV[hoje.getDay()];
+  const deFeriasHoje = alunosDeFeriasNoDia(feriasAprovadas, hoje);
+  // Aulas fixas (dias da semana do aluno) + sessões avulsas/reposições do dia, como a
+  // Agenda e o Início do app. Férias aprovadas tiram o aluno do dia.
+  const fixasHoje = ativos
+    .filter(a => a.tipoServico !== 'online' && Array.isArray(a.dias) && a.dias.includes(diaSemanaHoje) && !deFeriasHoje.has(a.id))
+    .map(a => ({
+      id: `fixa_${a.id}`, alunoId: a.id, status: null,
+      horario: (Array.isArray(a.agendaSemanal) ? a.agendaSemanal.find(e => e.dia === diaSemanaHoje)?.horario : null) || a.horario || '',
+    }));
+  const avulsasHoje = sessoes.filter(s => s.data === hojeISO && !deFeriasHoje.has(s.alunoId));
+  const sessoesHoje = [...fixasHoje, ...avulsasHoje]
+    .sort((a, b) => (minutosDoHorario(a.horario) ?? 24 * 60) - (minutosDoHorario(b.horario) ?? 24 * 60));
+  const agoraMin = new Date().getHours() * 60 + new Date().getMinutes();
+  const proximaId = sessoesHoje.find(s => { const m = minutosDoHorario(s.horario); return m !== null && m >= agoraMin; })?.id;
   const alunosMap = Object.fromEntries(alunos.map(a => [a.id, a]));
 
   // Aniversariantes próximos 7 dias (usa dataNascimento ou nascimento)
@@ -317,7 +335,7 @@ export default function DashboardPage() {
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[18px] text-white/40 font-semibold font-display">%</span>
             </div>
             <button onClick={aplicarReajuste} disabled={aplicandoR || !pctReajuste} className="w-full py-3 rounded-[14px] bg-accent hover:bg-accent-hover text-[13px] font-bold text-on-accent disabled:opacity-40 transition-all mb-2">
-              {aplicandoR ? 'Aplicando...' : `Aplicar a ${alunos.filter(a => a.status !== 'inativo' && a.valor).length} alunos`}
+              {aplicandoR ? 'Aplicando...' : `Aplicar a ${ativos.filter(a => valorNum(a.valor) > 0).length} alunos`}
             </button>
             <button onClick={() => { const ano = new Date().getFullYear(); localStorage.setItem(`reajuste_aviso_${ano}`,'1'); setShowReajuste(false); setReajusteDone(true); }}
               className="w-full py-2 text-[11px] text-white/30 hover:text-white/60 transition-all">Já fiz o reajuste, não mostrar mais</button>
@@ -370,7 +388,7 @@ export default function DashboardPage() {
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
         <KpiCard icon={Users}         label="Alunos ativos"    value={ativos.length}       accent="blue"  href="/dashboard/alunos" />
-        <KpiCard icon={TrendingUp}    label="Receita do mês"
+        <KpiCard icon={TrendingUp}    label="Recebido no mês"
           value={`R$ ${receitaMes.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} accent="green" href="/dashboard/financeiro" />
         <KpiCard icon={Clock}         label="Vencem em 7 dias" value={vencendo.length}
           sub={vencendo.map(a => a.nome?.split(' ')[0]).join(', ') || undefined} accent="amber" href="/dashboard/alunos?filtro=vencendo" />
@@ -444,7 +462,7 @@ export default function DashboardPage() {
             <div className="p-3">
               {sessoesHoje.length === 0 ? (
                 <div className="px-2 py-3 text-center"><p className="text-[12px] text-white/20">Nenhuma sessão hoje</p></div>
-              ) : sessoesHoje.slice(0, 5).map(s => {
+              ) : sessoesHoje.slice(0, 8).map(s => {
                 const aluno = alunosMap[s.alunoId];
                 const statusCls = { agendado:'bg-white/[0.08] text-white/70', realizado:'bg-accent/12 text-accent', faltou:'bg-red-500/12 text-red-400', cancelado:'bg-white/[0.06] text-white/30' };
                 return (
@@ -454,7 +472,11 @@ export default function DashboardPage() {
                       {(aluno?.nome || s.alunoId || '?')[0]}
                     </div>
                     <span className="text-[12px] text-white/65 flex-1 truncate">{aluno?.nome?.split(' ')[0] || '—'}</span>
-                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${statusCls[s.status] || statusCls.agendado}`}>{s.status || 'agendado'}</span>
+                    {s.id === proximaId
+                      ? <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-accent/12 text-accent">Próxima</span>
+                      : s.status
+                        ? <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${statusCls[s.status] || statusCls.agendado}`}>{s.status}</span>
+                        : null}
                   </div>
                 );
               })}

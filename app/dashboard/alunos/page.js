@@ -1,4 +1,5 @@
 ﻿'use client';
+import { calcStatus } from '@/lib/statusAluno';
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -150,15 +151,13 @@ export default function AlunosPage() {
 
   const hoje = new Date();
 
+  // Mesma regra do app (lib/statusAluno) e do Início: cobrança automática só é atrasada
+  // quando o Asaas marcou vencido; sem vencimento conta como em dia; inativo não entra
+  // nos grupos de atraso/vencendo.
   function classificar(a) {
-    if (!a.vencimento) return 'sem-data';
-    const [d, m, y] = a.vencimento.split('/');
-    const diff = Math.ceil((new Date(+y, m - 1, +d) - hoje) / 86400000);
-    if (diff < 0) return 'inadimplente';
-    // Cobrança automática renova sozinha — não é "vencendo" de verdade (mesma
-    // regra do card do dashboard, pra não mostrar números diferentes).
-    if (diff <= 7 && !a.cobrancaAutomatica) return 'vencendo';
-    return 'ativo';
+    if (a.ativo === false) return 'inativo';
+    const st = calcStatus(a);
+    return st === 'pendente' ? 'inadimplente' : st;
   }
 
   const filtrados = alunos
