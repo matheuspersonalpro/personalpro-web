@@ -726,18 +726,23 @@ export default function FinanceiroPage() {
           {aReceberPorMes.length > 0 && (
             <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] p-5">
               <p className="text-[11px] font-semibold text-white/35 uppercase tracking-wider mb-3">Quando cai na conta</p>
+              <div className="mb-4">
+                <p className="text-[12px] text-white/45">Total a receber</p>
+                <p className="text-[26px] font-semibold text-accent font-display leading-tight">{fmt(totalBrutoFuturo)}</p>
+                <p className="text-[11px] text-white/35">{fmt(totalLiquidoFuturo)} líquido · taxa Asaas já descontada</p>
+              </div>
               <div className="space-y-4">
                 {aReceberPorMes.map(g => (
                   <div key={`${g.ano}-${g.mes}`}>
                     <div className="flex items-center justify-between mb-1.5">
                       <p className="text-[12px] font-semibold text-white">{MESES[g.mes]} {g.ano}</p>
-                      <p className="text-[12px] text-white/50">{fmt(g.liquido)} <span className="text-white/25">líquido</span></p>
+                      <div className="text-right"><p className="text-[12px] font-semibold text-amber-400">{fmt(g.bruto)}</p><p className="text-[10px] text-white/35">líq. {fmt(g.liquido)}</p></div>
                     </div>
                     <div className="divide-y divide-white/[0.05]">
                       {g.itens.map((it, i) => (
                         <div key={i} className="flex items-center justify-between py-1.5 text-[12px]">
                           <span className="text-white/70 truncate pr-3">{it.nome}{it.estimado ? ' · estimado' : it.manual ? ' · PIX/dinheiro' : ''}</span>
-                          <span className="text-white/40 shrink-0">{String(it.data.getDate()).padStart(2,'0')}/{String(it.data.getMonth()+1).padStart(2,'0')} · {fmt(it.liquido)}</span>
+                          <span className="text-white/55 shrink-0 text-right">{String(it.data.getDate()).padStart(2,'0')}/{MESES[it.data.getMonth()].toLowerCase()} · {fmt(it.bruto)} <span className="text-white/30 text-[10px]">líq. {fmt(it.liquido)}</span></span>
                         </div>
                       ))}
                     </div>
