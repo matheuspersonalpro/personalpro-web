@@ -4,6 +4,7 @@ import { buscarConfigApp, salvarConfigApp } from '@/lib/firestore';
 import { Save, User, Phone, Link2, Building2, FileText } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import { usePersonal } from '@/lib/AuthContext';
+import ConfigExtra from './ConfigExtra';
 
 function Field({ label, field, form, setForm, type = 'text', placeholder, icon: Icon, multiline }) {
   return (
@@ -59,7 +60,9 @@ export default function PerfilPage() {
   const personal = usePersonal();
   const [form,   setForm]   = useState({
     nome: '', cref: '', telefone: '', whatsapp: '', instagram: '',
-    modalidades: { musculacao: true, corrida: false, ciclismo: false },
+    // Padrão do app: as três modalidades ligadas. Com corrida/ciclismo desligados aqui, salvar
+    // o perfil de um personal sem `modalidades` gravadas apagaria essas abas dos alunos dele.
+    modalidades: { musculacao: true, corrida: true, ciclismo: true },
     avisoTexto: '',
   });
   const [saving, setSaving] = useState(false);
@@ -74,7 +77,7 @@ export default function PerfilPage() {
         telefone:   cfg.telefone   || '',
         whatsapp:   cfg.whatsapp   || '',
         instagram:  cfg.instagram  || '',
-        modalidades: { musculacao: true, corrida: false, ciclismo: false, ...cfg.modalidades },
+        modalidades: { musculacao: true, corrida: true, ciclismo: true, ...cfg.modalidades },
         avisoTexto: cfg.aviso?.texto || '',
       }));
     }).finally(() => setLoading(false));
@@ -162,6 +165,10 @@ export default function PerfilPage() {
           </button>
         </div>
       </form>
+
+      <div className="space-y-4 mt-4">
+        <ConfigExtra nomePersonal={form.nome} />
+      </div>
     </div>
   );
 }
