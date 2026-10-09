@@ -6,7 +6,7 @@ import {
   copiarTemplateGlobal, clonarTemplateParaAlunos, excluirTreino, buscarAlunos,
   atribuirProgramaMuscular,
 } from '@/lib/firestore';
-import { listarProgramas } from '@/lib/programaMusculacao';
+import { listarProgramas, RITMOS_PROGRAMA, ritmoSelecionado } from '@/lib/programaMusculacao';
 import { BookOpen, Plus, X, Dumbbell, Copy, Users, Trash2, Check, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import ConfirmModal from '@/components/ConfirmModal';
@@ -25,13 +25,17 @@ function ModalGerarPrograma({ programa, alunos, onFechar, onConcluido }) {
   const [alunoId, setAlunoId] = useState('');
   const [mes, setMes] = useState(1);
   const [gerando, setGerando] = useState(false);
+  // null = não mexe no ritmo do aluno (preserva o que ele já tem; aluno novo nasce em 30 dias).
+  const [ritmo, setRitmo] = useState(null);
+  const ritmoDoAluno = alunos.find(a => a.id === alunoId)?.programaMuscular;
+  const ritmoMostrado = ritmo !== null ? ritmo : (ritmoDoAluno ? ritmoSelecionado(ritmoDoAluno) : 30);
 
   async function gerar() {
     if (!alunoId) { toast('Selecione um aluno.', 'error'); return; }
     setGerando(true);
     try {
       const aluno = alunos.find(a => a.id === alunoId);
-      await atribuirProgramaMuscular(aluno, programa.id, mes);
+      await atribuirProgramaMuscular(aluno, programa.id, mes, ritmo !== null ? { diasPorBloco: ritmo } : null);
       toast(`Programa "${programa.nome}" gerado a partir do Mês ${mes} para ${aluno.nome.split(' ')[0]}!`);
       onConcluido();
     } catch { toast('Erro ao gerar programa.', 'error'); }
@@ -81,6 +85,18 @@ function ModalGerarPrograma({ programa, alunos, onFechar, onConcluido }) {
               {mes <= 3 ? 'Bloco 1 — Adaptação (meses 1-3)' : mes <= 6 ? 'Bloco 2 — Hipertrofia (meses 4-6)' : mes <= 9 ? 'Bloco 3 — Força (meses 7-9)' : 'Bloco 4 — Intensidade (meses 10-12)'}
             </p>
           </div>
+        </div>
+        <div className="px-6 pb-5 -mt-1">
+          <label className="block text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">Trocar de bloco</label>
+          <div className="grid grid-cols-4 gap-1.5">
+            {RITMOS_PROGRAMA.map(r => (
+              <button key={r.dias} type="button" onClick={() => setRitmo(r.dias)}
+                className={`py-2 rounded-[14px] text-[12px] font-semibold ring-1 transition-all ${ritmoMostrado === r.dias ? 'bg-accent/15 text-accent ring-accent/30' : 'text-white/45 ring-white/[0.08] hover:text-white/75'}`}>
+                {r.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-[11px] text-white/30 mt-1.5">{RITMOS_PROGRAMA.find(r => r.dias === ritmoMostrado)?.desc}</p>
         </div>
         <div className="px-6 py-4 border-t border-white/[0.06] flex justify-end gap-2">
           <button onClick={onFechar}
