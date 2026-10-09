@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react';
 import {
   buscarSessoes, buscarAlunos, criarSessao, atualizarSessao, excluirSessao,
   buscarPresencasDia, registrarPresenca,
-  buscarFeriasPendentes, atualizarStatusFerias, aprovarFeriasEEstenderPlano, atualizarAluno,
+  buscarFeriasPorStatus, atualizarStatusFerias, aprovarFeriasEEstenderPlano, atualizarAluno,
   criarSlotLivre, buscarSlotsLivres, deletarSlotLivre, buscarSolicitacoesReposicao,
   criarTrocaHorario, buscarTrocasHorario, deletarTrocaHorario,
   buscarConfigApp, salvarConfigApp,
@@ -13,6 +13,7 @@ import {
   Clock, CheckCircle2, XCircle, AlertCircle, Trash2, ExternalLink,
   Calendar, RefreshCcw,
 } from 'lucide-react';
+import { mapaPresencaAgenda, alunosDeFeriasNoDia } from '@/lib/presencaAgenda';
 import { useToast } from '@/components/Toast';
 import { useConfirm } from '@/components/Confirm';
 
@@ -141,6 +142,7 @@ export default function AgendaPage() {
   const [alunos,        setAlunos]        = useState([]);
   const [sessoes,       setSessoes]       = useState([]);
   const [ferias,        setFerias]        = useState([]);
+  const [feriasAprovadas, setFeriasAprovadas] = useState([]);
   const [slots,         setSlots]         = useState([]);
   const [solicitacoes,  setSolicitacoes]  = useState([]);
   const [trocas,        setTrocas]        = useState([]);
@@ -185,11 +187,11 @@ export default function AgendaPage() {
   const carregar = useCallback(async () => {
     setLoading(true);
     try {
-      const [a, s, f, sl, sol, tr] = await Promise.all([
-        buscarAlunos(), buscarSessoes(), buscarFeriasPendentes(),
+      const [a, s, { pendentes: f, aprovadas: fap }, sl, sol, tr] = await Promise.all([
+        buscarAlunos(), buscarSessoes(), buscarFeriasPorStatus(),
         buscarSlotsLivres(), buscarSolicitacoesReposicao(), buscarTrocasHorario(),
       ]);
-      setAlunos(a); setSessoes(s); setFerias(f);
+      setAlunos(a); setSessoes(s); setFerias(f); setFeriasAprovadas(fap);
       setSlots(sl); setSolicitacoes(sol); setTrocas(tr);
     } finally { setLoading(false); }
   }, []);
@@ -199,20 +201,24 @@ export default function AgendaPage() {
   // Presenças do dia selecionado
   useEffect(() => {
     const iso = toISO(diasSemana[diaSel]);
+    let atual = true; // só a resposta do ÚLTIMO dia pedido pinta o mapa
     buscarPresencasDia(iso).then(lista => {
-      const mapa = {}; lista.forEach(p => { mapa[p.alunoId] = p.presente; });
-      setPresencas(mapa);
+      if (atual) setPresencas(mapaPresencaAgenda(lista));
     }).catch(() => {});
+    return () => { atual = false; };
   }, [diaSel, weekOffset]);
 
+  // Reposição já passada sai da lista (a do dia continua até o fim do dia).
+  const reposicoesFuturas = solicitacoes.filter(r => !r.dataAgendada || r.dataAgendada >= hojeISO);
   const diaAtualISO = toISO(diasSemana[diaSel]);
   const ehHoje = diaAtualISO === hojeISO;
 
   // Sessões do dia
+  const deFeriasNoDia = alunosDeFeriasNoDia(feriasAprovadas, diasSemana[diaSel]);
   const getTrocaAtiva = (alunoId) => trocas.find(t => t.semanaIso === getMondayISO(diasSemana[diaSel]) && (t.alunoA_id === alunoId || t.alunoB_id === alunoId));
 
   const sessoesNoDia = alunos
-    .filter(a => a.tipoServico !== 'online')
+    .filter(a => a.ativo !== false && a.tipoServico !== 'online' && !deFeriasNoDia.has(a.id))
     .map(a => {
       const troca = getTrocaAtiva(a.id);
       const diasA = a.agendaSemanal?.length ? a.agendaSemanal.map(e => e.dia) : (a.dias || []);
@@ -235,7 +241,7 @@ export default function AgendaPage() {
     if (!ehHoje) { toast('A presença só pode ser confirmada hoje.', 'error'); return; }
     const novoEstado = !presencas[alunoId];
     setPresencas(p => ({ ...p, [alunoId]: novoEstado }));
-    try { await registrarPresenca(alunoId, diaAtualISO, novoEstado); }
+    try { await registrarPresenca(alunoId, diaAtualISO, novoEstado, alunoNome); }
     catch { setPresencas(p => ({ ...p, [alunoId]: !novoEstado })); toast('Erro ao registrar presença.', 'error'); }
   }
 
@@ -450,7 +456,7 @@ export default function AgendaPage() {
                 <div key={letra}>
                   <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-2">Aluno {letra}</p>
                   <div className="max-h-32 overflow-y-auto rounded-[14px] ring-1 ring-white/[0.06]">
-                    {alunos.filter(a => a.tipoServico !== 'online' && a.dias?.length && a.id !== (letra==='B' ? trocaAlunoA?.id : null)).map(a => (
+                    {alunos.filter(a => a.ativo !== false && a.tipoServico !== 'online' && a.dias?.length && a.id !== (letra==='B' ? trocaAlunoA?.id : null)).map(a => (
                       <button key={a.id} onClick={() => setSel(a)} className={`w-full flex items-center justify-between px-4 py-2.5 text-left transition-all ${sel?.id===a.id ? 'bg-accent/20 text-accent' : 'text-white/70 hover:bg-white/[0.04]'}`}>
                         <span className="text-[12px] font-semibold">{a.nome}</span>
                         <span className="text-[11px] text-white/35">{(a.dias||[]).join(', ')} · {a.horario}</span>
@@ -521,7 +527,7 @@ export default function AgendaPage() {
             </div>
             <p className="text-[12px] text-white/40 mb-4">Clique num aluno para criar o evento recorrente no Google Calendar.</p>
             <div className="overflow-y-auto space-y-1 flex-1">
-              {alunos.filter(a => a.tipoServico !== 'online' && a.dias?.length && a.horario).map(a => {
+              {alunos.filter(a => a.ativo !== false && a.tipoServico !== 'online' && a.dias?.length && a.horario).map(a => {
                 const url = gerarURLGoogleAgenda(a);
                 return (
                   <a key={a.id} href={url || '#'} target="_blank" rel="noopener noreferrer"
@@ -534,7 +540,7 @@ export default function AgendaPage() {
                   </a>
                 );
               })}
-              {alunos.filter(a => a.tipoServico !== 'online' && a.dias?.length && a.horario).length === 0 && (
+              {alunos.filter(a => a.ativo !== false && a.tipoServico !== 'online' && a.dias?.length && a.horario).length === 0 && (
                 <p className="text-[12px] text-white/30 text-center py-6">Nenhum aluno com dias e horário configurados.</p>
               )}
             </div>
@@ -596,7 +602,7 @@ export default function AgendaPage() {
             const iso = toISO(dia);
             const ehH = iso === hojeISO;
             const sels = sessoes.filter(s => s.data === iso);
-            const sesNoDia = alunos.filter(a => a.tipoServico !== 'online' && Array.isArray(a.dias) && a.dias.includes(DIAS_LABEL[dia.getDay()]));
+            const sesNoDia = alunos.filter(a => a.ativo !== false && a.tipoServico !== 'online' && Array.isArray(a.dias) && a.dias.includes(DIAS_LABEL[dia.getDay()]));
             const total = sels.length + sesNoDia.length;
             return (
               <button key={iso} onClick={() => setDiaSel(i)}
@@ -738,13 +744,13 @@ export default function AgendaPage() {
         {/* Reposições confirmadas */}
         <div className="rounded-[22px] bg-[#141619] ring-1 ring-white/[0.06] overflow-hidden">
           <div className="px-4 py-3 border-b border-white/[0.05]">
-            <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">Reposições ({solicitacoes.length})</p>
+            <p className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">Reposições ({reposicoesFuturas.length})</p>
           </div>
-          {solicitacoes.length === 0 ? (
+          {reposicoesFuturas.length === 0 ? (
             <p className="text-[12px] text-white/25 text-center py-6">Nenhuma reposição</p>
           ) : (
             <div className="p-3 space-y-2">
-              {solicitacoes.map(sol => (
+              {reposicoesFuturas.map(sol => (
                 <div key={sol.id} className="rounded-[14px] bg-accent/[0.06] ring-1 ring-accent/15 p-3">
                   <div className="flex items-center gap-1.5 mb-1.5">
                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-accent/15 text-accent">Confirmado</span>
