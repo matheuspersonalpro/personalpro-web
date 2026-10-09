@@ -74,6 +74,7 @@ function resumirSeries(series) {
 function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
   const [open, setOpen] = useState(false);
   const [showPlayer, setShowPlayer] = useState(false);
+  const [variar, setVariar] = useState(false);
   const metodoInfo = ex.metodo ? METODOS[ex.metodo] : null;
   const ytId = extrairYoutubeId(videoUrl);
   const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : null;
@@ -85,6 +86,13 @@ function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
     : (Number(ex.series) > 0
         ? Array.from({ length: Number(ex.series) }, () => ({ reps: ex.reps || '12', carga: ex.carga || '', pausa: ex.descanso || ex.pausa || '60s' }))
         : []);
+
+  // Séries com valores diferentes entre si (pirâmide, carga por série do app) abrem direto no
+  // modo "variar por série": o modo uniforme achataria tudo na 1ª série ao editar.
+  const diferem = series.some(s => (s.reps || '') !== (series[0]?.reps || '') || (s.carga || '') !== (series[0]?.carga || '') || (s.pausa || '') !== (series[0]?.pausa || ''));
+  const modoVariar = variar || diferem;
+  const campoSerie = 'w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-accent/50 transition-all';
+  const mudarSerie = (i, campo, valor) => onChange(idx, 'series', series.map((s, j) => (j === i ? { ...s, [campo]: valor } : s)));
 
   return (
     <div className="rounded-[14px] bg-white/[0.03] ring-1 ring-white/[0.06] overflow-hidden">
@@ -156,7 +164,32 @@ function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
               (a maioria dos casos). Séries com valores diferentes entre si
               (ex.: pirâmide) continuam possíveis via periodização, só não dá
               pra ajustar set-a-set aqui. */}
+          {modoVariar ? (
+            <div className="space-y-1.5">
+              <div className="grid gap-2 px-0.5" style={{ gridTemplateColumns: '28px 1fr 1fr 1fr 24px' }}>
+                <span />
+                {['Reps', 'Carga', 'Descanso'].map(t => <label key={t} className="text-[9px] font-semibold text-white/25 uppercase tracking-wider">{t}</label>)}
+                <span />
+              </div>
+              {series.map((s, i) => (
+                <div key={i} className="grid gap-2 items-center" style={{ gridTemplateColumns: '28px 1fr 1fr 1fr 24px' }}>
+                  <span className="text-[11px] text-white/35 text-center">{i + 1}</span>
+                  <input value={s.reps || ''} onChange={e => mudarSerie(i, 'reps', e.target.value)} placeholder="12" className={campoSerie} />
+                  <input value={s.carga || ''} onChange={e => mudarSerie(i, 'carga', e.target.value)} placeholder="—" className={campoSerie} />
+                  <input value={s.pausa || ''} onChange={e => mudarSerie(i, 'pausa', e.target.value)} placeholder="60s" className={campoSerie} />
+                  <button type="button" disabled={series.length <= 1} onClick={() => onChange(idx, 'series', series.filter((_, j) => j !== i))}
+                    className="w-6 h-6 rounded-lg hover:bg-red-500/15 flex items-center justify-center text-white/20 hover:text-red-400 disabled:opacity-20 transition-all"><X size={12} /></button>
+                </div>
+              ))}
+              <div className="flex items-center gap-3 pt-1">
+                <button type="button" onClick={() => onChange(idx, 'series', [...series, { ...(series[series.length - 1] || { reps: '12', carga: '', pausa: '60s' }) }])}
+                  className="text-[11px] font-semibold text-accent hover:text-accent-pale transition-colors">+ série</button>
+                {!diferem && <button type="button" onClick={() => setVariar(false)} className="text-[11px] text-white/35 hover:text-white/70 transition-colors">Igual em todas</button>}
+              </div>
+            </div>
+          ) : (
           <div className="space-y-1">
+            <button type="button" onClick={() => setVariar(true)} className="text-[11px] text-white/35 hover:text-white/70 transition-colors">Variar por série</button>
             <div className="grid gap-2 px-0.5" style={{ gridTemplateColumns: '70px 1fr 1fr 1fr' }}>
               <label className="text-[9px] font-semibold text-white/25 uppercase tracking-wider">Séries</label>
               <label className="text-[9px] font-semibold text-white/25 uppercase tracking-wider">Reps</label>
@@ -179,6 +212,7 @@ function ExCard({ ex, idx, onChange, onRemove, videoUrl }) {
                 className="w-full px-2 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white text-[12px] placeholder-white/20 focus:outline-none focus:border-accent/50 transition-all" />
             </div>
           </div>
+          )}
           {/* Método */}
           <div>
             <label className="block text-[9px] font-semibold text-white/25 uppercase tracking-wider mb-1.5">Método</label>
