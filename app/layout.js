@@ -15,6 +15,7 @@ const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope', displa
 // descrição, canonical e Open Graph (lib/seo.js). `metadataBase` resolve os
 // caminhos relativos (imagem de compartilhamento) em URL absoluta.
 export const metadata = {
+  verification: { google: "5jd2-lCguNR9zjHt8EyusefoIc4OrTY8oRrAxEyE6Vk" },
   metadataBase: new URL(SITE),
   applicationName: 'Personal Pro',
   title: 'Personal Pro',
