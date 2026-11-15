@@ -1,5 +1,6 @@
 import Convite from '@/app/convite/Convite';
 import { metadataPagina } from '@/lib/seo';
+import EncaminharLinkPessoal from '@/components/EncaminharLinkPessoal';
 
 // /convite/ em espanhol. O código chega na query (?codigo=), igual ao português.
 export const metadata = metadataPagina({
@@ -12,5 +13,10 @@ export const metadata = metadataPagina({
 });
 
 export default function Page() {
-  return <Convite idioma="es" />;
+  return (
+    <>
+      <EncaminharLinkPessoal />
+      <Convite idioma="es" />
+    </>
+  );
 }

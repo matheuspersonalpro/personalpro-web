@@ -1,6 +1,7 @@
 import Convite from './Convite';
 import SugestaoIdioma from '@/components/SugestaoIdioma';
 import { metadataPagina } from '@/lib/seo';
+import EncaminharLinkPessoal from '@/components/EncaminharLinkPessoal';
 
 // A tela é a mesma da /es/invitacion/ (Convite.js).
 export const metadata = metadataPagina({
@@ -15,6 +16,7 @@ export const metadata = metadataPagina({
 export default function Page() {
   return (
     <>
+      <EncaminharLinkPessoal />
       <SugestaoIdioma pagina="convite" />
       <Convite idioma="pt-BR" />
     </>
